@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@theme {
+    --color-one: #000000;
+    --color-twoo: #0C1821;
+    --color-three: #1B2A41;
+    --color-four:#324A5F;
+    --color-five:#4B6B89;
+  }
+  .MuiSvgIcon-root{
+    color:white !important;
+  }
