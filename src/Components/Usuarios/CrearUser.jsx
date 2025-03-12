@@ -35,7 +35,7 @@ export default function CrearUser(){
                 }}
                 onSubmit={(values, { setSubmitting}) => {
                     setLoading(true);
-                    fetch("https://script.google.com/macros/s/AKfycbxgOtpQyUFbBzFGl4bjyaMYuY6wm_18FAR87fSelbdIzXBvlauVzANQQ86aZHkgQ_5zlw/exec")
+                    fetch("https://script.google.com/macros/s/AKfycbz7gxd2iss9HvHL9IbBt190ObHuGazeklHgWbD_S9oj5-3a5I5_1395Bx4Q5NNf4NK3/exec")
                     .then(response => response.text())
                     .then(data => {
                         // Asegurarnos de que 'data' sea un número
@@ -55,7 +55,7 @@ export default function CrearUser(){
                             Activo: 1,
                                 }
                             // Enviar datos a Google Sheets usando fetch
-                            fetch("https://script.google.com/macros/s/AKfycbz12KdGyJHH8b2_bu02WJFij7RP398nOoCDnA4FB405lJY33zN1IW4Ss0_qacc3Ld3WcA/exec", {
+                            fetch("https://script.google.com/macros/s/AKfycbwQjWbGhDGs25EZFAAGUM36dJC7KsWwdHPFX4ib4lDm2zIlZmzTzk7PiDqZDtK4DWbe/exec", {
                                 method: "POST",
                                 body: JSON.stringify(valores), // Enviar los valores del formulario
                                 headers: {

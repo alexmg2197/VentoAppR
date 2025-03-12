@@ -121,6 +121,7 @@ export default function CrearResponsiva() {
             const pdfBlob = doc.output('blob'); // Convertir PDF a Blob
             const pdfUrl = URL.createObjectURL(pdfBlob); // Crear URL Blob
             window.open(pdfUrl, '_blank'); // Abrir en nueva pestaña
+            resolve()
         },
         x: 10,
         y: 60,
@@ -210,7 +211,7 @@ export default function CrearResponsiva() {
                         }}
                         onSubmit={(values, { setSubmitting}) => {
                             setLoading(true);
-                            fetch("https://script.google.com/macros/s/AKfycbzCz-bej0ee1oAkFqE6IfOPYG3o00AKOozEpNEkLE0weSU9hgqqqM1lFAprUSlHQsQrbQ/exec")
+                            fetch("https://script.google.com/macros/s/AKfycbzlzFswPM5sN_KmB8sLPwoB5S6jBk8Ed-kOmuEM1lSXbXC5M4hFLlh2Lp0gNic-2Q7R/exec")
                             .then(response => response.text())
                             .then(data => {
                                 console.log(data)
@@ -237,12 +238,12 @@ export default function CrearResponsiva() {
                                     DiscoDuro: values.discoDuro,
                                     PlacaActivo: values.placaActivo,
                                     Activa: 1,
-                                    // Creador: usuario.nombre
+                                    Creador: usuario.nombre
                                         }
                                         console.log(id)
                                         console.log(valores)
                                  // Enviar datos a Google Sheets usando fetch
-                                    fetch("https://script.google.com/macros/s/AKfycbx2bkPgooqJczhBaoGL9n3LpSfJVfYTJRAz6I-BfGcnyvATHXDLe8Vq0IuL2zd10ZV3AA/exec", {
+                                    fetch("https://script.google.com/macros/s/AKfycbzGj6vjXkQZm19LaE6pXahi4FeR1k99e24pq_U_HOC-tmeJivd_flsZsSOE2QYqQzGT/exec", {
                                         method: "POST",
                                         body: JSON.stringify(valores), // Enviar los valores del formulario
                                         headers: {

@@ -15,7 +15,7 @@ export default function VerUsers(){
 
     useEffect(() => {
     setLoading(true);
-    fetch('https://script.google.com/macros/s/AKfycbyHgz3UevAhCBD50kPliCDQYAvE-1ax9hXHNm8r-ztbWwQmVkjnhPJf1RdMaSzY8BxVqg/exec')
+    fetch('https://script.google.com/macros/s/AKfycbyYIPaUoT4PDVCg0Z8wCW53h-sFmvxxyNt17iTJpVlZB190HnCgv-Mgm9BML-iyfAKL/exec')
         .then((response) => response.json())
         .then((data) => {setLoading(false); setUsuarios(data)});
     }, []);
@@ -67,7 +67,7 @@ export default function VerUsers(){
         }).then((result) => {
           if (result.isConfirmed) {
             setLoading(true)
-            fetch("https://script.google.com/macros/s/AKfycbx3jfim4s3Fs5xGBfArihrtfWMwHSfZCDU2Ztpgsv9-NkF72cXMNp-l4uzxYhU2M62K6w/exec", {
+            fetch("https://script.google.com/macros/s/AKfycbzb47oev1mqmeZz_qfNsCIPBpvIoua9OftmVt_fii-HU_g1FbXXTIj_7CPPwmxdEmYA/exec", {
               method: "POST",
               body: JSON.stringify(valores), // Enviar los valores del formulario
               headers: {

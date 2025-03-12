@@ -71,7 +71,7 @@ export default function ModalEditUser({modal, usuario}){
                                     };
                                 
                                 
-                                fetch("https://script.google.com/macros/s/AKfycbxNRC6FiKbaOPSEBVMikosSB68i_-cJgp-5Grt7aasYEbY1JX0BsuA1tznEJmkPy01RHQ/exec", {
+                                fetch("https://script.google.com/macros/s/AKfycbyL3wH6RSLPROBOy_y4rUAXb4B3FgVDe5zHJMLk0eKXt-6ahtDdzf4ilN0GYmRLhoc/exec", {
                                     method: "POST",
                                     body: JSON.stringify(datos), // Enviar los valores del formulario
                                     headers: {

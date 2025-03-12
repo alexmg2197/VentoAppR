@@ -1,4 +1,4 @@
-import {React, useState} from "react";
+import {React, useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik } from 'formik'
 import Swal from 'sweetalert2';
@@ -6,19 +6,29 @@ import Swal from 'sweetalert2';
 export default function CrearCorreo(){
 
     const [loading, setLoading] = useState(false);
+    const [ubicaciones, setUbicaciones] = useState([]);
+    const [departamentos, setDepartamentos] = useState([]);
+
+    useEffect(() => {
+        setLoading(true);
+
+        const fetchUbicaciones = fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+            .then((response) => response.json())
+            .then((data) =>  setUbicaciones(data));
+
+        const fetchDepartamentos = fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+            .then((response) => response.json())
+            .then((data) =>  setDepartamentos(data));
+
+
+        Promise.all([fetchUbicaciones,fetchDepartamentos])
+        .catch((error) => console.error("Error al cargar datos:", error))
+        .finally(() => {setLoading(false)});
+    }, []);
     
     const navigate = useNavigate();
     
     const usuario = JSON.parse(localStorage.getItem("usuario"));
-
-    const Ubicacion = [
-        {name:'Lerma'},{name:'Santin'},{name:'Chapultepec'},{name:'Duero'},{name:'Militares'}
-    ]
-
-    const Departamento = [
-        {name:'Sistemas'},{name:'Enfermeria'},{name:'Nominas'},{name:'Calidad'},{name:'Logistica'},{name:'Ingenieria de Procesos'}
-    ]
-        
 
     return(
         <div className="container mx-auto p-6">
@@ -41,7 +51,7 @@ export default function CrearCorreo(){
                 }}
                 onSubmit={(values, { setSubmitting}) => {
 
-                    fetch("https://script.google.com/macros/s/AKfycbzn5MvXt-2gfTowxSWmiP8axYQjgZ5S1GVGEkhMHvVooFMfF8f6vRN1sxvUUWMLQXx3ww/exec")
+                    fetch("https://script.google.com/macros/s/AKfycbyHv9WpmccMvs6pDMdSFf-b_byW3dNLGFIyCo7ajFxgRdvDB439Jowd-3gVn7KisjTu/exec")
                     .then(response => response.text())
                     .then(data => {
                         setLoading(true)
@@ -62,12 +72,12 @@ export default function CrearCorreo(){
                             Correo: values.correo,
                             Contraseña: values.contrasena,
                             Activo: 1,
-                            // Creador: usuario.nombre
+                            Creador: usuario.nombre
                                 }
                                 console.log(id)
                                 console.log(valores)
                             // Enviar datos a Google Sheets usando fetch
-                            fetch("https://script.google.com/macros/s/AKfycbzdYY9Yb5uklTD8qgeiMkhvUMzXpTRRvHRoDFsfFSV7SwEnae0G9Sje5Jdcji3xtbArOQ/exec", {
+                            fetch("https://script.google.com/macros/s/AKfycby1HjpNMjxdQYSudusXbMrm4bPcd3rnNggj3v0ScVBK3_d22eABx3vPaxDveDTQjgg/exec", {
                                 method: "POST",
                                 body: JSON.stringify(valores), // Enviar los valores del formulario
                                 headers: {
@@ -117,7 +127,7 @@ export default function CrearCorreo(){
                         <select id="departamento" name="departamento" value={values.departamento} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                             <option value="">Departamento</option>
                             {
-                                Departamento.map((depa) =>{
+                                departamentos.map((depa) =>{
                                     return(
                                         <option key={depa.name} value={depa.name}>{depa.name}</option>
                                     )
@@ -127,7 +137,7 @@ export default function CrearCorreo(){
                         <select id="ubicacion" name="ubicacion" value={values.ubicacion} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                             <option value="">Ubicaciòn</option>
                             {
-                                Ubicacion.map((ubicacion) =>{
+                                ubicaciones.map((ubicacion) =>{
                                     return(
                                         <option key={ubicacion.name} value={ubicacion.name}>{ubicacion.name}</option>
                                     )

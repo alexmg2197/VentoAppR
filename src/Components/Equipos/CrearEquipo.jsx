@@ -1,41 +1,56 @@
 import { Formik } from "formik";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
 export default function CrearEquipo(){
 
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
-
     const [loading, setLoading] = useState(false);
+    const [ubicaciones, setUbicaciones] = useState([]);
+    const [departamentos, setDepartamentos] = useState([]);
+    const [procesadores, setProcesadores] = useState([]);
+    const [sistema, setSistema] = useState([]);
+    const [disco, setDisco] = useState([]);
+    const [equipo, setEquipo] = useState([]);
+    const [conexion, setConexion] = useState([]);
 
-    const Procesador = [
-        {name:'Core i3'},{name:'Core i5'},{name:'Core i7'},{name:'Core i9'}
-    ]
-    
-    const Sistema = [
-        {name:'Windows 7'},{name:'Windows 100'},{name:'Windows 11'}
-    ]
+    useEffect(() => {
+        setLoading(true);
 
-    const Disco = [
-        {name:'128 GB'},{name:'254 GB'},{name:'500 GB'},{name:'1 TB'}
-    ]
+        const fetchUbicaciones = fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+            .then((response) => response.json())
+            .then((data) =>  setUbicaciones(data));
 
-    const Equipo =[
-        {name:'ENSAMBLE'}, {name:'LAPTOP'}
-    ]
+        const fetchDepartamentos = fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+            .then((response) => response.json())
+            .then((data) =>  setDepartamentos(data));
 
-    const Conexion = [
-        {name:'WI-FI'}, {name:'CABLE'},{name:'SIN CONEXION'}
-    ]
+        const fetchProcesadores = fetch('https://script.google.com/macros/s/AKfycbz-rU8K8Mhxmjb7UY3TQsKn88bdMScjDkLRXn6dmOBx3S8GCG8pJPANNzm_lMe9-I7J/exec')
+            .then((response) => response.json())
+            .then((data) =>  setProcesadores(data));
 
-    const Ubicacion = [
-        {name:'Lerma'},{name:'Santin'},{name:'Chapultepec'},{name:'Duero'},{name:'Militares'}
-    ]
+        const fetchSistema = fetch('https://script.google.com/macros/s/AKfycbxZ5Qf_B0sUF82WzFgWixlkwSpOAAvJfIF8e0Fd-JNBKwvLmIZvbexNbPPz4RJXKJh8/exec')
+            .then((response) => response.json())
+            .then((data) =>  setSistema(data));
 
-    const Departamento = [
-        {name:'Sistemas'},{name:'Enfermeria'},{name:'Nominas'},{name:'Calidad'},{name:'Logistica'},{name:'Ingenieria de Procesos'}
-    ]
+        const fetchDisco = fetch('https://script.google.com/macros/s/AKfycbzBmmInoIDdR21QF3hFid0fWtYpr2j6XVq98lXk2niFTxAeySyg_mnNBOu67yHCuOjd/exec')
+            .then((response) => response.json())
+            .then((data) =>  setDisco(data));
 
+        const fetchEquipo = fetch('https://script.google.com/macros/s/AKfycbyo3pvsjYRQ8UEk36Ugg8HSJEL9Ao20bqH9qNQhHogXJLF9mxU09W1d5YFML-iwNh3B/exec')
+            .then((response) => response.json())
+            .then((data) =>  setEquipo(data));
+
+        const fetchConexion = fetch('https://script.google.com/macros/s/AKfycbwp9QtaGNkaXm7_iLNOHmM2mEQEKxVmvHZTt_ObH-9YcLtObNi36Vccm2hvc-y6fVk/exec')
+            .then((response) => response.json())
+            .then((data) =>  setConexion(data));
+
+        Promise.all([fetchUbicaciones, fetchDepartamentos, fetchProcesadores, fetchSistema, fetchDisco, fetchEquipo,fetchConexion])
+        .catch((error) => console.error("Error al cargar datos:", error))
+        .finally(() => {setLoading(false)});
+    }, []);
+
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+  
     return(
         <div className="container mx-auto p-6">
             <div className="bg-three text-white text-center py-3 rounded-t-xl">
@@ -78,7 +93,7 @@ export default function CrearEquipo(){
 
                     console.log(((values.ssd && values.hdd && values.m2) ? ('SSD/HDD/M2') : ((values.ssd && values.hdd && !values.m2) ? ('SSD/HDD'):((values.ssd && !values.hdd && values.m2)?('SSD/M2'):((!values.ssd && values.hdd && values.m2)?('HDD/M2'):((values.ssd && !values.hdd && !values.m2)?('SSD'):((!values.ssd && values.hdd && !values.m2)?('HDD'):((!values.ssd && !values.hdd && values.m2)?('M2'):''))))))))
                     setLoading(true);
-                    fetch("https://script.google.com/macros/s/AKfycbxDvXgzwVK7mOeJDTMNAtxzvErjLy-km6DKuhd_zFZMGjykaKSKyhOZam4D6lX0J6iVow/exec")
+                    fetch("https://script.google.com/macros/s/AKfycbwPxzEIi2ThGgsg7JHjp4lB-iRau9f4Mxb2xkEf2wgQZrJpc7bjZV8hONrgPbQZW3mN/exec")
                     .then(response => response.text())
                     .then(data => {
                         console.log(data)
@@ -114,11 +129,11 @@ export default function CrearEquipo(){
                             ActivoFijo: values.activofijo,
                             Activo: 1,
                             Realizo: usuario.nombre,
-                                }
-                                console.log(id)
-                                console.log(valores)
+                        }
+                        console.log(id)
+                        console.log(valores)
                             // Enviar datos a Google Sheets usando fetch
-                            fetch("https://script.google.com/macros/s/AKfycby3Mx0If0BKL99BABp19wM947PoP1OilUHMc5ZhzL-Pjk-Ucd9DOdxPtshdF1X-Be49mA/exec", {
+                            fetch("https://script.google.com/macros/s/AKfycbzj3VReT4Ex4yTGa-5kE56tiHAeXS7xvOEOmZe9q-DXRQAXLjSG1kxTSyvILW0Na3Bo/exec", {
                                 method: "POST",
                                 body: JSON.stringify(valores), // Enviar los valores del formulario
                                 headers: {
@@ -175,10 +190,11 @@ export default function CrearEquipo(){
                                 <select id="departamento" name="departamento" value={values.departamento} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                                     <option value=""> --- Seleccione una opción ---</option>
                                     {
-                                        Departamento.map((depa) =>{
+                                        departamentos.map((depa) =>{
                                             return(
                                                 <option key={depa.name} value={depa.name}>{depa.name}</option>
                                             )
+                                            
                                         })
                                     }
                                 </select>
@@ -188,7 +204,7 @@ export default function CrearEquipo(){
                                 <select id="ubicacion" name="ubicacion" value={values.ubicacion} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                                     <option value=""> --- Seleccione una opción ---</option>
                                     {
-                                        Ubicacion.map((ubicacion) =>{
+                                        ubicaciones.map((ubicacion) =>{
                                             return(
                                                 <option key={ubicacion.name} value={ubicacion.name}>{ubicacion.name}</option>
                                             )
@@ -208,7 +224,7 @@ export default function CrearEquipo(){
                                     <select  id="equipo" name="equipo" value={values.equipo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                         <option value="">--- Seleccione una opción ---</option>
                                         {
-                                            Equipo.map((sistema) =>{
+                                            equipo.map((sistema) =>{
                                                 return(
                                                     <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
                                                 )
@@ -233,7 +249,7 @@ export default function CrearEquipo(){
                                     <select id="procesador" name="procesador" value={values.procesador} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                         <option value="">--- Selecciona una opción ---</option>
                                         {
-                                            Procesador.map((procesador) =>{
+                                            procesadores.map((procesador) =>{
                                                 return(
                                                     <option key={procesador.name} value={procesador.name}>{procesador.name}</option>
                                                 )
@@ -250,7 +266,7 @@ export default function CrearEquipo(){
                                     <select  id="sistemaOperativo" name="sistemaOperativo" value={values.sistemaOperativo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                         <option value="">Sistema Operativo</option>
                                         {
-                                            Sistema.map((sistema) =>{
+                                            sistema.map((sistema) =>{
                                                 return(
                                                     <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
                                                 )
@@ -263,7 +279,7 @@ export default function CrearEquipo(){
                                     <select name="tipoconexion" id="tipoconexion" value={values.tipoconexion} onChange={handleChange} className="w-full p-2 border rounded-md">
                                         <option value=""> --- Seleccione una opción ---</option>
                                         {
-                                            Conexion.map((conexion) =>{
+                                            conexion.map((conexion) =>{
                                                 return(
                                                     <option key={conexion.name} value={conexion.name}>{conexion.name}</option>
                                                 )
@@ -283,11 +299,11 @@ export default function CrearEquipo(){
                                         <span>SSD</span>
                                     </label>
                                     <label className="flex items-center space-x-2">
-                                        <input type="checkbox" name="hdd" value={values.ssd} onChange={handleChange}/>
+                                        <input type="checkbox" name="hdd" value={values.hdd} onChange={handleChange}/>
                                         <span>HDD</span>
                                     </label>
                                     <label className="flex items-center space-x-2">
-                                        <input type="checkbox" name="m2" value={values.ssd} onChange={handleChange}/>
+                                        <input type="checkbox" name="m2" value={values.m2} onChange={handleChange}/>
                                         <span>M2</span>
                                     </label>
                                 </div>
@@ -297,7 +313,7 @@ export default function CrearEquipo(){
                                         <select name="ssdSize" id="ssdSize" value={values.ssdSize} onChange={handleChange} className="w-full p-2 border rounded-md">
                                             <option value=""> --- SSD ---</option>
                                             {
-                                                Disco.map((disco) =>{
+                                                disco.map((disco) =>{
                                                     return(
                                                         <option key={disco.name} value={disco.name}>{disco.name}</option>
                                                     )
@@ -311,7 +327,7 @@ export default function CrearEquipo(){
                                         <select name="hddSize" id="hddSize" value={values.hddSize} onChange={handleChange} className="w-full p-2 border rounded-md">
                                             <option value=""> --- HDD ---</option>
                                             {
-                                                Disco.map((disco) =>{
+                                                disco.map((disco) =>{
                                                     return(
                                                         <option key={disco.name} value={disco.name}>{disco.name}</option>
                                                     )
@@ -325,7 +341,7 @@ export default function CrearEquipo(){
                                         <select name="m2Size" id="m2Size" value={values.m2Size} onChange={handleChange} className="w-full p-2 border rounded-md">
                                             <option value=""> --- M2 ---</option>
                                             {
-                                                Disco.map((disco) =>{
+                                                disco.map((disco) =>{
                                                     return(
                                                         <option key={disco.name} value={disco.name}>{disco.name}</option>
                                                     )

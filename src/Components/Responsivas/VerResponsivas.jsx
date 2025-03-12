@@ -17,7 +17,7 @@ export default function VerResponsiva() {
 
     useEffect(() => {
       setLoading(true);
-      fetch('https://script.google.com/macros/s/AKfycbxO-2Y-4e8MrWTys_zAZ6qfmUQ76FnzHWvrHRlBI5tov7dgvQB80wQsP9fBplFZ5RX3DQ/exec')
+      fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Av0F9BmQQ24be89zJqtLGL4_J1hJKhTY2Pcu-3l7NcA3RszW99ZhHcjvPKDA6J6CI4i9eqcI5BxH44ni9uuoaPiOG5x42bHbm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnI0ZpyEVoOungJUum7ol0R_xYxaYy_BEKUe1uwbf9PKfHdly63Hcl_LKoeJAZRFeHfft8TSMfgyAOTP1mcJ_0xwD25TVflC-4A&lib=MHjXBVhai-CdhE7mJFGEsMsvpNBcmj7mt')
         .then((response) => response.json())
         .then((data) => {setLoading(false); setResponsivas(data)});
     }, []);
@@ -77,7 +77,7 @@ export default function VerResponsiva() {
   }).then((result) => {
     if (result.isConfirmed) {
       setLoading(true);
-      fetch("https://script.google.com/macros/s/AKfycbwevvckl8vTSaI8UDCU3ZV1TEy7b7TVVOd1H6RKAqahDpKaPlNERz1ETYYV46HXcea02g/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbyMWe2c-SoknS2wSeSnrtgdHy51xEWjglmtahb2VhJ-snor_ERIh4k4bKxRVP5WWkXP/exec", {
         method: "POST",
         body: JSON.stringify(valores), // Enviar los valores del formulario
         headers: {

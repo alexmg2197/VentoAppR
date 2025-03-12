@@ -261,7 +261,7 @@ export default function ModalEditR({modal,responsiva}){
                           };
                           
                         
-                        fetch("https://script.google.com/macros/s/AKfycbzORBYP2F7yqgz-YaI3CGZxI3SUERcpU7Cvl9rt896IX44N8sXXC4Qhz4qDWQVc-O1XfA/exec", {
+                        fetch("https://script.google.com/macros/s/AKfycbw66xR4ZMHuPjhH3Hu47qaqrTDjkhp4gw1Gkda_AXAyjFQy-hM4GQ3y83v4lwHj0-W1/exec", {
                             method: "POST",
                             body: JSON.stringify(datos), // Enviar los valores del formulario
                             headers: {

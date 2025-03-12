@@ -9,23 +9,28 @@ export default function Inicio() {
     const [countResponsivas, setCountResponsivas] = useState([]);
     const [countCorreos, setCountCorreos] = useState([]);
     const [countUsuarios, setCountUsuarios] = useState([]);
+    const [countEquipos, setCountEquipos] = useState([]);
     const [dataMarcas, setDataMarcas] = useState([]);
     const [dataAreas, setDataAreas] = useState([]);
 
     useEffect(() => {
         setLoading(true);
 
-        const fetchResponsivasCount = fetch('https://script.google.com/macros/s/AKfycbwHsCh2y9GcPTF2xuUaOzcxM3QY4vmPpsRHZs58SIZJBgTfhIi4JFsI9UQZY2sqa6BI_A/exec')
+        const fetchResponsivasCount = fetch('https://script.google.com/macros/s/AKfycbweruTMcyLjgrfGsRa7v-QUhjrvNSO7NGM0w4NDnaRiC6UlcQbtcRnogNJQvii_YS78/exec')
             .then((response) => response.json())
             .then((data) =>  setCountResponsivas(data));
 
-        const fetchCountCorreos = fetch('https://script.google.com/macros/s/AKfycbzqJ9yaseSLQpzx-2GI1XPSuLS7TzzUtAmxBuMoZ5cDU1Oyc-Z5GoHArC7_6S0tdlmv7Q/exec')
+        const fetchCountCorreos = fetch('https://script.google.com/macros/s/AKfycbxqqh59CVPO5raQe9-R00E3WMSbmSk67FdRCOIfpllT3b-8eQEcSaVrZ4KH6tUblUx_/exec')
             .then((response) => response.json())
             .then((data) =>  setCountCorreos(data));
 
-        const fetchCountUsuarios = fetch('https://script.google.com/macros/s/AKfycbymX5nxhj1i_BSSKjHx-WdfTB8TWxaUgWEtBGjaTTYZGsMgb89uvfOP28O1J_eWtVYIVA/exec')
+        const fetchCountUsuarios = fetch('https://script.google.com/macros/s/AKfycbzzIzh6UYQiNYHanJOyXj6kD6M2kBKLjxhIGlrxfYkESMExnymwisjY1ZRG2GGR7533/exec')
             .then((response) => response.json())
             .then((data) =>  setCountUsuarios(data));
+
+        const fetchCountEquipos = fetch('https://script.google.com/macros/s/AKfycbxXCv9emYyAZ7G03fy_ZoBxLItDOpw_k_91bUDUF0QXRNSyoIBhgEw8fRN-bT8X5j41/exec')
+            .then((response) => response.json())
+            .then((data) =>  setCountEquipos(data));
 
         const fetchMarcas =  fetch('https://script.google.com/macros/s/AKfycbxO-2Y-4e8MrWTys_zAZ6qfmUQ76FnzHWvrHRlBI5tov7dgvQB80wQsP9fBplFZ5RX3DQ/exec')
                             .then((response) => response.json())
@@ -50,7 +55,7 @@ export default function Inicio() {
                             });
 
 
-        Promise.all([fetchResponsivasCount, fetchCountCorreos, fetchCountUsuarios, fetchMarcas, fetchAreas])
+        Promise.all([fetchResponsivasCount, fetchCountCorreos, fetchCountUsuarios, fetchCountEquipos, fetchMarcas, fetchAreas])
         .catch((error) => console.error("Error al cargar datos:", error))
         .finally(() => {setLoading(false); console.log(dataAreas)});
     }, []);
@@ -122,7 +127,24 @@ export default function Inicio() {
                     </div>
                     {/* Footer con Fondo Oscuro y Link */}
                     <div className="bg-yellow-700 text-white px-4 py-2 flex justify-center items-center hover:bg-yellow-800 transition">
-                        <a href="#VerCorreos" className="text-white text-sm font-semibold pr-2">Más Información</a>
+                        <a href="#VerUsuarios" className="text-white text-sm font-semibold pr-2">Más Información</a>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 15v-4H7v-2h5V7l5 5z"/></svg>
+                    </div>
+                </div>
+                <div className="bg-green-600 text-white rounded-lg shadow-md overflow-hidden">
+                    {/* Contenido Principal */}
+                    <div className="p-4 flex justify-between items-center">
+                        <div className='pl-2'>
+                            <h3 className="text-3xl font-bold">{countEquipos.totalActiveRows}</h3>
+                            <p className="text-sm uppercase text-white opacity-80">Equipos</p>
+                        </div>
+                        <div className="text-6xl opacity-30"> 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M8 2a1 1 0 0 0-1 1v.469h.5a2.75 2.75 0 0 1 2.75 2.75v.156H14V3a1 1 0 0 0-1-1zm-.109 11.871a2 2 0 0 0 .088-.944a2.75 2.75 0 0 0 2.271-2.708V7.625H14V13a1 1 0 0 1-1 1H8.5a1.5 1.5 0 0 1-.609-.129m4.78-9.684a.766.766 0 1 1-1.53 0a.766.766 0 0 1 1.53 0M0 6.22a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 9 6.22v4a1.5 1.5 0 0 1-1.5 1.5H5.25v.75H6a.75.75 0 1 1 0 1.5H3a.75.75 0 0 1 0-1.5h.75v-.75H1.5a1.5 1.5 0 0 1-1.5-1.5z" clipRule="evenodd"/></svg>
+                        </div>
+                    </div>
+                    {/* Footer con Fondo Oscuro y Link */}
+                    <div className="bg-green-700 text-white px-4 py-2 flex justify-center items-center hover:bg-yellow-800 transition">
+                        <a href="#VerEquipos" className="text-white text-sm font-semibold pr-2">Más Información</a>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 15v-4H7v-2h5V7l5 5z"/></svg>
                     </div>
                 </div>
