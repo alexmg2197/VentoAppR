@@ -15,7 +15,7 @@ export default function VerEquipos(){
 
         useEffect(() => {
               setLoading(true);
-              fetch('https://script.google.com/macros/s/AKfycbznzmfRTm-f1LcUjQlM9MLLzQwSECcTJ4zHBC0xz3WHxdGNPrlqTDLej-_g_778OXgUbA/exec')
+              fetch('https://script.google.com/macros/s/AKfycbxIo4TNNdy1hMRh82MF8r1g14W4IWJlfb8D-rfAaTQhwFSjq0PU33d-ztgy3GylQOls/exec')
                 .then((response) => response.json())
                 .then((data) => {setLoading(false); setEquipos(data)});
             }, []);
@@ -64,7 +64,7 @@ export default function VerEquipos(){
             activa: 0 
           }
           Swal.fire({
-            title: "¿Estas seguro que deseas eliminar esta responsiva?",
+            title: "¿Estas seguro que deseas eliminar este equipo?",
             text: "Esta acción no se puede revertir!",
             icon: "warning",
             showCancelButton: true,
@@ -75,7 +75,7 @@ export default function VerEquipos(){
           }).then((result) => {
             if (result.isConfirmed) {
               setLoading(true);
-              fetch("https://script.google.com/macros/s/AKfycbwevvckl8vTSaI8UDCU3ZV1TEy7b7TVVOd1H6RKAqahDpKaPlNERz1ETYYV46HXcea02g/exec", {
+              fetch("https://script.google.com/macros/s/AKfycbxjOLnaQMPcSVqbN8jufiqhuT9EPeIe_yGTPolq9MmZSos6lMYRU5Y-LX50JgEHxm-F/exec", {
                 method: "POST",
                 body: JSON.stringify(valores), // Enviar los valores del formulario
                 headers: {
@@ -87,7 +87,7 @@ export default function VerEquipos(){
                   setLoading(false);
                   Swal.fire({
                     title: "Eliminada",
-                    text: "La responsiva a sido eliminada.",
+                    text: "El equipo a sido eliminado.",
                     icon: "success"
                   }).then((result)=>{
                     if(result.isConfirmed){
@@ -98,7 +98,7 @@ export default function VerEquipos(){
                 .catch(error => {
                 console.error("Error:", error);
                 Swal.fire({
-                  title: "No se pudo eliminar la resposiva",
+                  title: "No se pudo eliminar el equipo",
                   icon: "error",
                   draggable: true
                 });
@@ -115,7 +115,7 @@ export default function VerEquipos(){
                 modalEdit && <ModalEditEquipo modal={setModalEdit} equipo={equipo}/>
               }
                <div className="bg-three text-white py-3 rounded-t-xl flex items-center justify-between px-4">
-                    <h2 className="text-2xl font-bold text-center flex-1">Responsiva de equipo de computo</h2>
+                    <h2 className="text-2xl font-bold text-center flex-1">Equipos de computo</h2>
                     <TextField onChange={(e) => setSearchTerm(e.target.value)} id="standard-basic" label="" variant="standard"  slotProps={{
                       input: {
                         startAdornment: (

@@ -66,7 +66,7 @@ export default function ModalPassword({modal}){
                                         "email": values.correo
                                     }
 
-                                    fetch('https://script.google.com/macros/s/AKfycby7Ah1E6aAhxfCOnAiLUdsr9M5AZCx29UK4mfdPMtQpABU8OcDuuO1_he_qq8Z4WlwxnQ/exec',{
+                                    fetch('https://script.google.com/macros/s/AKfycbxr0xh0mpk6JNTbVAAcwENdxG7KLvnbzrjAFpY0IIOF5OHHx4xwisz4sRP5r2Z2hU9I/exec',{
                                         method: "POST",
                                         body: JSON.stringify(valores), // Enviar los valores del formulario
                                         headers: {

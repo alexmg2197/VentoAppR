@@ -15,7 +15,7 @@ export default function VerCorreos(){
 
   useEffect(() => {
     setLoading(true);
-    fetch('https://script.google.com/macros/s/AKfycbyTpEuaTI_V9tgfbLAyZqobY5WUPqKGL0wZbCltjVGQmUI8bVckHdQN57D4lmomf8uNSA/exec')
+    fetch('https://script.google.com/macros/s/AKfycbx2DvPh6RgJyQxF1tQJVMS8-1Hm7QctMtZdBA-S3A4mvvz-Bb36EqwrVSgmw_SCu7Wt/exec')
       .then((response) => response.json())
       .then((data) => {setLoading(false); setCorreos(data)});
   }, []);
@@ -67,7 +67,7 @@ export default function VerCorreos(){
     }).then((result) => {
       if (result.isConfirmed) {
         
-        fetch("https://script.google.com/macros/s/AKfycbwwHi5D2Nr7SQeRKzH1KR2IL9Mw8J-bV5lDOSv191g8l-bmu2rUbyjPw2eKLDaeDu-POA/exec", {
+        fetch("https://script.google.com/macros/s/AKfycbw7i6afHDG3nhWSeOo5ButMT4rfaulrLTTWkteYMgnrgT_Jjo33LxtpvoO1dcWu914p/exec", {
           method: "POST",
           body: JSON.stringify(valores), // Enviar los valores del formulario
           headers: {

@@ -5,7 +5,41 @@ import { useNavigate } from "react-router-dom";
 
 export default function ModalEditEquipo({modal,equipo}){
 
-    console.log((equipo.tipoAlmacenamiento === 'SSD/HDD/M2' || equipo.tipoAlmacenamiento === 'SSD/HDD' || equipo.tipoAlmacenamiento === 'SSD/M2' || equipo.tipoAlmacenamiento === 'SSD') ? true :'')
+    const tipoAlmacenamiento = equipo.tipoAlmacenamiento.split('/').map(item => item.trim());
+    const almacenamiento = equipo.almacenamiento.split('/').map(item => item.trim());
+
+    let ssdSize = '';
+    let hddSize = '';
+    let m2Size = '';
+
+    // Asigna los valores en orden según los tipos de almacenamiento
+    switch (tipoAlmacenamiento.length) {
+        case 1:
+            if (tipoAlmacenamiento[0] === 'SSD') ssdSize = almacenamiento[0];
+            else if (tipoAlmacenamiento[0] === 'HDD') hddSize = almacenamiento[0];
+            else if (tipoAlmacenamiento[0] === 'M2') m2Size = almacenamiento[0];
+            break;
+
+        case 2:
+            tipoAlmacenamiento.forEach((tipo, index) => {
+                if (tipo === 'SSD') ssdSize = almacenamiento[index];
+                else if (tipo === 'HDD') hddSize = almacenamiento[index];
+                else if (tipo === 'M2') m2Size = almacenamiento[index];
+            });
+            break;
+
+        case 3:
+            tipoAlmacenamiento.forEach((tipo, index) => {
+                if (tipo === 'SSD') ssdSize = almacenamiento[index];
+                else if (tipo === 'HDD') hddSize = almacenamiento[index];
+                else if (tipo === 'M2') m2Size = almacenamiento[index];
+            });
+            break;
+
+        default:
+            console.warn('Formato de almacenamiento desconocido');
+    }
+
 
      const [loading, setLoading] = useState(false);
         
@@ -55,7 +89,7 @@ export default function ModalEditEquipo({modal,equipo}){
                         {/* Modal header */}
                         <div className=" bg-twoo flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600 border-gray-200">
                         <h3 className="text-lg font-semibold text-white">
-                            Editar Responsiva
+                            Editar Equipo
                         </h3>
                         <button
                             onClick={closeModal}
@@ -81,6 +115,7 @@ export default function ModalEditEquipo({modal,equipo}){
                         </div>
                         <Formik
                     initialValues={{
+                        id:equipo.ID,
                         //USUARIO
                         usuario: equipo.usuario,
                         puesto: equipo.puesto,
@@ -95,17 +130,17 @@ export default function ModalEditEquipo({modal,equipo}){
                         procesador: equipo.procesador,
                         ram: equipo.ram,
                         ssd:((equipo.tipoAlmacenamiento === 'SSD/HDD/M2' || equipo.tipoAlmacenamiento === 'SSD/HDD' || equipo.tipoAlmacenamiento === 'SSD/M2' || equipo.tipoAlmacenamiento === 'SSD')? true :''),
-                        hdd:false,
-                        m2:false,
-                        ssdSize:'',
-                        hddSize:'',
-                        m2Size:'',
+                        hdd:((equipo.tipoAlmacenamiento === 'SSD/HDD/M2' || equipo.tipoAlmacenamiento === 'SSD/HDD' || equipo.tipoAlmacenamiento === 'HDD/M2' || equipo.tipoAlmacenamiento === 'HDD')? true :''),
+                        m2:((equipo.tipoAlmacenamiento === 'SSD/HDD/M2' || equipo.tipoAlmacenamiento === 'HDD/M2' || equipo.tipoAlmacenamiento === 'SSD/M2' || equipo.tipoAlmacenamiento === 'M2')? true :''),
+                        ssdSize:ssdSize,
+                        hddSize:hddSize,
+                        m2Size:m2Size,
                         sistemaOperativo: '',
-                        tipoconexion:'',
-                        activofijo: '',
+                        tipoconexion:equipo.tipoconexion,
+                        activofijo: equipo.activofijo,
                         //CORREO
-                        correo:'',
-                        contrasena:'',
+                        correo:equipo.correo,
+                        contrasena:equipo.contrasena,
                     }}
                     validate={values => {
                         const errors = {};
@@ -114,54 +149,62 @@ export default function ModalEditEquipo({modal,equipo}){
                     }}
                     onSubmit={(values, { setSubmitting}) => {
                         console.log(values)
-                        // setLoading(true);
-                        // const datos = {
-                        //     "ID": values.id,
-                        //     "NombreDelResponsable": values.nombreResponsable,
-                        //     "AreaDelResponsable": values.area,
-                        //     "ResponsableDelArea": values.responsableArea,
-                        //     "Marca": values.marca,
-                        //     "Modelo": values.modelo,
-                        //     "NoDeSerie": values.noSerie,
-                        //     "SistemaOperativo": values.sistemaOperativo,
-                        //     "MemoriaRAM": values.ram,
-                        //     "Procesador": values.procesador,
-                        //     "DiscoDuro": values.discoDuro,
-                        //     "PlacaActivo": values.placaActivo
-                        //     };
+                        setLoading(true);
+                        const datos = {
+                            ID: values.id,  // El nombre de la propiedad debe coincidir con lo que espera Google Apps Script (por ejemplo, 'ID', no 'id')
+                            Usuario: values.usuario,
+                            Puesto: values.puesto,
+                            Departamento: values.departamento,
+                            Area: values.area,  // Asegúrate de que la capitalización coincida con lo esperado en el código de Google
+                            Ubicacion: values.ubicacion,
+                            Equipo: values.equipo,
+                            SistemaOperativo: values.sistemaOperativo,
+                            Marca: values.marca,
+                            Modelo: values.modelo,
+                            NumeroSerie: values.noSerie,
+                            Procesador: values.procesador,
+                            RAM: values.ram,
+                            TipoAlmacenamiento: ((values.ssd && values.hdd && values.m2) ? ('SSD/HDD/M2') : ((values.ssd && values.hdd && !values.m2) ? ('SSD/HDD'):((values.ssd && !values.hdd && values.m2)?('SSD/M2'):((!values.ssd && values.hdd && values.m2)?('HDD/M2'):((values.ssd && !values.hdd && !values.m2)?('SSD'):((!values.ssd && values.hdd && !values.m2)?('HDD'):((!values.ssd && !values.hdd && values.m2)?('M2'):''))))))),
+                            Almacenamiento: ((values.ssd && values.hdd && values.m2) ? (values.ssdSize+'/'+values.hddSize+'/'+values.m2Size) : ((values.ssd && values.hdd && !values.m2) ? (values.ssdSize+'/'+values.hddSize):((values.ssd && !values.hdd && values.m2)?(values.ssdSize+'/'+values.m2Size):((!values.ssd && values.hdd && values.m2)?(values.hddSize+'/'+values.m2Size):((values.ssd && !values.hdd && !values.m2)?(values.ssdSize):((!values.ssd && values.hdd && !values.m2)?(values.hddSize):((!values.ssd && !values.hdd && values.m2)?(values.m2Size):''))))))),
+                            SistemaOperativo: values.sistemaOperativo,
+                            TipoConexion: values.tipoconexion,
+                            Correo: values.correo,
+                            Contraseña: values.contrasena,
+                            ActivoFijo: values.activofijo,
+                            Realizo: usuario.nombre,
+                            };
                             
                         
-                        // fetch("https://script.google.com/macros/s/AKfycbzORBYP2F7yqgz-YaI3CGZxI3SUERcpU7Cvl9rt896IX44N8sXXC4Qhz4qDWQVc-O1XfA/exec", {
-                        //     method: "POST",
-                        //     body: JSON.stringify(datos), // Enviar los valores del formulario
-                        //     headers: {
-                        //         "Content-Type": "text/plain;charset=utf-8",
-                        //     },
-                        // })
-                        //     .then(response => response.text())
-                        //     .then(async (result) => {
-                        //         setLoading(false);
-                        //             Swal.fire({
-                        //             title: "Datos guardados correctamente",
-                        //             icon: "success",
-                        //             draggable: true
-                        //             }).then(async (result)=>{
-                        //             if(result.isConfirmed)
-                        //             {
-                        //                 await generarPDF(values);
-                        //             window.location.reload();
+                        fetch("https://script.google.com/macros/s/AKfycbyz74thvDlQI4G9l9HuFLOMzHxQhdAUZ26gRUE0mXWLXUd2yQ-caymENF2Dw48GdyuL/exec", {
+                            method: "POST",
+                            body: JSON.stringify(datos), // Enviar los valores del formulario
+                            headers: {
+                                "Content-Type": "text/plain;charset=utf-8",
+                            },
+                        })
+                            .then(response => response.text())
+                            .then(async (result) => {
+                                setLoading(false);
+                                    Swal.fire({
+                                    title: "Datos guardados correctamente",
+                                    icon: "success",
+                                    draggable: true
+                                    }).then(async (result)=>{
+                                    if(result.isConfirmed)
+                                    {
+                                    window.location.reload();
                                         
-                        //             }
-                        //             });
-                        //     })
-                        //     .catch(error => {
-                        //     console.error("Error:", error);
-                        //     Swal.fire({
-                        //         title: "Error al guardar los datos",
-                        //         icon: "error",
-                        //         draggable: true
-                        //         });
-                        //     });
+                                    }
+                                    });
+                            })
+                            .catch(error => {
+                            console.error("Error:", error);
+                            Swal.fire({
+                                title: "Error al guardar los datos",
+                                icon: "error",
+                                draggable: true
+                                });
+                            });
                     }}>
                         {
                         ({
@@ -288,15 +331,15 @@ export default function ModalEditEquipo({modal,equipo}){
                                     <div className="grid grid-cols-2 md:grid-cols-2">
                                         <div className="space-y-3">
                                             <label className="flex items-center space-x-2">
-                                                <input type="checkbox" name="ssd" value={values.ssd} onChange={handleChange}/>
+                                                <input type="checkbox" name="ssd" checked={values.ssd} onChange={handleChange}/>
                                                 <span>SSD</span>
                                             </label>
                                             <label className="flex items-center space-x-2">
-                                                <input type="checkbox" name="hdd" value={values.ssd} onChange={handleChange}/>
+                                                <input type="checkbox" name="hdd" checked={values.hdd} onChange={handleChange}/>
                                                 <span>HDD</span>
                                             </label>
                                             <label className="flex items-center space-x-2">
-                                                <input type="checkbox" name="m2" value={values.ssd} onChange={handleChange}/>
+                                                <input type="checkbox" name="m2" checked={values.m2} onChange={handleChange}/>
                                                 <span>M2</span>
                                             </label>
                                         </div>
@@ -362,7 +405,7 @@ export default function ModalEditEquipo({modal,equipo}){
                             {/* Botón de envío */}
                             <div className="mt-6">
                                 <button type="submit" className="w-full bg-five hover:bg-four text-white py-2 rounded-md disabled:opacity-50"  >
-                                    Crear
+                                    Editar
                                 </button>
                             </div>
                         </form>

@@ -5,16 +5,28 @@ import Swal from "sweetalert2";
 export default function ModalEditEmail({modal, correo}){
 
     const [loading, setLoading] = useState(false);
+    const [ubicaciones, setUbicaciones] = useState([]);
+    const [departamentos, setDepartamentos] = useState([]);
 
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-    const Ubicacion = [
-        {name:'Lerma'},{name:'Santin'},{name:'Chapultepec'},{name:'Duero'},{name:'Militares'}
-    ]
 
-    const Departamento = [
-        {name:'Sistemas'},{name:'Enfermeria'},{name:'Nominas'},{name:'Calidad'},{name:'Logistica'}
-    ]
+    useEffect(() => {
+        setLoading(true);
+
+        const fetchUbicaciones = fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+            .then((response) => response.json())
+            .then((data) =>  setUbicaciones(data));
+
+        const fetchDepartamentos = fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+            .then((response) => response.json())
+            .then((data) =>  setDepartamentos(data));
+
+
+        Promise.all([fetchUbicaciones,fetchDepartamentos])
+        .catch((error) => console.error("Error al cargar datos:", error))
+        .finally(() => {setLoading(false)});
+    }, []);
 
     const closeModal = () => {
         modal(false); // Ocultar modal
@@ -80,7 +92,7 @@ export default function ModalEditEmail({modal, correo}){
                                 };
                             
                             
-                            fetch("https://script.google.com/macros/s/AKfycbxT9rfOCS1QSG8qc4yJ7XlIpDFCcAfImXZdNaUsBVH_ghdhk0cVUXPYU5ePWfiHrk9Qgw/exec", {
+                            fetch("https://script.google.com/macros/s/AKfycbx8ka8djxumtNROSvpN6LwiFsFRtv1_lfdcMpDJSzRlr2O7L0LL7S1fWFusDFEm5wXp/exec", {
                                 method: "POST",
                                 body: JSON.stringify(datos), // Enviar los valores del formulario
                                 headers: {
@@ -124,7 +136,7 @@ export default function ModalEditEmail({modal, correo}){
                                     <select id="departamento" name="departamento" value={values.departamento} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                                         <option value="">Departamento</option>
                                         {
-                                            Departamento.map((depa) =>{
+                                            departamentos.map((depa) =>{
                                                 return(
                                                     <option key={depa.name} value={depa.name}>{depa.name}</option>
                                                 )
@@ -134,7 +146,7 @@ export default function ModalEditEmail({modal, correo}){
                                     <select id="ubicacion" name="ubicacion" value={values.ubicacion} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                                         <option value="">Ubicaciòn</option>
                                         {
-                                            Ubicacion.map((ubicacion) =>{
+                                            ubicaciones.map((ubicacion) =>{
                                                 return(
                                                     <option key={ubicacion.name} value={ubicacion.name}>{ubicacion.name}</option>
                                                 )

@@ -85,7 +85,7 @@ export default function ModalUploadR({modal,responsiva}){
                                     formData.append("mimeType", archivo.type);
                                     formData.append("customId", responsiva.ID); // ID de la fila en Google Sheets
 
-                                fetch("https://script.google.com/macros/s/AKfycbx-_bdFJ0rBF5MWjvL9d72w7uXtSc8iW79XwLMkP3yWZsRGj3-wWuBCeC6FsK07dXbiPQ/exec", {
+                                fetch("https://script.google.com/macros/s/AKfycbz5Bk3rzJCCLxMEo2IhMz7dZ2uDVPjgaCerMqaE1QdGJBDs1AnbsWYredoi81r7i4hE/exec", {
                                     method: "POST",
                                     body: formData, // Enviar el archivo como FormData
                                 })

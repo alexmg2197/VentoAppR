@@ -35,7 +35,7 @@ export default function Login({ setIsAuthenticated }) {
           onSubmit={(values, { setSubmitting }) => {
             console.log(values)
             setLoading(true);
-            let url = `https://script.google.com/macros/s/AKfycbwiiVgb0-f8pGdhbTT2NK1sDDhbQ4KRl3UW5B138RbDiftt1SejPWu0eD_m6CS4SN-TpA/exec?usuario=${values.usuario}&password=${values.pass}`;
+            let url = `https://script.google.com/macros/s/AKfycbytoCaI8ZgtheT8GrZH1_Fc2SYQ029es8A5ocNuSgUZX9pCxbOBzGCN9nLZl_BXtT6a/exec?usuario=${values.usuario}&password=${values.pass}`;
 
             console.log(url)
 
