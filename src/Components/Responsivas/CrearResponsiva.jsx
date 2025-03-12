@@ -176,7 +176,7 @@ export default function CrearResponsiva() {
     ]
     
     const Sistema = [
-        {name:'Windows 7'},{name:'Windows 100'},{name:'Windows 11'}
+        {name:'Windows 7'},{name:'Windows 10'},{name:'Windows 11'}
     ]
     
     const Disco = [
