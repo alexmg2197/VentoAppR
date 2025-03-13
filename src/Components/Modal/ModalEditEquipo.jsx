@@ -1,9 +1,59 @@
-import {React, useState } from "react";
+import {React, useState, useEffect } from "react";
 import { Formik } from "formik";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 export default function ModalEditEquipo({modal,equipo}){
+
+    const [loading, setLoading] = useState(false);
+    const [ubicaciones, setUbicaciones] = useState([]);
+    const [departamentos, setDepartamentos] = useState([]);
+    const [procesadores, setProcesadores] = useState([]);
+    const [sistemao, setSistemao] = useState([]);
+    const [discoduro, setDiscoDuro] = useState([]);
+    const [equipos, setEquipo] = useState([]);
+    const [conexion, setConexion] = useState([]);
+
+    useEffect(() => {
+            setLoading(true);
+        
+            Promise.all([
+                fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+                    .then((response) => response.json()),
+                fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+                    .then((response) => response.json()),
+                fetch('https://script.google.com/macros/s/AKfycbyXmX6uaggJXpxrGeGMdgHY0tEqxILTi_8melx5vSC80ij7ywFW9G0-4ZnFcXXjM4jA/exec')
+                    .then((response) => response.json()),
+                fetch('https://script.google.com/macros/s/AKfycbwJw0AQsZHLcuzvFd5r3dpbpNTxHDpH-NKuYP1P5iExxCux-61rp1AOcvEELqDJKdTW/exec')
+                    .then((response) => response.json()),
+                fetch('https://script.google.com/macros/s/AKfycbzfBN92rs1jcaEC8L0ODkfD0h0mCUZwGU9Qdu8BdZk-WWuNIgFtxdCUC0vNcsrsK8RJ/exec')
+                    .then((response) => response.json()),
+                fetch('https://script.google.com/macros/s/AKfycbwvcqLWis-m6vhe04kk-pABFis9eg-jBrtd_fs3tc9eOUVxx9KyVA8YBW-6RMG-WuN9/exec')
+                    .then((response) => response.json()),
+                fetch('https://script.google.com/macros/s/AKfycbz5qNIGwQrYVcOUpvOR1jtM-XCruAVUKJW9SvVkSS50u8d8UmDSP-z59eNsXlcCxUuv/exec')
+                    .then((response) => response.json())
+            ])
+            .then(([ubicaciones, departamentos,procesadores,sistemao,discoduro,equipo,conexion]) => {
+                setUbicaciones(ubicaciones);
+                setDepartamentos(departamentos);
+                setProcesadores(procesadores);
+                setSistemao(sistemao);
+                setDiscoDuro(discoduro);
+                setEquipo(equipo);
+                setConexion(conexion);
+            })
+            .catch((error) => console.error("Error al cargar datos:", error))
+            .finally(() => setLoading(false));
+        
+        }, []);
+        
+    const navigate = useNavigate();
+    
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+    const closeModal = () => {
+        modal(false); // Ocultar modal
+    };
 
     const tipoAlmacenamiento = equipo.tipoAlmacenamiento.split('/').map(item => item.trim());
     const almacenamiento = equipo.almacenamiento.split('/').map(item => item.trim());
@@ -40,51 +90,12 @@ export default function ModalEditEquipo({modal,equipo}){
             console.warn('Formato de almacenamiento desconocido');
     }
 
-
-     const [loading, setLoading] = useState(false);
-        
-    const navigate = useNavigate();
-    
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
-
-    const closeModal = () => {
-        modal(false); // Ocultar modal
-    };
-
-    const Procesador = [
-        {name:'Core i3'},{name:'Core i5'},{name:'Core i7'},{name:'Core i9'}
-    ]
-    
-    const Sistema = [
-        {name:'Windows 7'},{name:'Windows 100'},{name:'Windows 11'}
-    ]
-
-    const Disco = [
-        {name:'128 GB'},{name:'254 GB'},{name:'500 GB'},{name:'1 TB'}
-    ]
-
-    const Equipo =[
-        {name:'ENSAMBLE'}, {name:'LAPTOP'}
-    ]
-
-    const Conexion = [
-        {name:'WI-FI'}, {name:'CABLE'},{name:'SIN CONEXION'}
-    ]
-
-    const Ubicacion = [
-        {name:'Lerma'},{name:'Santin'},{name:'Chapultepec'},{name:'Duero'},{name:'Militares'}
-    ]
-
-    const Departamento = [
-        {name:'Sistemas'},{name:'Enfermeria'},{name:'Nominas'},{name:'Calidad'},{name:'Logistica'},{name:'Ingenieria de Procesos'}
-    ]
-
     return(
         <>
             <div onClick={closeModal} className="fixed inset-0 bg-black opacity-60 z-40" >
             </div>
             <div className="fixed inset-0 z-50 flex justify-center items-center overflow-y-auto">
-                <div className="relative p-4 w-full max-w-3xl max-h-full">
+                <div className="relative p-4 w-full max-w-5xl max-h-full">
                     <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                         {/* Modal header */}
                         <div className=" bg-twoo flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600 border-gray-200">
@@ -135,7 +146,7 @@ export default function ModalEditEquipo({modal,equipo}){
                         ssdSize:ssdSize,
                         hddSize:hddSize,
                         m2Size:m2Size,
-                        sistemaOperativo: '',
+                        sistemaOperativo: equipo.sistemaOperativo,
                         tipoconexion:equipo.tipoconexion,
                         activofijo: equipo.activofijo,
                         //CORREO
@@ -227,7 +238,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                         <select id="departamento" name="departamento" value={values.departamento} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                                             <option value=""> --- Seleccione una opción ---</option>
                                             {
-                                                Departamento.map((depa) =>{
+                                                departamentos.map((depa) =>{
                                                     return(
                                                         <option key={depa.name} value={depa.name}>{depa.name}</option>
                                                     )
@@ -240,7 +251,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                         <select id="ubicacion" name="ubicacion" value={values.ubicacion} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                                             <option value=""> --- Seleccione una opción ---</option>
                                             {
-                                                Ubicacion.map((ubicacion) =>{
+                                                ubicaciones.map((ubicacion) =>{
                                                     return(
                                                         <option key={ubicacion.name} value={ubicacion.name}>{ubicacion.name}</option>
                                                     )
@@ -260,7 +271,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                             <select  id="equipo" name="equipo" value={values.equipo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                                 <option value="">--- Seleccione una opción ---</option>
                                                 {
-                                                    Equipo.map((sistema) =>{
+                                                    equipos.map((sistema) =>{
                                                         return(
                                                             <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
                                                         )
@@ -285,7 +296,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                             <select id="procesador" name="procesador" value={values.procesador} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                                 <option value="">--- Selecciona una opción ---</option>
                                                 {
-                                                    Procesador.map((procesador) =>{
+                                                    procesadores.map((procesador) =>{
                                                         return(
                                                             <option key={procesador.name} value={procesador.name}>{procesador.name}</option>
                                                         )
@@ -302,7 +313,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                             <select  id="sistemaOperativo" name="sistemaOperativo" value={values.sistemaOperativo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                                 <option value="">Sistema Operativo</option>
                                                 {
-                                                    Sistema.map((sistema) =>{
+                                                    sistemao.map((sistema) =>{
                                                         return(
                                                             <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
                                                         )
@@ -315,7 +326,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                             <select name="tipoconexion" id="tipoconexion" value={values.tipoconexion} onChange={handleChange} className="w-full p-2 border rounded-md">
                                                 <option value=""> --- Seleccione una opción ---</option>
                                                 {
-                                                    Conexion.map((conexion) =>{
+                                                    conexion.map((conexion) =>{
                                                         return(
                                                             <option key={conexion.name} value={conexion.name}>{conexion.name}</option>
                                                         )
@@ -349,7 +360,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                                 <select name="ssdSize" id="ssdSize" value={values.ssdSize} onChange={handleChange} className="w-full p-2 border rounded-md">
                                                     <option value=""> --- SSD ---</option>
                                                     {
-                                                        Disco.map((disco) =>{
+                                                        discoduro.map((disco) =>{
                                                             return(
                                                                 <option key={disco.name} value={disco.name}>{disco.name}</option>
                                                             )
@@ -363,7 +374,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                                 <select name="hddSize" id="hddSize" value={values.hddSize} onChange={handleChange} className="w-full p-2 border rounded-md">
                                                     <option value=""> --- HDD ---</option>
                                                     {
-                                                        Disco.map((disco) =>{
+                                                        discoduro.map((disco) =>{
                                                             return(
                                                                 <option key={disco.name} value={disco.name}>{disco.name}</option>
                                                             )
@@ -377,7 +388,7 @@ export default function ModalEditEquipo({modal,equipo}){
                                                 <select name="m2Size" id="m2Size" value={values.m2Size} onChange={handleChange} className="w-full p-2 border rounded-md">
                                                     <option value=""> --- M2 ---</option>
                                                     {
-                                                        Disco.map((disco) =>{
+                                                        discoduro.map((disco) =>{
                                                             return(
                                                                 <option key={disco.name} value={disco.name}>{disco.name}</option>
                                                             )

@@ -1,4 +1,4 @@
-import {React, useState } from "react";
+import {React, useState, useEffect } from "react";
 import jsPDF from "jspdf";
 import { useNavigate } from "react-router-dom";
 import { Formik } from 'formik'
@@ -12,6 +12,43 @@ import Logo from '../../assets/LOGOVNA.png'
 export default function CrearResponsiva() {
     
     const [loading, setLoading] = useState(false);
+    const [departamentos, setDepartamentos] = useState([]);
+    const [procesadores, setProcesadores] = useState([]);
+    const [sistemao, setSistemao] = useState([]);
+    const [discoduros, setDiscoDuro] = useState([]);
+
+    useEffect(() => {
+                    setLoading(true);
+                
+                    Promise.all([
+                        // fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+                        //     .then((response) => response.json()),
+                        fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+                            .then((response) => response.json()),
+                        fetch('https://script.google.com/macros/s/AKfycbyXmX6uaggJXpxrGeGMdgHY0tEqxILTi_8melx5vSC80ij7ywFW9G0-4ZnFcXXjM4jA/exec')
+                            .then((response) => response.json()),
+                        fetch('https://script.google.com/macros/s/AKfycbwJw0AQsZHLcuzvFd5r3dpbpNTxHDpH-NKuYP1P5iExxCux-61rp1AOcvEELqDJKdTW/exec')
+                            .then((response) => response.json()),
+                        fetch('https://script.google.com/macros/s/AKfycbzfBN92rs1jcaEC8L0ODkfD0h0mCUZwGU9Qdu8BdZk-WWuNIgFtxdCUC0vNcsrsK8RJ/exec')
+                            .then((response) => response.json()),
+                        // fetch('https://script.google.com/macros/s/AKfycbwvcqLWis-m6vhe04kk-pABFis9eg-jBrtd_fs3tc9eOUVxx9KyVA8YBW-6RMG-WuN9/exec')
+                        //     .then((response) => response.json()),
+                        // fetch('https://script.google.com/macros/s/AKfycbz5qNIGwQrYVcOUpvOR1jtM-XCruAVUKJW9SvVkSS50u8d8UmDSP-z59eNsXlcCxUuv/exec')
+                        //     .then((response) => response.json())
+                    ])
+                    .then(([departamentos,procesadores,sistemao,discoduro]) => {
+                        // setUbicaciones(ubicaciones);
+                        setDepartamentos(departamentos);
+                        setProcesadores(procesadores);
+                        setSistemao(sistemao);
+                        setDiscoDuro(discoduro);
+                        // setEquipo(equipo);
+                        // setConexion(conexion);
+                    })
+                    .catch((error) => console.error("Error al cargar datos:", error))
+                    .finally(() => setLoading(false));
+                
+                }, []);
     
     const navigate = useNavigate();
     
@@ -136,7 +173,7 @@ export default function CrearResponsiva() {
             values.sistemaOperativo,
             values.ram,
             values.procesador,
-            values.discoDuro,
+            ((values.ssd && values.hdd && values.m2) ? (values.ssdSize + ' SSD / ' + values.hddSize + ' HDD / ' + values.m2Size + ' M2') : ((values.ssd && values.hdd && !values.m2) ? (values.ssdSize +' SSD / ' + values.hddSize + ' HDD'):((values.ssd && !values.hdd && values.m2)?(values.ssdSize +' SSD / ' + values.m2Size + ' M2'):((!values.ssd && values.hdd && values.m2)?(values.hddSize +' HHD / ' + values.m2Size + ' M2'):((values.ssd && !values.hdd && !values.m2)?(values.ssdSize + ' SSD'):((!values.ssd && values.hdd && !values.m2)?(values.hddSize + ' HDD'):((!values.ssd && !values.hdd && values.m2)?(values.m2Size + ' M2'):''))))))),
             values.placaActivo
         ]],
         theme: 'grid',
@@ -148,7 +185,7 @@ export default function CrearResponsiva() {
     doc.setFontSize(12);
     doc.text(
         `El costo del equipo es proporcional al valor de la factura, este valor deberá cubrirse por el responsable del equipo en caso de pérdida, robo, extravío o daño irreparable. Si el responsable permanece dentro de la compañía, se cubrirá el costo a través de pagos quincenales a la cuenta asignada por la compañía, en caso de no continuar con la relación laboral, se dispondrá de dicha cantidad del finiquito o liquidación y fondo de ahorro correspondientes`,
-        18, startY + 110, { maxWidth: 180 }
+        18, startY + 115, { maxWidth: 180 }
     );
 
     // Firmas
@@ -171,19 +208,6 @@ export default function CrearResponsiva() {
         })
     };
 
-    const Procesador = [
-        {name:'Core i3'},{name:'Core i5'},{name:'Core i7'},{name:'Core i9'}
-    ]
-    
-    const Sistema = [
-        {name:'Windows 7'},{name:'Windows 10'},{name:'Windows 11'}
-    ]
-    
-    const Disco = [
-        {name:'128 GB HDD'},{name:'254 GB HDD'},{name:'500 GB HDD'},{name:'1 TB HDD'},{name:'128 GB SSD'},{name:'254 GB SSD'},{name:'500 GB SSD'},
-        {name:'1 TB SSD'},{name:'128 GB M2'},{name:'254 GB M2'},{name:'500 GB M2'},{name:'1 TB M2'}
-    ]
-
     return (
         <div className="container mx-auto p-6 ">
             <div className="bg-three text-white text-center py-3 rounded-t-xl">
@@ -201,7 +225,12 @@ export default function CrearResponsiva() {
                             sistemaOperativo: '',
                             ram: '',
                             procesador: '',
-                            discoDuro: '',
+                            ssd:false,
+                            hdd:false,
+                            m2:false,
+                            ssdSize:'',
+                            hddSize:'',
+                            m2Size:'',
                             placaActivo: '',
                         }}
                         validate={values => {
@@ -210,6 +239,7 @@ export default function CrearResponsiva() {
                             return errors
                         }}
                         onSubmit={(values, { setSubmitting}) => {
+                            console.log(((values.ssd && values.hdd && values.m2) ? (values.ssdSize + ' SSD / ' + values.hddSize + ' HDD / ' + values.m2Size + ' M2') : ((values.ssd && values.hdd && !values.m2) ? (values.ssdSize +' SSD / ' + values.hddSize + ' HDD'):((values.ssd && !values.hdd && values.m2)?(values.ssdSize +' SSD / ' + values.m2Size + ' M2'):((!values.ssd && values.hdd && values.m2)?(values.hddSize +' HHD / ' + values.m2Size + ' M2'):((values.ssd && !values.hdd && !values.m2)?(values.ssdSize + ' SSD'):((!values.ssd && values.hdd && !values.m2)?(values.hddSize + ' HDD'):((!values.ssd && !values.hdd && values.m2)?(values.m2Size + ' M2'):''))))))))
                             setLoading(true);
                             fetch("https://script.google.com/macros/s/AKfycbzlzFswPM5sN_KmB8sLPwoB5S6jBk8Ed-kOmuEM1lSXbXC5M4hFLlh2Lp0gNic-2Q7R/exec")
                             .then(response => response.text())
@@ -235,7 +265,7 @@ export default function CrearResponsiva() {
                                     SistemaOperativo: values.sistemaOperativo,
                                     MemoriaRAM: values.ram,
                                     Procesador: values.procesador,
-                                    DiscoDuro: values.discoDuro,
+                                    DiscoDuro: ((values.ssd && values.hdd && values.m2) ? (values.ssdSize + ' SSD / ' + values.hddSize + ' HDD / ' + values.m2Size + ' M2') : ((values.ssd && values.hdd && !values.m2) ? (values.ssdSize +' SSD / ' + values.hddSize + ' HDD'):((values.ssd && !values.hdd && values.m2)?(values.ssdSize +' SSD / ' + values.m2Size + ' M2'):((!values.ssd && values.hdd && values.m2)?(values.hddSize +' HHD / ' + values.m2Size + ' M2'):((values.ssd && !values.hdd && !values.m2)?(values.ssdSize + ' SSD'):((!values.ssd && values.hdd && !values.m2)?(values.hddSize + ' HDD'):((!values.ssd && !values.hdd && values.m2)?(values.m2Size + ' M2'):''))))))),
                                     PlacaActivo: values.placaActivo,
                                     Activa: 1,
                                     Creador: usuario.nombre
@@ -294,7 +324,16 @@ export default function CrearResponsiva() {
                         <h3 className="text-lg font-semibold mb-2">Datos del responsable del equipo</h3>
                         <div className="space-y-4">
                             <input type="text" id="nombreResponsable" name="nombreResponsable" value={values.nombreResponsable} onChange={handleChange} placeholder="Nombre" className="w-full p-2 border rounded-md" />
-                            <input type="text" id="area" name="area" value={values.area} onChange={handleChange} placeholder="Area" className="w-full p-2 border rounded-md" />
+                            <select id="area" name="area" value={values.area} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
+                                <option value=""> --- Seleccione una opción ---</option>
+                                {
+                                    departamentos.map((depa) =>{
+                                        return(
+                                            <option key={depa.name} value={depa.name}>{depa.name}</option>
+                                        )
+                                    })
+                                }
+                            </select>
                             <input type="text" id="responsableArea" name="responsableArea" value={values.responsableArea} onChange={handleChange} placeholder="Responsable del Area" className="w-full p-2 border rounded-md" />
                         </div>
                     </div>
@@ -309,7 +348,7 @@ export default function CrearResponsiva() {
                             <select  id="sistemaOperativo" name="sistemaOperativo" value={values.sistemaOperativo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                 <option value="">Sistema Operativo</option>
                                 {
-                                    Sistema.map((sistema) =>{
+                                    sistemao.map((sistema) =>{
                                         return(
                                             <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
                                         )
@@ -320,24 +359,69 @@ export default function CrearResponsiva() {
                             <select id="procesador" name="procesador" value={values.procesador} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                 <option value="">Procesador</option>
                                 {
-                                    Procesador.map((procesador) =>{
+                                    procesadores.map((procesador) =>{
                                         return(
                                             <option key={procesador.name} value={procesador.name}>{procesador.name}</option>
                                         )
                                     })
                                 }
                             </select>
-                            <select id="discoDuro" name="discoDuro" value={values.discoDuro} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
-                                <option value="">Disco Duro</option>
-                                {
-                                    Disco.map((disco) =>{
-                                        return(
-                                            <option key={disco.name} value={disco.name}>{disco.name}</option>
-                                        )
-                                    })
-                                }
-                            </select>
                             <input type="text" id="placaActivo" name="placaActivo" value={values.placaActivo} onChange={handleChange} placeholder="Placa Activo" className="w-full p-2 border rounded-md" />
+                            <label className="flex items-center space-x-2">
+                                <input type="checkbox" name="ssd" value={values.ssd} onChange={handleChange}/>
+                                <span>SSD</span>
+                            </label>
+                            {values.ssd && (
+                                <>
+                                    <select name="ssdSize" id="ssdSize" value={values.ssdSize} onChange={handleChange} className="w-full p-2 border rounded-md">
+                                        <option value=""> --- SSD ---</option>
+                                        {
+                                            discoduros.map((disco) =>{
+                                                return(
+                                                    <option key={disco.name} value={disco.name}>{disco.name}</option>
+                                                )
+                                            })
+                                        }
+                                    </select>
+                                </>
+                                )}
+                            <label className="flex items-center space-x-2">
+                                <input type="checkbox" name="hdd" value={values.hdd} onChange={handleChange}/>
+                                <span>HDD</span>
+                            </label>
+                            {values.hdd && (
+                                <>
+                                    <select name="hddSize" id="hddSize" value={values.hddSize} onChange={handleChange} className="w-full p-2 border rounded-md">
+                                        <option value=""> --- HDD ---</option>
+                                        {
+                                            discoduros.map((disco) =>{
+                                                return(
+                                                    <option key={disco.name} value={disco.name}>{disco.name}</option>
+                                                )
+                                            })
+                                        }
+                                    </select>
+                                </>
+                                )}
+                            <label className="flex items-center space-x-2">
+                                <input type="checkbox" name="m2" value={values.m2} onChange={handleChange}/>
+                                <span>M2</span>
+                            </label>
+                                    {values.m2 && (
+                                    <>
+                                        <select name="m2Size" id="m2Size" value={values.m2Size} onChange={handleChange} className="w-full p-2 border rounded-md">
+                                            <option value=""> --- M2 ---</option>
+                                            {
+                                                discoduros.map((disco) =>{
+                                                    return(
+                                                        <option key={disco.name} value={disco.name}>{disco.name}</option>
+                                                    )
+                                                })
+                                            }
+                                        </select>
+                                    </>
+                                    )}
+                            
                         </div>
                     </div>
                     </div>

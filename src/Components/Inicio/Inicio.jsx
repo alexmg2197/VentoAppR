@@ -32,7 +32,7 @@ export default function Inicio() {
             .then((response) => response.json())
             .then((data) =>  setCountEquipos(data));
 
-        const fetchMarcas =  fetch('https://script.google.com/macros/s/AKfycbxO-2Y-4e8MrWTys_zAZ6qfmUQ76FnzHWvrHRlBI5tov7dgvQB80wQsP9fBplFZ5RX3DQ/exec')
+        const fetchMarcas =  fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Av0F9BmQQ24be89zJqtLGL4_J1hJKhTY2Pcu-3l7NcA3RszW99ZhHcjvPKDA6J6CI4i9eqcI5BxH44ni9uuoaPiOG5x42bHbm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnI0ZpyEVoOungJUum7ol0R_xYxaYy_BEKUe1uwbf9PKfHdly63Hcl_LKoeJAZRFeHfft8TSMfgyAOTP1mcJ_0xwD25TVflC-4A&lib=MHjXBVhai-CdhE7mJFGEsMsvpNBcmj7mt')
                             .then((response) => response.json())
                             .then((data) => {
                                 const marcas = data.reduce((acc, curr) => {
@@ -43,7 +43,7 @@ export default function Inicio() {
                                 setDataMarcas(Object.entries(marcas).map(([marca, total]) => ({ marca, total })));
                             });
 
-        const fetchAreas =  fetch('https://script.google.com/macros/s/AKfycbyTpEuaTI_V9tgfbLAyZqobY5WUPqKGL0wZbCltjVGQmUI8bVckHdQN57D4lmomf8uNSA/exec')
+        const fetchAreas =  fetch('https://script.google.com/macros/s/AKfycbx2DvPh6RgJyQxF1tQJVMS8-1Hm7QctMtZdBA-S3A4mvvz-Bb36EqwrVSgmw_SCu7Wt/exec')
                             .then((response) => response.json())
                             .then((data) => {
                                 const areas = data.reduce((acc, curr) => {
@@ -59,17 +59,6 @@ export default function Inicio() {
         .catch((error) => console.error("Error al cargar datos:", error))
         .finally(() => {setLoading(false); console.log(dataAreas)});
     }, []);
-    
-
-    // const values =[{id:1, value:20, label:'rojo'},{id:2,value:30,label:'verde'},{id:3,value:50,label:'azul'}]
-
-    // const data = [
-    //     { marca: 'HP', total: 120 },
-    //     { marca: 'Lenovo', total: 98 },
-    //     { marca: 'Dell', total: 150 },
-    //     { marca: 'MSI', total: 170 },
-    //     { marca: 'Generica', total: 200 },
-    // ];
 
     const pieParams = {
         height: 270,
@@ -143,7 +132,7 @@ export default function Inicio() {
                         </div>
                     </div>
                     {/* Footer con Fondo Oscuro y Link */}
-                    <div className="bg-green-700 text-white px-4 py-2 flex justify-center items-center hover:bg-yellow-800 transition">
+                    <div className="bg-green-700 text-white px-4 py-2 flex justify-center items-center hover:bg-green-800 transition">
                         <a href="#VerEquipos" className="text-white text-sm font-semibold pr-2">Más Información</a>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 15v-4H7v-2h5V7l5 5z"/></svg>
                     </div>

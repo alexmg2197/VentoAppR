@@ -1,4 +1,4 @@
-import {React, useState } from "react";
+import {React, useState,useEffect } from "react";
 import { Formik } from "formik";
 import Swal from "sweetalert2";
 import jsPDF from "jspdf";
@@ -11,6 +11,43 @@ import Logo from '../../assets/LOGOVNA.png'
 export default function ModalEditR({modal,responsiva}){
 
     const [loading, setLoading] = useState(false);
+    const [departamentos, setDepartamentos] = useState([]);
+    const [procesadores, setProcesadores] = useState([]);
+    const [sistemao, setSistemao] = useState([]);
+    const [discoduros, setDiscoDuro] = useState([]);
+
+        useEffect(() => {
+                setLoading(true);
+            
+                Promise.all([
+                    // fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+                    //     .then((response) => response.json()),
+                    fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+                        .then((response) => response.json()),
+                    fetch('https://script.google.com/macros/s/AKfycbyXmX6uaggJXpxrGeGMdgHY0tEqxILTi_8melx5vSC80ij7ywFW9G0-4ZnFcXXjM4jA/exec')
+                        .then((response) => response.json()),
+                    fetch('https://script.google.com/macros/s/AKfycbwJw0AQsZHLcuzvFd5r3dpbpNTxHDpH-NKuYP1P5iExxCux-61rp1AOcvEELqDJKdTW/exec')
+                        .then((response) => response.json()),
+                    fetch('https://script.google.com/macros/s/AKfycbzfBN92rs1jcaEC8L0ODkfD0h0mCUZwGU9Qdu8BdZk-WWuNIgFtxdCUC0vNcsrsK8RJ/exec')
+                        .then((response) => response.json()),
+                    // fetch('https://script.google.com/macros/s/AKfycbwvcqLWis-m6vhe04kk-pABFis9eg-jBrtd_fs3tc9eOUVxx9KyVA8YBW-6RMG-WuN9/exec')
+                    //     .then((response) => response.json()),
+                    // fetch('https://script.google.com/macros/s/AKfycbz5qNIGwQrYVcOUpvOR1jtM-XCruAVUKJW9SvVkSS50u8d8UmDSP-z59eNsXlcCxUuv/exec')
+                    //     .then((response) => response.json())
+                ])
+                .then(([departamentos,procesadores,sistemao,discoduro]) => {
+                    // setUbicaciones(ubicaciones);
+                    setDepartamentos(departamentos);
+                    setProcesadores(procesadores);
+                    setSistemao(sistemao);
+                    setDiscoDuro(discoduro);
+                    // setEquipo(equipo);
+                    // setConexion(conexion);
+                })
+                .catch((error) => console.error("Error al cargar datos:", error))
+                .finally(() => setLoading(false));
+            
+            }, []);
     
     const navigate = useNavigate();
     
@@ -176,19 +213,6 @@ export default function ModalEditR({modal,responsiva}){
         modal(false); // Ocultar modal
     };
 
-    const Proce = [
-        {name:'Core i3'},{name:'Core i5'},{name:'Core i7'},{name:'Core i9'}
-    ]
-    
-    const Sistema = [
-        {name:'Windows 7'},{name:'Windows 10'},{name:'Windows 11'}
-    ]
-    
-    const Disco = [
-        {name:'128 GB HDD'},{name:'254 GB HDD'},{name:'500 GB HDD'},{name:'1 TB HDD'},{name:'128 GB SSD'},{name:'254 GB SSD'},{name:'500 GB SSD'},
-        {name:'1 TB SSD'},{name:'128 GB M2'},{name:'254 GB M2'},{name:'500 GB M2'},{name:'1 TB M2'}
-    ]
-
     return(
         <>
             <div onClick={closeModal} className="fixed inset-0 bg-black opacity-60 z-40" >
@@ -307,7 +331,16 @@ export default function ModalEditR({modal,responsiva}){
                                     <h3 className="text-lg font-semibold mb-2">Datos del responsable del equipo</h3>
                                     <div className="space-y-4">
                                         <input type="text" id="nombreResponsable" name="nombreResponsable" value={values.nombreResponsable} onChange={handleChange} placeholder="Nombre" className="w-full p-2 border rounded-md" />
-                                        <input type="text" id="area" name="area" value={values.area} onChange={handleChange} placeholder="Area" className="w-full p-2 border rounded-md" />
+                                        <select id="area" name="area" value={values.area} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
+                                            <option value=""> --- Seleccione una opción ---</option>
+                                            {
+                                                departamentos.map((depa) =>{
+                                                    return(
+                                                        <option key={depa.name} value={depa.name}>{depa.name}</option>
+                                                    )
+                                                })
+                                            }
+                                        </select>
                                         <input type="text" id="responsableArea" name="responsableArea" value={values.responsableArea} onChange={handleChange} placeholder="Responsable del Area" className="w-full p-2 border rounded-md" />
                                     </div>
                                 </div>
@@ -322,7 +355,7 @@ export default function ModalEditR({modal,responsiva}){
                                         <select  id="sistemaOperativo" name="sistemaOperativo" value={values.sistemaOperativo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                             <option value="">Sistema Operativo</option>
                                             {
-                                                Sistema.map((sistema) =>{
+                                                sistemao.map((sistema) =>{
                                                     return(
                                                         <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
                                                     )
@@ -333,7 +366,7 @@ export default function ModalEditR({modal,responsiva}){
                                         <select id="procesador" name="procesador" value={values.procesador} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                             <option value="">Procesador</option>
                                             {
-                                                Proce.map((proce) =>{
+                                                procesadores.map((proce) =>{
                                                     return(
                                                         <option key={proce.name} value={proce.name}>{proce.name}</option>
                                                     )
@@ -343,7 +376,7 @@ export default function ModalEditR({modal,responsiva}){
                                         <select id="discoDuro" name="discoDuro" value={values.discoDuro} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                                             <option value="">Disco Duro</option>
                                             {
-                                                Disco.map((disco) =>{
+                                                discoduros.map((disco) =>{
                                                     return(
                                                         <option key={disco.name} value={disco.name}>{disco.name}</option>
                                                     )
