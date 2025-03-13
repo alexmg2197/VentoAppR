@@ -1,4 +1,4 @@
-import {React,useState} from "react";
+import {React,useState, useEffect} from "react";
 import { Formik } from "formik";
 import Swal from "sweetalert2";
 
@@ -13,19 +13,20 @@ export default function ModalEditEmail({modal, correo}){
 
     useEffect(() => {
         setLoading(true);
-
-        const fetchUbicaciones = fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
-            .then((response) => response.json())
-            .then((data) =>  setUbicaciones(data));
-
-        const fetchDepartamentos = fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
-            .then((response) => response.json())
-            .then((data) =>  setDepartamentos(data));
-
-
-        Promise.all([fetchUbicaciones,fetchDepartamentos])
+    
+        Promise.all([
+            fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+                .then((response) => response.json()),
+            fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+                .then((response) => response.json())
+        ])
+        .then(([ubicaciones, departamentos]) => {
+            setUbicaciones(ubicaciones);
+            setDepartamentos(departamentos);
+        })
         .catch((error) => console.error("Error al cargar datos:", error))
-        .finally(() => {setLoading(false)});
+        .finally(() => setLoading(false));
+    
     }, []);
 
     const closeModal = () => {
@@ -88,7 +89,7 @@ export default function ModalEditEmail({modal, correo}){
                                 "Marca": values.ubicacion,
                                 "Ubicacion": values.modelo,
                                 "Correo": values.correo,
-                                "Contraseña": values.contraseña,
+                                "Contraseña": values.contrasena,
                                 };
                             
                             
