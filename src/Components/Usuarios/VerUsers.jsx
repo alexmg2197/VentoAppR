@@ -15,7 +15,7 @@ export default function VerUsers(){
 
     useEffect(() => {
     setLoading(true);
-    fetch('https://script.google.com/macros/s/AKfycbyYIPaUoT4PDVCg0Z8wCW53h-sFmvxxyNt17iTJpVlZB190HnCgv-Mgm9BML-iyfAKL/exec')
+    fetch('https://localhost:7180/api/usuario')
         .then((response) => response.json())
         .then((data) => {setLoading(false); setUsuarios(data)});
     }, []);
@@ -124,7 +124,6 @@ export default function VerUsers(){
                 <Table sx={{minWidth:650}} aria-label="simple table">
                     <TableHead sx={{backgroundColor:'#26292c'}}>
                         <TableRow>
-                            <TableCell sx={{color:'white', fontWeight:'bold'}}>#</TableCell>
                             <TableCell sx={{color:'white', fontWeight:'bold'}}>Nombre Completo</TableCell>
                             <TableCell sx={{color:'white', fontWeight:'bold'}}>Usuario</TableCell>
                             <TableCell sx={{color:'white', fontWeight:'bold'}}>Correo</TableCell>
@@ -135,12 +134,11 @@ export default function VerUsers(){
                     <TableBody>
                         {
                             currentItems.map((usuario) => (
-                                <TableRow key={usuario.ID}>
-                                    <TableCell>{usuario.ID}</TableCell>
-                                    <TableCell>{usuario.nombreCompleto}</TableCell>
+                                <TableRow key={usuario.idUsuario}>
+                                    <TableCell>{usuario.nombreUsuario + ' ' + usuario.apellidoUsuario}</TableCell>
                                     <TableCell>{usuario.usuario}</TableCell>
-                                    <TableCell>{usuario.correo}</TableCell>
-                                    <TableCell>{usuario.rol}</TableCell>
+                                    <TableCell>{usuario.correoUsuario}</TableCell>
+                                    <TableCell>{usuario.rolUsuario}</TableCell>
                                     <TableCell>
                                         <button onClick={()=>{editU(usuario)}} className='icon-button p-2'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="m2.292 13.36l4.523 4.756L.5 20zM12.705 2.412l4.522 4.755L7.266 17.64l-4.523-4.754zM16.142.348l2.976 3.129c.807.848.086 1.613.086 1.613l-1.521 1.6l-4.524-4.757L14.68.334l.02-.019c.119-.112.776-.668 1.443.033"/></svg></button>
                                         <button onClick={()=>{deleteU(usuario)}} className='icon-button'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>

@@ -47,11 +47,11 @@ export default function ModalEditUser({modal, usuario}){
                         <Formik
                             initialValues={{
                                 id: usuario.ID,
-                                nombreCompleto: usuario.nombreCompleto,
+                                nombreCompleto: usuario.nombreUsuario,
                                 usuario: usuario.usuario,
-                                contraseña: usuario.contraseña,
-                                correo: usuario.correo,
-                                rol: usuario.rol,
+                                contraseña: usuario.password,
+                                correo: usuario.correoUsuario,
+                                rol: usuario.rolUsuario,
                             }}
                             validate={values => {
                                 const errors = {};
