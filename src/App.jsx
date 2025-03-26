@@ -11,6 +11,7 @@ import CrearUser from './Components/Usuarios/CrearUser';
 import VerUsers from './Components/Usuarios/VerUsers';
 import CrearEquipo from './Components/Equipos/CrearEquipo';
 import VerEquipos from './Components/Equipos/VerEquipos';
+import CrearRegistro from './Components/RegistroGlobal/Registro'
 import Login from './Components/Login/Login';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -44,6 +45,7 @@ function App() {
             <div className="p-4 flex-1 overflow-auto">
               <Routes>
                 <Route exact path="/Inicio" element={<Inicio />} />
+                <Route exact path="/CrearRegistro" element={<CrearRegistro />} />
                 <Route exact path="/CrearResponsiva" element={<CrearResponsiva />} />
                 <Route exact path="/VerResponsiva" element={<VerResponsiva />} />
                 <Route exact path="/CrearCorreo" element={<CrearCorreo />} />

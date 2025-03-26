@@ -5,6 +5,8 @@ import ModalEditUser from "../Modal/ModalEditUser";
 
 export default function VerUsers(){
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     const [usuarios, setUsuarios] = useState([]);
     const [usuario, setUsuario] = useState([]);
     const [modalEdit, setModalEdit] = useState(false);
@@ -15,7 +17,7 @@ export default function VerUsers(){
 
     useEffect(() => {
     setLoading(true);
-    fetch('https://localhost:7180/api/usuario')
+    fetch(`${API_URL}/api/usuario/Usuarios`)
         .then((response) => response.json())
         .then((data) => {setLoading(false); setUsuarios(data)});
     }, []);

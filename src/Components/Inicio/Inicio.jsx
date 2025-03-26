@@ -5,6 +5,8 @@ import { BarChart } from '@mui/x-charts';
 
 export default function Inicio() {
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     const [loading, setLoading] = useState(false);
     const [countResponsivas, setCountResponsivas] = useState([]);
     const [countCorreos, setCountCorreos] = useState([]);
@@ -24,7 +26,7 @@ export default function Inicio() {
             .then((response) => response.json())
             .then((data) =>  setCountCorreos(data));
 
-        const fetchCountUsuarios = fetch('https://script.google.com/macros/s/AKfycbzzIzh6UYQiNYHanJOyXj6kD6M2kBKLjxhIGlrxfYkESMExnymwisjY1ZRG2GGR7533/exec')
+        const fetchCountUsuarios = fetch(`${API_URL}/api/usuario/ContarUsuarios`)
             .then((response) => response.json())
             .then((data) =>  setCountUsuarios(data));
 
@@ -107,7 +109,7 @@ export default function Inicio() {
                     {/* Contenido Principal */}
                     <div className="p-4 flex justify-between items-center">
                         <div className='pl-2'>
-                            <h3 className="text-3xl font-bold">{countUsuarios.totalActiveRows}</h3>
+                            <h3 className="text-3xl font-bold">{countUsuarios}</h3>
                             <p className="text-sm uppercase text-white opacity-80">Usuarios</p>
                         </div>
                         <div className="text-6xl opacity-30"> 
@@ -133,6 +135,23 @@ export default function Inicio() {
                     </div>
                     {/* Footer con Fondo Oscuro y Link */}
                     <div className="bg-green-700 text-white px-4 py-2 flex justify-center items-center hover:bg-green-800 transition">
+                        <a href="#VerEquipos" className="text-white text-sm font-semibold pr-2">Más Información</a>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 15v-4H7v-2h5V7l5 5z"/></svg>
+                    </div>
+                </div>
+                <div className="bg-orange-600 text-white rounded-lg shadow-md overflow-hidden">
+                    {/* Contenido Principal */}
+                    <div className="p-4 flex justify-between items-center">
+                        <div className='pl-2'>
+                            <h3 className="text-3xl font-bold">{countEquipos.totalActiveRows}</h3>
+                            <p className="text-sm uppercase text-white opacity-80">Equipos</p>
+                        </div>
+                        <div className="text-6xl opacity-30"> 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M8 2a1 1 0 0 0-1 1v.469h.5a2.75 2.75 0 0 1 2.75 2.75v.156H14V3a1 1 0 0 0-1-1zm-.109 11.871a2 2 0 0 0 .088-.944a2.75 2.75 0 0 0 2.271-2.708V7.625H14V13a1 1 0 0 1-1 1H8.5a1.5 1.5 0 0 1-.609-.129m4.78-9.684a.766.766 0 1 1-1.53 0a.766.766 0 0 1 1.53 0M0 6.22a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 9 6.22v4a1.5 1.5 0 0 1-1.5 1.5H5.25v.75H6a.75.75 0 1 1 0 1.5H3a.75.75 0 0 1 0-1.5h.75v-.75H1.5a1.5 1.5 0 0 1-1.5-1.5z" clipRule="evenodd"/></svg>
+                        </div>
+                    </div>
+                    {/* Footer con Fondo Oscuro y Link */}
+                    <div className="bg-orange-700 text-white px-4 py-2 flex justify-center items-center hover:bg-green-800 transition">
                         <a href="#VerEquipos" className="text-white text-sm font-semibold pr-2">Más Información</a>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 15v-4H7v-2h5V7l5 5z"/></svg>
                     </div>
