@@ -4,49 +4,43 @@ import Swal from "sweetalert2";
 
 export default function Registro(){
 
+        const API_URL = import.meta.env.VITE_API_URL;
+
         const [loading, setLoading] = useState(false);
         const [ubicaciones, setUbicaciones] = useState([]);
         const [departamentos, setDepartamentos] = useState([]);
         const [procesadores, setProcesadores] = useState([]);
-        const [sistema, setSistema] = useState([]);
         const [disco, setDisco] = useState([]);
         const [equipo, setEquipo] = useState([]);
-        const [conexion, setConexion] = useState([]);
     
         useEffect(() => {
             setLoading(true);
     
-            const fetchUbicaciones = fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+            const fetchUbicaciones = fetch(`${API_URL}/api/Ubicaciones`)
                 .then((response) => response.json())
                 .then((data) =>  setUbicaciones(data));
+                
     
-            const fetchDepartamentos = fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+            const fetchDepartamentos = fetch(`${API_URL}/api/Areas`)
                 .then((response) => response.json())
                 .then((data) =>  setDepartamentos(data));
     
-            const fetchProcesadores = fetch('https://script.google.com/macros/s/AKfycbz-rU8K8Mhxmjb7UY3TQsKn88bdMScjDkLRXn6dmOBx3S8GCG8pJPANNzm_lMe9-I7J/exec')
+            const fetchProcesadores = fetch(`${API_URL}/api/Procesador`)
                 .then((response) => response.json())
                 .then((data) =>  setProcesadores(data));
-    
-            const fetchSistema = fetch('https://script.google.com/macros/s/AKfycbxZ5Qf_B0sUF82WzFgWixlkwSpOAAvJfIF8e0Fd-JNBKwvLmIZvbexNbPPz4RJXKJh8/exec')
-                .then((response) => response.json())
-                .then((data) =>  setSistema(data));
     
             const fetchDisco = fetch('https://script.google.com/macros/s/AKfycbzBmmInoIDdR21QF3hFid0fWtYpr2j6XVq98lXk2niFTxAeySyg_mnNBOu67yHCuOjd/exec')
                 .then((response) => response.json())
                 .then((data) =>  setDisco(data));
     
-            const fetchEquipo = fetch('https://script.google.com/macros/s/AKfycbyo3pvsjYRQ8UEk36Ugg8HSJEL9Ao20bqH9qNQhHogXJLF9mxU09W1d5YFML-iwNh3B/exec')
+            const fetchEquipo = fetch(`${API_URL}/api/TipoEquipo`)
                 .then((response) => response.json())
                 .then((data) =>  setEquipo(data));
     
-            const fetchConexion = fetch('https://script.google.com/macros/s/AKfycbwp9QtaGNkaXm7_iLNOHmM2mEQEKxVmvHZTt_ObH-9YcLtObNi36Vccm2hvc-y6fVk/exec')
-                .then((response) => response.json())
-                .then((data) =>  setConexion(data));
-    
-            Promise.all([fetchUbicaciones, fetchDepartamentos, fetchProcesadores, fetchSistema, fetchDisco, fetchEquipo,fetchConexion])
+            Promise.all([fetchUbicaciones, fetchDepartamentos, fetchProcesadores, fetchSistema, fetchDisco, fetchEquipo])
             .catch((error) => console.error("Error al cargar datos:", error))
             .finally(() => {setLoading(false)});
+            console.log(ubicaciones)
         }, []);
     
         const usuario = JSON.parse(localStorage.getItem("usuario"));
@@ -195,7 +189,7 @@ export default function Registro(){
                                         {
                                             departamentos.map((depa) =>{
                                                 return(
-                                                    <option key={depa.name} value={depa.name}>{depa.name}</option>
+                                                    <option key={depa.idArea} value={depa.idArea}>{depa.nombreArea}</option>
                                                 )
                                                 
                                             })
@@ -207,7 +201,7 @@ export default function Registro(){
                                         {
                                             ubicaciones.map((ubicacion) =>{
                                                 return(
-                                                    <option key={ubicacion.name} value={ubicacion.name}>{ubicacion.name}</option>
+                                                    <option key={ubicacion.idUbicacion} value={ubicacion.idUbicacion}>{ubicacion.ubicacion}</option>
                                                 )
                                             })
                                         }
@@ -235,7 +229,7 @@ export default function Registro(){
                                             {
                                                 equipo.map((sistema) =>{
                                                     return(
-                                                        <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
+                                                        <option key={sistema.idTipoEquipo} value={sistema.idTipoEquipo}>{sistema.tipoEquipo}</option>
                                                     )
                                                 })
                                             }
@@ -256,7 +250,7 @@ export default function Registro(){
                                             {
                                                 procesadores.map((procesador) =>{
                                                     return(
-                                                        <option key={procesador.name} value={procesador.name}>{procesador.name}</option>
+                                                        <option key={procesador.idProcesador} value={procesador.idProcesador}>{procesador.procesador}</option>
                                                     )
                                                 })
                                             }
@@ -396,13 +390,23 @@ export default function Registro(){
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-1 pt-3">
-                                    <label className="flex items-center space-x-2">Observaciones</label>
-                                    <textarea id="observa" value={values.observa} onChange={handleChange}className="border-1 rounded-md"/>
+                                    <label className="flex items-center space-x-2">Estado:</label>
+                                    <input type="text" id="estado" name="estado" value={values.estado} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-1 pt-3">
+                                    <label className="flex items-center space-x-2">Observaciones:</label>
+                                    <textarea id="observa" value={values.observa} onChange={handleChange} className="border-1 rounded-md"/>
                                 </div>
                             </div>
                         {/* Sección 3 */}
                             <div>
-                                
+                                <h3 className="text-lg font-semibold mb-2">Datos de la Extensión</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                                    <label htmlFor="extension">Extensión:</label>
+                                    <input type="text" id="extension" name="extension" value={values.extension} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                    <label htmlFor="telefono">Telefono:</label>
+                                    <input type="text" id="telefono" name="telefono" value={values.telefono} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                </div>
                             </div>
                         </div>
     

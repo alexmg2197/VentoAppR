@@ -18,7 +18,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 function App() {
 
   const [count, setCount] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(true); // Estado para controlar el tamaño del sidebar
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Estado para controlar el tamaño del sidebar
 
   const [isAuthenticated, setIsAuthenticated] = useState(() =>{
     return localStorage.getItem("usuario") ? true : false;
