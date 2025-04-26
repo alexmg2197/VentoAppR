@@ -4,22 +4,21 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function ModalEditEmail({modal, correo,isEdit}){
+export default function ModalExtensiones({modal, extension,isEdit}){
 
     const API_URL = import.meta.env.VITE_API_URL;
-
+    
     const [loading, setLoading] = useState(false);
     const [colaboradores,setColaboradores] = useState([]);
 
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-    console.log(correo)
     useEffect(() => {
         setLoading(true);
         
         if(isEdit){
             Promise.all([
-                fetch(`${API_URL}/api/Correos/ColaboradoresEditar/${correo.idCorreo}`)
+                fetch(`${API_URL}/api/Extension/ColaboradoresEditarExt/${extension.idExtension}`)
                     .then((response) => response.json()),
             ])
             .then(([colaboradores]) => {
@@ -29,7 +28,7 @@ export default function ModalEditEmail({modal, correo,isEdit}){
             .finally(() => setLoading(false));
         }else{
             Promise.all([
-                fetch(`${API_URL}/api/Correos/ColaboradorSinCorreo`)
+                fetch(`${API_URL}/api/Extension/ColaboradorSinExtension`)
                     .then((response) => response.json()),
             ])
             .then(([colaboradores]) => {
@@ -54,7 +53,7 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                 <div className="relative bg-white rounded-lg shadow-sm">
                     <div className="bg-twoo flex items-center justify-between p-4 border-b rounded-t">
                         <h3 className="text-lg font-semibold text-white">
-                            {isEdit ? 'Editar Correo': 'Agregar Correo'}
+                            {isEdit ? 'Editar Extensión': 'Agregar Extensión'}
                         </h3>
                         <button onClick={closeModal} className="text-gray-400 bg-transparent hover:bg-five hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center">
                             <svg
@@ -77,10 +76,10 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                     </div>
                     <Formik
                         initialValues={{
-                            idCorreo: isEdit ? correo.idCorreo : '',
-                            colaboradorid: isEdit ? correo.colaboradorId : '',
-                            correo: isEdit ? correo.correo : '',
-                            contrasena: isEdit ? correo.contraseñaCorreo : '',
+                            idExtension: isEdit ? extension.idExtension : '',
+                            colaboradorid: isEdit ? extension.colaboradorId : '',
+                            extension: isEdit ? extension.extension : '',
+                            telefono: isEdit ? extension.telefono : '',
                         }}
                         validate={values => {
                             const errors = {};
@@ -93,9 +92,9 @@ export default function ModalEditEmail({modal, correo,isEdit}){
 
                             if(!isEdit){
                                 try {
-                                    const response = await axios.post(`${API_URL}/api/Correos/GuardarCorreo`,{
-                                        Correo: values.correo,
-                                        ContraseñaCorreo: values.contrasena,
+                                    const response = await axios.post(`${API_URL}/api/Extension/GuardarExtension`,{
+                                        Extension: values.extension,
+                                        Telefono: values.telefono,
                                         ColaboradorId: values.colaboradorid
                                     });
                                     Swal.fire({
@@ -116,9 +115,9 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                                 }
                             }else{
                                 try {
-                                    const response = await axios.patch(`${API_URL}/api/Correos/EditarCorreo/${values.idCorreo}`,{
-                                        Correo: values.correo,
-                                        ContraseñaCorreo: values.contrasena,
+                                    const response = await axios.patch(`${API_URL}/api/Extension/EditarExtension/${values.idExtension}`,{
+                                        Extension: values.extension,
+                                        Telefono: values.telefono,
                                         ColaboradorId: values.colaboradorid
                                     })
                                     
@@ -131,7 +130,7 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                                         window.location.reload(); // Recargar la página
                                     });
                                 } catch (error) {
-                                     Swal.fire({
+                                        Swal.fire({
                                         title: "Error",
                                         text: "Hubo un error al registrar los datos",
                                         icon: "error",
@@ -165,8 +164,8 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                                             })
                                         }
                                     </select>
-                                    <input type="email" id="correo" name="correo" value={values.correo} onChange={handleChange} placeholder="Correo" className="w-full p-2 border rounded-md"/>
-                                    <input type="text" id="contrasena" name="contrasena" value={values.contrasena} onChange={handleChange} placeholder="Contraseña" className="w-full p-2 border rounded-md"/>
+                                    <input type="tel" id="telefono" name="telefono" value={values.telefono} onChange={handleChange} placeholder="Telefono" className="w-full p-2 border rounded-md"/>
+                                    <input type="text" id="extension" name="extension" value={values.extension} onChange={handleChange} placeholder="Extension" className="w-full p-2 border rounded-md"/>
                                 </div>
                                 <div className="mt-6">
                                     <button type="submit" className="w-full bg-five hover:bg-four text-white py-2 rounded-md disabled:opacity-50"  >
@@ -181,15 +180,15 @@ export default function ModalEditEmail({modal, correo,isEdit}){
         </div>
         {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
             <svg className="animate-spin h-10 w-10 text-blue-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
             </svg>
             <p className="text-gray-700">Cargando...</p>
-          </div>
+            </div>
         </div>
-      )}
+        )}
         </>
     )
 }

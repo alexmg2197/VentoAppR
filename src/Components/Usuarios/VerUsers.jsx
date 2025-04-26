@@ -9,6 +9,7 @@ export default function VerUsers(){
 
     const [usuarios, setUsuarios] = useState([]);
     const [usuario, setUsuario] = useState([]);
+    const [ismodal, setIsModal] = useState(false);
     const [modalEdit, setModalEdit] = useState(false);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(0); // Página actual
@@ -49,6 +50,7 @@ export default function VerUsers(){
 
     const editU = (datos) =>{
         setUsuario(datos);
+        setIsModal(true)
         setModalEdit(true);
     }
 
@@ -102,10 +104,20 @@ export default function VerUsers(){
         });
       }
 
+      const newUser = () => {
+        setUsuario(null);
+        setIsModal(false)
+        setModalEdit(true)
+      }
+
+      const cambiarPass = () => {
+        
+      }
+
     return(
         <div className="p-4">
             {
-                modalEdit && <ModalEditUser modal={setModalEdit} usuario={usuario}/>
+                modalEdit && <ModalEditUser modal={setModalEdit} usuario={usuario} isEdit={ismodal}/>
             }
             <div className="bg-three text-white py-3 rounded-t-xl flex items-center justify-between px-4">
                 <h2 className="text-2xl font-bold text-center flex-1">Usuarios</h2>
@@ -122,6 +134,18 @@ export default function VerUsers(){
                   "& .MuiInput-underline:after": { borderBottom: "none" },
                 }}/>   
             </div>
+            <div className="flex justify-end bg-three relative pr-5">
+                <div className="relative group">
+                    <button onClick={()=>{newUser()}} className="icon-button text-white cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+                        <path fill="currentColor" fillRule="evenodd" d="M5.4 3h13.2A2.4 2.4 0 0 1 21 5.4v13.2a2.4 2.4 0 0 1-2.4 2.4H5.4A2.4 2.4 0 0 1 3 18.6V5.4A2.4 2.4 0 0 1 5.4 3M12 7a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V8a1 1 0 0 1 1-1" clipRule="evenodd"/>
+                    </svg>
+                    </button>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-black text-sm rounded px-2 py-1 whitespace-nowrap z-10">
+                        Crear nuevo correo
+                    </div>
+                </div>
+              </div>
             <TableContainer>
                 <Table sx={{minWidth:650}} aria-label="simple table">
                     <TableHead sx={{backgroundColor:'#26292c'}}>
@@ -142,8 +166,9 @@ export default function VerUsers(){
                                     <TableCell>{usuario.correoUsuario}</TableCell>
                                     <TableCell>{usuario.rolUsuario}</TableCell>
                                     <TableCell>
-                                        <button onClick={()=>{editU(usuario)}} className='icon-button p-2'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="m2.292 13.36l4.523 4.756L.5 20zM12.705 2.412l4.522 4.755L7.266 17.64l-4.523-4.754zM16.142.348l2.976 3.129c.807.848.086 1.613.086 1.613l-1.521 1.6l-4.524-4.757L14.68.334l.02-.019c.119-.112.776-.668 1.443.033"/></svg></button>
-                                        <button onClick={()=>{deleteU(usuario)}} className='icon-button'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>
+                                        <button onClick={()=>{editU(usuario)}} title="Editar Usuario" className='icon-button p-2'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="m2.292 13.36l4.523 4.756L.5 20zM12.705 2.412l4.522 4.755L7.266 17.64l-4.523-4.754zM16.142.348l2.976 3.129c.807.848.086 1.613.086 1.613l-1.521 1.6l-4.524-4.757L14.68.334l.02-.019c.119-.112.776-.668 1.443.033"/></svg></button>
+                                        <button onClick={()=>{deleteU(usuario)}} title="Eliminar Usuario" className='icon-button'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>
+                                        <button onClick={()=>{cambiarPass(usuario)}} title="Cambiar Contraeña" className='icon-button p-2'><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24"><path fill="currentColor" d="M3 20v-2.8q0-.85.438-1.562T4.6 14.55q1.55-.775 3.15-1.162T11 13q.5 0 1 .038t1 .112q-.1 1.45.525 2.738T15.35 18v2zm16 3l-1.5-1.5v-4.65q-1.1-.325-1.8-1.237T15 13.5q0-1.45 1.025-2.475T18.5 10t2.475 1.025T22 13.5q0 1.125-.638 2t-1.612 1.25L21 18l-1.5 1.5L21 21zm-8-11q-1.65 0-2.825-1.175T7 8t1.175-2.825T11 4t2.825 1.175T15 8t-1.175 2.825T11 12m7.5 2q.425 0 .713-.288T19.5 13t-.288-.712T18.5 12t-.712.288T17.5 13t.288.713t.712.287"/></svg></button>
                                     </TableCell>
                                 </TableRow>
                             ))

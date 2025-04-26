@@ -1,12 +1,15 @@
 import Logo from '../../assets/ventologoN.svg'
 import ModalPassword from '../Modal/ModalPassword'
-import { Formik } from 'formik'
+import { Formik, ErrorMessage  } from 'formik'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { useState } from 'react'
 import Fondo from '../../assets/fondo-vento.webp'
+import axios from 'axios'
 
 export default function Login({ setIsAuthenticated }) {
+
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const [loading, setLoading] = useState(false);
   const [modalOP, setModalOP] = useState(false);
@@ -31,33 +34,61 @@ export default function Login({ setIsAuthenticated }) {
 
         <Formik
           initialValues={{ usuario: '', pass: '' }}
-          validate={() => {}}
-          onSubmit={(values, { setSubmitting }) => {
+          validate={values => {
+            const errors = {};
+
+            if (!values.usuario) {
+              errors.usuario = 'El correo o usuario es requerido';
+            } 
+
+            if (!values.pass) {
+              errors.pass = 'La contraseña es requerida';
+            }
+            return errors
+          }}
+          onSubmit={async(values, { setSubmitting,resetForm  }) => {
             console.log(values)
             setLoading(true);
-            let url = `https://script.google.com/macros/s/AKfycbytoCaI8ZgtheT8GrZH1_Fc2SYQ029es8A5ocNuSgUZX9pCxbOBzGCN9nLZl_BXtT6a/exec?usuario=${values.usuario}&password=${values.pass}`;
-
-            console.log(url)
-
-            fetch(url,{method:"GET",headers: {
-              "Content-Type": "text/plain;charset=utf-8",
-          },})
-              .then((response) => response.json())
-              .then((data) => {
-                setLoading(false);
-                setSubmitting(false)
-                if (data.success === true) {
-                  localStorage.setItem("usuario", JSON.stringify(data));
-                  localStorage.setItem("isAuthenticated", "true");
-                  setIsAuthenticated(true);
-                  navigate('/Inicio');
-                } else {
-                  Swal.fire({ title: data.message, icon: "error", draggable: true });
-                }
+            try {
+              const response = await axios.post(`${API_URL}/api/auth/login`, {
+                UsuarioOrCorreo: values.usuario,
+                Password: values.pass
               });
+              localStorage.setItem('token', response.data.token);
+              localStorage.setItem("isAuthenticated", "true");
+              localStorage.setItem('user', JSON.stringify(response.data.user));
+              setIsAuthenticated(true);
+              resetForm();
+                  navigate('/Inicio');
+            } catch (error) {
+              Swal.fire({ title: error, icon: "error", draggable: true });
+            }finally{
+              setLoading(false);
+              setSubmitting(false)
+            }
+          //   let url = `https://script.google.com/macros/s/AKfycbytoCaI8ZgtheT8GrZH1_Fc2SYQ029es8A5ocNuSgUZX9pCxbOBzGCN9nLZl_BXtT6a/exec?usuario=${values.usuario}&password=${values.pass}`;
+
+          //   console.log(url)
+
+          //   fetch(url,{method:"GET",headers: {
+          //     "Content-Type": "text/plain;charset=utf-8",
+          // },})
+          //     .then((response) => response.json())
+          //     .then((data) => {
+          //       setLoading(false);
+          //       setSubmitting(false)
+          //       if (data.success === true) {
+          //         localStorage.setItem("usuario", JSON.stringify(data));
+          //         localStorage.setItem("isAuthenticated", "true");
+          //         setIsAuthenticated(true);
+          //         navigate('/Inicio');
+          //       } else {
+          //         Swal.fire({ title: data.message, icon: "error", draggable: true });
+          //       }
+          //     });
           }}
         >
-          {({ values, handleChange, handleSubmit }) => (
+          {({ values, handleChange, handleSubmit,errors, touched  }) => (
             <form onSubmit={handleSubmit} className="mt-6 space-y-6">
               <div>
                 <label htmlFor="usuario" className="block text-sm font-medium text-gray-900">Correo o Usuario:</label>
@@ -67,9 +98,12 @@ export default function Login({ setIsAuthenticated }) {
                   type="text"
                   value={values.usuario}
                   onChange={handleChange}
-                  required
-                  className="w-full mt-2 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  
+                  className={`w-full mt-2 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.usuario && touched.usuario
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border-gray-300 focus:ring-indigo-500'}`}
                 />
+                 {errors.usuario && touched.usuario && <div className="text-red-500">{errors.usuario}</div>}
               </div>
 
               <div>
@@ -83,9 +117,12 @@ export default function Login({ setIsAuthenticated }) {
                   type="password"
                   value={values.pass}
                   onChange={handleChange}
-                  required
-                  className="w-full mt-2 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  
+                  className={`w-full mt-2 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500  ${errors.pass && touched.pass
+                ? 'border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:ring-indigo-500'}`}
                 />
+                {errors.pass && touched.pass && <div className="text-red-500">{errors.pass}</div>}
               </div>
 
               <button

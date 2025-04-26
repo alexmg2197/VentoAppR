@@ -1,6 +1,8 @@
 import { Formik } from "formik";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import axios from "axios";
+
 
 export default function Registro(){
 
@@ -10,6 +12,7 @@ export default function Registro(){
         const [ubicaciones, setUbicaciones] = useState([]);
         const [departamentos, setDepartamentos] = useState([]);
         const [procesadores, setProcesadores] = useState([]);
+        const [sistema, setSistema] = useState([]);
         const [disco, setDisco] = useState([]);
         const [equipo, setEquipo] = useState([]);
     
@@ -19,8 +22,11 @@ export default function Registro(){
             const fetchUbicaciones = fetch(`${API_URL}/api/Ubicaciones`)
                 .then((response) => response.json())
                 .then((data) =>  setUbicaciones(data));
+
+                const fetchSistema = fetch(`${API_URL}/api/SistemaOperativo`)
+                .then((response) => response.json())
+                .then((data) =>  setSistema(data));
                 
-    
             const fetchDepartamentos = fetch(`${API_URL}/api/Areas`)
                 .then((response) => response.json())
                 .then((data) =>  setDepartamentos(data));
@@ -29,7 +35,7 @@ export default function Registro(){
                 .then((response) => response.json())
                 .then((data) =>  setProcesadores(data));
     
-            const fetchDisco = fetch('https://script.google.com/macros/s/AKfycbzBmmInoIDdR21QF3hFid0fWtYpr2j6XVq98lXk2niFTxAeySyg_mnNBOu67yHCuOjd/exec')
+            const fetchDisco = fetch(`${API_URL}/api/Almacenamiento`)
                 .then((response) => response.json())
                 .then((data) =>  setDisco(data));
     
@@ -37,7 +43,7 @@ export default function Registro(){
                 .then((response) => response.json())
                 .then((data) =>  setEquipo(data));
     
-            Promise.all([fetchUbicaciones, fetchDepartamentos, fetchProcesadores, fetchSistema, fetchDisco, fetchEquipo])
+            Promise.all([fetchUbicaciones, fetchSistema, fetchDepartamentos, fetchProcesadores, fetchDisco, fetchEquipo])
             .catch((error) => console.error("Error al cargar datos:", error))
             .finally(() => {setLoading(false)});
             console.log(ubicaciones)
@@ -46,22 +52,26 @@ export default function Registro(){
         const usuario = JSON.parse(localStorage.getItem("usuario"));
 
     return(
-            <div className="container mx-auto p-6">
+            <div className="container mx-auto p-1 ">
                 <div className="bg-three text-white text-center py-3 rounded-t-xl">
                     <h2 className="text-2xl font-bold text-center mb-4">Registro de Información</h2>
                 </div>
                 <Formik
                     initialValues={{
-                        //USUARIO
-                        usuario: '',
+                        //COLABORADOR
+                        nombreColaborador: '',
+                        apellidosColaborador:'',
                         puesto: '',
-                        departamento: '',
                         area: '',
                         ubicacion: '',
+                        //CORREO
+                        correo:'',
+                        contrasena:'',
                         //EQUIPO
-                        equipo:'',
+                        tipoEquipo:'',
                         marca:'',
                         modelo:'',
+                        sistemaOperativo:'',
                         noSerie: '',
                         procesador: '',
                         ram: '',
@@ -71,98 +81,89 @@ export default function Registro(){
                         ssdSize:'',
                         hddSize:'',
                         m2Size:'',
-                        sistemaOperativo: '',
+                        monitor: false,
+                        marcaMonitor: '',
+                        teclado: false,
+                        marcaTeclado: '',
+                        mouse: false,
+                        marcaMouse: '',
+                        diadema: false,
+                        marcaDiadema: '',
                         tipoconexion:'',
                         activofijo: '',
-                        monitor:false,
-                        //CORREO
-                        correo:'',
-                        contrasena:'',
+                        observa:'',
                     }}
                     validate={values => {
                         const errors = {};
                         
                         return errors
                     }}
-                    onSubmit={(values, { setSubmitting}) => {
-    
-                        console.log(((values.ssd && values.hdd && values.m2) ? ('SSD/HDD/M2') : ((values.ssd && values.hdd && !values.m2) ? ('SSD/HDD'):((values.ssd && !values.hdd && values.m2)?('SSD/M2'):((!values.ssd && values.hdd && values.m2)?('HDD/M2'):((values.ssd && !values.hdd && !values.m2)?('SSD'):((!values.ssd && values.hdd && !values.m2)?('HDD'):((!values.ssd && !values.hdd && values.m2)?('M2'):''))))))))
-                        setLoading(true);
-                        fetch("https://script.google.com/macros/s/AKfycbwPxzEIi2ThGgsg7JHjp4lB-iRau9f4Mxb2xkEf2wgQZrJpc7bjZV8hONrgPbQZW3mN/exec")
-                        .then(response => response.text())
-                        .then(data => {
-                            console.log(data)
-                            console.log(values)
-                                // Asegurarnos de que 'data' sea un número
-                                let id = parseInt(data, 10);  // Convertimos el ID a un número, base 10
-                                if (isNaN(id)) {
-                                    id = 0;  // Si 'data' no es un número válido, inicializamos 'id' en 0
-                                }
-                                
-                                id = id + 1;  // Sumamos 1 para obtener el nuevo ID
-                            console.log(values)
-                            let valores = {
-                                ID: id,  // El nombre de la propiedad debe coincidir con lo que espera Google Apps Script (por ejemplo, 'ID', no 'id')
-                                Usuario: values.usuario,
-                                Puesto: values.puesto,
-                                Departamento: values.departamento,
-                                Area: values.area,  // Asegúrate de que la capitalización coincida con lo esperado en el código de Google
-                                Ubicacion: values.ubicacion,
-                                Equipo: values.equipo,
-                                SistemaOperativo: values.sistemaOperativo,
-                                Marca: values.marca,
-                                Modelo: values.modelo,
-                                NumeroSerie: values.noSerie,
-                                Procesador: values.procesador,
-                                RAM: values.ram,
-                                TipoAlmacenamiento: ((values.ssd && values.hdd && values.m2) ? ('SSD/HDD/M2') : ((values.ssd && values.hdd && !values.m2) ? ('SSD/HDD'):((values.ssd && !values.hdd && values.m2)?('SSD/M2'):((!values.ssd && values.hdd && values.m2)?('HDD/M2'):((values.ssd && !values.hdd && !values.m2)?('SSD'):((!values.ssd && values.hdd && !values.m2)?('HDD'):((!values.ssd && !values.hdd && values.m2)?('M2'):''))))))),
-                                Almacenamiento: ((values.ssd && values.hdd && values.m2) ? (values.ssdSize+'/'+values.hddSize+'/'+values.m2Size) : ((values.ssd && values.hdd && !values.m2) ? (values.ssdSize+'/'+values.hddSize):((values.ssd && !values.hdd && values.m2)?(values.ssdSize+'/'+values.m2Size):((!values.ssd && values.hdd && values.m2)?(values.hddSize+'/'+values.m2Size):((values.ssd && !values.hdd && !values.m2)?(values.ssdSize):((!values.ssd && values.hdd && !values.m2)?(values.hddSize):((!values.ssd && !values.hdd && values.m2)?(values.m2Size):''))))))),
-                                SistemaOperativo: values.sistemaOperativo,
-                                TipoConexion: values.tipoconexion,
-                                Correo: values.correo,
-                                Contraseña: values.contrasena,
-                                ActivoFijo: values.activofijo,
-                                Activo: 1,
-                                Realizo: usuario.nombre,
-                            }
-                            console.log(id)
-                            console.log(valores)
-                                // Enviar datos a Google Sheets usando fetch
-                                fetch("https://script.google.com/macros/s/AKfycbzj3VReT4Ex4yTGa-5kE56tiHAeXS7xvOEOmZe9q-DXRQAXLjSG1kxTSyvILW0Na3Bo/exec", {
-                                    method: "POST",
-                                    body: JSON.stringify(valores), // Enviar los valores del formulario
-                                    headers: {
-                                        "Content-Type": "text/plain;charset=utf-8",
-                                    },
-                                })
-                                    .then(response => response.text())
-                                    .then(result => {
-                                        setLoading(false);
-                                        Swal.fire({
-                                            title: "Datos guardados correctamente",
-                                            icon: "success",
-                                            draggable: true
-                                            }).then(async (result)=>{
-                                            if(result.isConfirmed)
-                                            {
-                                                window.location.reload();
-                                            }
-                                            });
-                                    // alert("Datos guardados correctamente en Google Sheets.");
-                                    })
-                                    .catch(error => {
-                                    console.error("Error:", error);
-                                    Swal.fire({
-                                        title: "Error al guardar los datos",
-                                        icon: "error",
-                                        draggable: true
-                                        });
-                                        
-                                    });
-                        })
-                        
-                        
-                        setSubmitting(false);
+                    onSubmit={async (values, { setSubmitting}) => {
+
+                        setLoading(true)
+
+                        try {
+                            const response = await axios.post(`${API_URL}/api/Colaboradores/GuardarDatosC`, {
+                                //Colaborador
+                                nombreColaborador: values.nombreColaborador,
+                                apellidoColaborador: values.apellidosColaborador,
+                                puesto: values.puesto,
+                                areaId: values.area,
+                                ubicacionId: values.ubicacion,
+                                //Equipo
+                                tipoEquipoId: values.tipoEquipo,
+                                marcaEquipo: values.marca,
+                                modeloEquipo:values.modelo,
+                                sistemaOperativoId: values.sistemaOperativo,
+                                nSerie: values.noSerie,
+                                procesadorId: values.procesador,
+                                ram: values.ram,
+                                activoFijo: values.activofijo,
+                                monitor: values.monitor,
+                                marcaMonitor: values.marcaMonitor,
+                                teclado: values.teclado,
+                                marcaTeclado: values.marcaTeclado,
+                                mouse: values.mouse,
+                                marcaMouse: values.marcaMouse,
+                                diadema: values.diadema,
+                                marcaDiadema: values.marcaDiadema,
+                                observaciones: values.observaciones,
+                                //Correo
+                                correo: values.correo,
+                                contraseñaCorreo: values.contrasena,
+                                //Extension
+                                extension:values.extension,
+                                telefono: values.telefono,
+                                //Almacenamientos
+                                almacenamientos: [
+                                    values.ssd && values.ssdSize ? { almacenamientoId: values.ssdSize, tipo: "SSD" } : null,
+                                    values.hdd && values.hddSize ? { almacenamientoId: values.hddSize, tipo: "HDD" } : null,
+                                    values.m2 && values.m2Size ? { almacenamientoId: values.m2Size, tipo: "M2" } : null,
+                                ].filter(Boolean) // Elimina valores `null`
+                            });
+                           
+
+                            Swal.fire({
+                                title: "¡Éxito!",
+                                text: "Colaborador y datos relacionados guardados correctamente.",
+                                icon: "success",
+                                confirmButtonText: "OK"
+                            }).then(() => {
+                                window.location.reload(); // Recargar la página
+                            });
+                    
+
+                        } catch (error) {console.error("Error al registrar los datos:", error);
+                            Swal.fire({
+                                title: "Error",
+                                text: "Hubo un error al registrar los datos",
+                                icon: "error",
+                                confirmButtonText: "OK"
+                            })
+                        } finally {
+                            setLoading(false);
+                            setSubmitting(false);
+                        }
                     }}
                 >{
                     ({
@@ -217,14 +218,13 @@ export default function Registro(){
                                     
                                 </div>
                             </div>
-    
                         {/* Sección 2 */}
                             <div>
                                 <h3 className="text-lg font-semibold mb-2">Datos del Equipo</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-3">
                                     <div className="space-y-4">
-                                        <label htmlFor="equipo">Tipo de Equipo:</label>
-                                        <select  id="equipo" name="equipo" value={values.equipo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
+                                        <label htmlFor="tipoEquipo">Tipo de Equipo:</label>
+                                        <select  id="tipoEquipo" name="tipoEquipo" value={values.tipoEquipo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                             <option value="">--- Seleccione una opción ---</option>
                                             {
                                                 equipo.map((sistema) =>{
@@ -240,8 +240,8 @@ export default function Registro(){
                                         <input type="text" id="marca" name="marca" value={values.marca} onChange={handleChange} className="w-full p-2 border rounded-md" />
                                     </div>
                                     <div className="space-y-4">
-                                        <label htmlFor="noSerie">No. de Serie:</label>
-                                        <input type="text" id="noSerie" name="noSerie" value={values.noSerie} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                        <label htmlFor="modelo">Modelo:</label>
+                                        <input type="text" id="modelo" name="modelo" value={values.modelo} onChange={handleChange} className="w-full p-2 border rounded-md" />
                                     </div>
                                     <div className="space-y-4">
                                         <label htmlFor="procesador">Procesador:</label>
@@ -257,12 +257,29 @@ export default function Registro(){
                                         </select>
                                     </div>
                                     <div className="space-y-4">
+                                        <label htmlFor="noSerie">No. de Serie:</label>
+                                        <input type="text" id="noSerie" name="noSerie" value={values.noSerie} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label htmlFor="sistemaOperativo">Sistema Operativo:</label>
+                                        <select id="sistemaOperativo" name="sistemaOperativo" value={values.sistemaOperativo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
+                                            <option value="">--- Selecciona una opción ---</option>
+                                            {
+                                                sistema.map((sis) =>{
+                                                    return(
+                                                        <option key={sis.idSistemaOperativo} value={sis.idSistemaOperativo}>{sis.sistemasOperativo}</option>
+                                                    )
+                                                })
+                                            }
+                                        </select>
+                                    </div>
+                                    <div className="space-y-4">
                                         <label htmlFor="ram"> Memoria RAM:</label>
                                         <input type="text" id="ram" name="ram" value={values.ram} onChange={handleChange} className="w-full p-2 border rounded-md" />
                                     </div>
                                     <div className="space-y-4">
                                         <label htmlFor="activofijo">Placa Activo:</label>
-                                        <input type="text" id="activofijo" name="activofijo" value={values.activofijo} onChange={handleChange} placeholder="Placa Activo" className="w-full p-2 border rounded-md" />
+                                        <input type="text" id="activofijo" name="activofijo" value={values.activofijo} onChange={handleChange} className="w-full p-2 border rounded-md" />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 md:grid-cols-2 pt-3">
@@ -288,7 +305,7 @@ export default function Registro(){
                                                 {
                                                     disco.map((disco) =>{
                                                         return(
-                                                            <option key={disco.name} value={disco.name}>{disco.name}</option>
+                                                            <option key={disco.idAlmacenamiento} value={disco.idAlmacenamiento}>{disco.almacenamiento}</option>
                                                         )
                                                     })
                                                 }
@@ -302,7 +319,7 @@ export default function Registro(){
                                                 {
                                                     disco.map((disco) =>{
                                                         return(
-                                                            <option key={disco.name} value={disco.name}>{disco.name}</option>
+                                                            <option key={disco.idAlmacenamiento} value={disco.idAlmacenamiento}>{disco.almacenamiento}</option>
                                                         )
                                                     })
                                                 }
@@ -316,7 +333,7 @@ export default function Registro(){
                                                 {
                                                     disco.map((disco) =>{
                                                         return(
-                                                            <option key={disco.name} value={disco.name}>{disco.name}</option>
+                                                            <option key={disco.idAlmacenamiento} value={disco.idAlmacenamiento}>{disco.almacenamiento}</option>
                                                         )
                                                     })
                                                 }
@@ -335,7 +352,7 @@ export default function Registro(){
                                     <div className="space-y-4">
                                     {values.monitor && (
                                     <>
-                                        <label htmlFor="marca">Marca del Monitor:</label>
+                                        <label htmlFor="marcaMonitor">Marca del Monitor:</label>
                                         <input type="text" id="marcaMonitor" name="marcaMonitor" value={values.marcaMonitor} onChange={handleChange} className="w-full p-2 border rounded-md" />
                                     </>
                                     )}
@@ -367,7 +384,7 @@ export default function Registro(){
                                     <div className="space-y-4">
                                     {values.mouse && (
                                     <>
-                                        <label htmlFor="marca">Marca del Mouse:</label>
+                                        <label htmlFor="marcaMouse">Marca del Mouse:</label>
                                         <input type="text" id="marcaMouse" name="marcaMouse" value={values.marcaMouse} onChange={handleChange} className="w-full p-2 border rounded-md" />
                                     </>
                                     )}
@@ -388,10 +405,6 @@ export default function Registro(){
                                     </>
                                     )}
                                     </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-1 pt-3">
-                                    <label className="flex items-center space-x-2">Estado:</label>
-                                    <input type="text" id="estado" name="estado" value={values.estado} onChange={handleChange} className="w-full p-2 border rounded-md" />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-1 pt-3">
                                     <label className="flex items-center space-x-2">Observaciones:</label>

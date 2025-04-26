@@ -2,30 +2,26 @@ import { Formik } from "formik";
 import { useState } from "react";
 import { UploadCloud } from "lucide-react";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function ModalUploadR({modal,responsiva}){
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const [archivo, setArchivo] = useState(null);
     const [file, setFile] = useState("Ningun Archivo Seleccionado");
     const [loading, setLoading] = useState(false);
 
+    const manejarArchivo = (event) => {
+        const f = event.target.files[0]
+        setArchivo(event.target.files[0]);
+        setFile(event.target.files[0].name)
+      };
 
     const closeModal = () => {
         modal(false); // Ocultar modal
     };
 
-    const handleFileChange = (event) => {
-        const selectedFile = event.target.files[0]
-        console.log(selectedFile)
-        if(selectedFile)
-        {
-            const nuevoNombre = `Responsiva_De_${responsiva.nombreResponsable}`;
-            const archivoRenombrado = new File([selectedFile], nuevoNombre, { type: selectedFile.type });
-            setArchivo(archivoRenombrado)
-            setFile(archivoRenombrado.name)
-            console.log(archivoRenombrado)
-        }
-    };
 
     return(
         <>
@@ -59,57 +55,104 @@ export default function ModalUploadR({modal,responsiva}){
                         </div>
                         <Formik
                             initialValues={{
-                                
+                                idResponsiva: responsiva.idResponsiva
                             }}
                             validate={values => {
                                 const errors = {};
                                 
                                 return errors
                             }}
-                            onSubmit={(values, { setSubmitting}) => {
+                            onSubmit={async(values, { setSubmitting}) => {
+                                console.log('si1')
+                                const formData = new FormData();
+                                console.log('si2')
+                                formData.append("IdResponsiva", values.idResponsiva);
+                                console.log('si3')
+                                formData.append("Archivo", archivo);
+                                console.log('si4')
+                                
                                 setLoading(true)
-                                //https://drive.google.com/drive/folders/1DQLR1Vy8VfggE6LkeMl7UwgOpxL4zhMJ?usp=drive_link
-                                if (!archivo) {
-                                    alert("Por favor selecciona un archivo antes de enviar.");
-                                    return;
-                                }
-
-                                const reader = new FileReader();
-                                reader.readAsDataURL(archivo);
-                                reader.onloadend = async () => {
-                                    const base64String = reader.result.split(",")[1]; // Quitamos el prefijo
-                        
-                                    const formData = new FormData();
-                                    formData.append("file", base64String); // Enviamos el archivo en Base64
-                                    formData.append("fileName", archivo.name);
-                                    formData.append("mimeType", archivo.type);
-                                    formData.append("customId", responsiva.ID); // ID de la fila en Google Sheets
-
-                                fetch("https://script.google.com/macros/s/AKfycbz5Bk3rzJCCLxMEo2IhMz7dZ2uDVPjgaCerMqaE1QdGJBDs1AnbsWYredoi81r7i4hE/exec", {
-                                    method: "POST",
-                                    body: formData, // Enviar el archivo como FormData
-                                })
-                                    .then(response => response.text())
-                                    .then((result) => {
-                                        setLoading(false)
-                                        Swal.fire({
-                                                    title: "Listo",
-                                                    text: "El archivo se ha subido correctamente.",
-                                                    icon: "success"
-                                                    }).then((result)=>{
-                                                    if(result.isConfirmed){
-                                                        window.location.reload();
-                                                    }
-                                                    });
-                                    })
-                                    .catch(error => {
-                                        Swal.fire({
-                                                    title: "No se pudo subir el archivo",
-                                                    icon: "error",
-                                                    draggable: true
-                                                });
+                                console.log('si5')
+                                console.log(responsiva)
+                                
+                                try {
+                                    console.log('si6')
+                                    if(responsiva.tipoResponsiva === "Asignación")
+                                        {
+                                        console.log('si7')
+                                        const response = await axios.post(
+                                            `${API_URL}/api/Responsivas/UploadResponsiva`,
+                                            formData,
+                                            {
+                                              headers: {
+                                                "Content-Type": "multipart/form-data",
+                                              },
+                                            }
+                                          );
+                                          Swal.fire({
+                                            title: "Listo",
+                                            text: "El archivo se ha subido correctamente.",
+                                            icon: "success"
+                                            }).then((result)=>{
+                                            if(result.isConfirmed){
+                                                window.location.reload();
+                                            }
+                                            });
+                                    }else if(responsiva.tipoResponsiva === "Devolución"){
+                                            console.log('si8')
+                                        const response = await axios.post(
+                                            `${API_URL}/api/Responsivas/UploadResponsivaDevolucion`,
+                                            formData,
+                                            {
+                                              headers: {
+                                                "Content-Type": "multipart/form-data",
+                                              },
+                                            }
+                                          );
+                                          Swal.fire({
+                                            title: "Listo",
+                                            text: "El archivo se ha subido correctamente.",
+                                            icon: "success"
+                                            }).then((result)=>{
+                                            if(result.isConfirmed){
+                                                window.location.reload();
+                                            }
+                                            });
+                                    }else if(responsiva.tipoResponsiva === "Prestamo")
+                                    {
+                                        const response = await axios.post(
+                                            `${API_URL}/api/Responsivas/UploadResponsivaPrestamo`,
+                                            formData,
+                                            {
+                                              headers: {
+                                                "Content-Type": "multipart/form-data",
+                                              },
+                                            }
+                                          );
+                                          Swal.fire({
+                                            title: "Listo",
+                                            text: "El archivo se ha subido correctamente.",
+                                            icon: "success"
+                                            }).then((result)=>{
+                                            if(result.isConfirmed){
+                                                window.location.reload();
+                                            }
+                                            });
+                                    }
+                                     
+                                } catch (error) {
+                                    Swal.fire({
+                                        title: "No se pudo subir el archivo",
+                                        icon: "error",
+                                        draggable: true
                                     });
-                                }
+                                }finally {
+                                    setLoading(false);
+                                    setSubmitting(false);
+                                  }
+
+
+                                
                             }}>
                                 {
                                 ({
@@ -123,7 +166,7 @@ export default function ModalUploadR({modal,responsiva}){
                                     <label className="w-full max-w-md flex flex-col items-center justify-center p-5 border-2 border-dashed border-accent rounded-2xl bg-white shadow-lg cursor-pointer transition hover:border-tertiary hover:bg-accent/10">
                                         <UploadCloud className="w-10 h-10 text-tertiary mb-2" />
                                         <span className="text-sm text-gray-600 font-medium">{file}</span>
-                                        <input type="file" className="hidden" onChange={handleFileChange} />
+                                        <input type="file" className="hidden" onChange={manejarArchivo} accept="application/pdf, image/*"/>
                                     </label>
                                     <p className="text-xs text-gray-500">Arrastra y suelta un archivo o haz clic para seleccionar.</p>
                                 </div>

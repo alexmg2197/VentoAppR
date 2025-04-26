@@ -1,8 +1,11 @@
 import {React,useState} from "react";
 import { Formik } from "formik";
 import Swal from "sweetalert2";
+import axios from "axios";
 
-export default function ModalEditUser({modal, usuario}){
+export default function ModalEditUser({modal, usuario, isEdit}){
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const [loading, setLoading] = useState(false);
 
@@ -18,12 +21,12 @@ export default function ModalEditUser({modal, usuario}){
         <>
             <div onClick={closeModal} className="fixed inset-0 bg-black opacity-60 z-40" >
             </div>
-            <div className="fixed inset-0 z-50 flex justify-center items-center overlow-y-auto">
+            <div className="fixed inset-0 z-50 flex justify-center items-center overlow-y-auto overflow-y-scroll">
                 <div className="relative p-4 w-full max-w-3xl max-h-full">
                     <div className="relative bg-white rounded-lg shadow-sm">
                         <div className="bg-twoo flex items-center justify-between p-4 border-b rounded-t">
                             <h3 className="text-lg font-semibold text-white">
-                                Editar Usuario
+                                {isEdit ? 'Editar Usuario' : 'Crear Usuario'}
                             </h3>
                             <button onClick={closeModal} className="text-gray-400 bg-transparent hover:bg-five hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center">
                                 <svg
@@ -46,41 +49,34 @@ export default function ModalEditUser({modal, usuario}){
                         </div>
                         <Formik
                             initialValues={{
-                                id: usuario.ID,
-                                nombreCompleto: usuario.nombreUsuario,
-                                usuario: usuario.usuario,
-                                contraseña: usuario.password,
-                                correo: usuario.correoUsuario,
-                                rol: usuario.rolUsuario,
+                                idUsuario: isEdit ? usuario.idUsuario : '',
+                                nombre: isEdit ? usuario.nombreUsuario : '',
+                                apellido: isEdit ? usuario.apellidoUsuario : '',
+                                usuario: isEdit ? usuario.usuario : '',
+                                correo: isEdit ? usuario.correoUsuario : '',
+                                contraseña:'',
+                                telefono: isEdit ? usuario.telefonoUsuario : '',
+                                rol: isEdit ? usuario.rolUsuario : '',
                             }}
                             validate={values => {
                                 const errors = {};
                                 
                                 return errors
                             }}
-                            onSubmit={(values, { setSubmitting}) => {
+                            onSubmit={async(values, { setSubmitting}) => {
                                 setLoading(true)
 
-                                const datos = {
-                                    "ID": values.id,
-                                    "NombreCompleto":values.nombreCompleto,
-                                    "Usuario": values.usuario,
-                                    "Contraseña": values.contraseña,
-                                    "Correo": values.correo,
-                                    "Rol": values.rol,
-                                    };
-                                
-                                
-                                fetch("https://script.google.com/macros/s/AKfycbyL3wH6RSLPROBOy_y4rUAXb4B3FgVDe5zHJMLk0eKXt-6ahtDdzf4ilN0GYmRLhoc/exec", {
-                                    method: "POST",
-                                    body: JSON.stringify(datos), // Enviar los valores del formulario
-                                    headers: {
-                                        "Content-Type": "text/plain;charset=utf-8",
-                                    },
-                                })
-                                    .then(response => response.text())
-                                    .then(async (result) => {
-                                        setLoading(false)
+                                if(!isEdit){
+                                    try {
+                                        const response = await axios.post(`${API_URL}/api/Usuario/register`,{
+                                            NombreUsuario: values.nombre,
+                                            ApellidoUsuario: values.apellido,
+                                            CorreoUsuario:values.correo,
+                                            TelefonoUsuario: values.telefono,
+                                            Usuario: values.usuario,
+                                            Password: values.contraseña,
+                                            RolUsuario: values.rol,
+                                        })
                                         Swal.fire({
                                             title: "Datos guardados correctamente",
                                             icon: "success",
@@ -91,15 +87,50 @@ export default function ModalEditUser({modal, usuario}){
                                                 window.location.reload();
                                             }
                                             });
-                                    })
-                                    .catch(error => {
-                                    console.error("Error:", error);
+                                        
+                                    } catch (error) {
+                                        console.error("Error:", error);
                                         Swal.fire({
                                         title: "Error al guardar los datos",
                                         icon: "error",
                                         draggable: true
                                         });
-                                    });
+                                    }finally{
+                                        setLoading(false)
+                                    }
+                                }else if(isEdit){
+                                    try {
+                                        const response = await axios.put(`${API_URL}/api/Usuario/EditarUsuario`,{
+                                            idUsuario: values.idUsuario,
+                                            Nombre: values.nombre,
+                                            Apellido: values.apellido,
+                                            Email:values.correo,
+                                            Telefono: values.telefono,
+                                            Usuario: values.usuario,
+                                            Rol: values.rol,
+                                        })
+                                        Swal.fire({
+                                            title: "Datos guardados correctamente",
+                                            icon: "success",
+                                            draggable: true
+                                            }).then((result)=>{
+                                            if(result.isConfirmed)
+                                            {
+                                                window.location.reload();
+                                            }
+                                            });
+                                        
+                                    } catch (error) {
+                                        console.error("Error:", error);
+                                        Swal.fire({
+                                        title: "Error al guardar los datos",
+                                        icon: "error",
+                                        draggable: true
+                                        });
+                                    }finally{
+                                        setLoading(false)
+                                    }
+                                }
                             }}>
                                 {
                                 ({
@@ -112,14 +143,22 @@ export default function ModalEditUser({modal, usuario}){
                                         <div className="flex flex-col items-center">
                                         {/* Sección 1 */}
                                             <div className="grid grid-cols-1 md:grid-cols-1 gap-3 w-full max-w-2xl">
-                                                <label htmlFor="nombreCompleto">Nombre Completo:</label>
-                                                <input type="text" id="nombreCompleto" name="nombreCompleto" value={values.nombreCompleto} onChange={handleChange} className="w-full md:w-full lg:w-full p-3 border rounded-md" />
+                                                <label htmlFor="nombre">Nombre:</label>
+                                                <input type="text" id="nombre" name="nombre" value={values.nombre} onChange={handleChange} className="w-full md:w-full lg:w-full p-3 border rounded-md" />
+                                                <label htmlFor="apellido">Apellidos:</label>
+                                                <input type="text" id="apellido" name="apellido" value={values.apellido} onChange={handleChange} className="w-full md:w-full lg:w-full p-3 border rounded-md" />
                                                 <label htmlFor="usuario">Usuario:</label>
                                                 <input type="text" id="usuario" name="usuario" value={values.usuario} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                                <label htmlFor="contraseña">Contraseña:</label>
-                                                <input type="text" id="contraseña" name="contraseña" value={values.contraseña} onChange={handleChange} className="w-full p-2 border rounded-md" />
                                                 <label htmlFor="correo">Correo:</label>
-                                                <input type="text" id="correo" name="correo" value={values.correo} onChange={handleChange} placeholder="No. de Serie" className="w-full p-2 border rounded-md" />
+                                                <input type="email" id="correo" name="correo" value={values.correo} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                                <label htmlFor="telefono">Telefono:</label>
+                                                <input type="tel" id="telefono" name="telefono" value={values.telefono} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                                {!isEdit && 
+                                                <>
+                                                    <label htmlFor="contraseña">Contraseña:</label>
+                                                    <input type="password" id="contraseña" name="contraseña" value={values.contraseña} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                                </>
+                                                }
                                                 <label htmlFor="rol">Rol:</label>
                                                 <select  id="rol" name="rol" value={values.rol} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
                                                     <option value="">-- Seleccion un rol --</option>

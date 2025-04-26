@@ -2,45 +2,36 @@ import {React, useState, useEffect } from "react";
 import { Formik } from "formik";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-export default function ModalEditEquipo({modal,equipo}){
+export default function ModalEditEquipo({modal,equipo, isEdit}){
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const [loading, setLoading] = useState(false);
-    const [ubicaciones, setUbicaciones] = useState([]);
-    const [departamentos, setDepartamentos] = useState([]);
     const [procesadores, setProcesadores] = useState([]);
-    const [sistemao, setSistemao] = useState([]);
-    const [discoduro, setDiscoDuro] = useState([]);
-    const [equipos, setEquipo] = useState([]);
-    const [conexion, setConexion] = useState([]);
+    const [sistema, setSistema] = useState([]);
+    const [disco, setDisco] = useState([]);
+    const [equipos, setEquipos] = useState([]);
 
     useEffect(() => {
             setLoading(true);
         
             Promise.all([
-                fetch('https://script.google.com/macros/s/AKfycbxIF5bPo7OvOgPCQCtrdal4xBwh3P-Q4dPageTLZ1GtkIQz9tAL9fkI-ksEqUxqe_ud/exec')
+                fetch(`${API_URL}/api/Procesador`)
                     .then((response) => response.json()),
-                fetch('https://script.google.com/macros/s/AKfycby0xvLsCNoeli0AeoydxxKUEGxunatr8N7XfXwth6PbTkToI6khEjEN0tYO2RY_mtZD/exec')
+                fetch(`${API_URL}/api/Almacenamiento`)
                     .then((response) => response.json()),
-                fetch('https://script.google.com/macros/s/AKfycbyXmX6uaggJXpxrGeGMdgHY0tEqxILTi_8melx5vSC80ij7ywFW9G0-4ZnFcXXjM4jA/exec')
+                fetch(`${API_URL}/api/TipoEquipo`)
                     .then((response) => response.json()),
-                fetch('https://script.google.com/macros/s/AKfycbwJw0AQsZHLcuzvFd5r3dpbpNTxHDpH-NKuYP1P5iExxCux-61rp1AOcvEELqDJKdTW/exec')
-                    .then((response) => response.json()),
-                fetch('https://script.google.com/macros/s/AKfycbzfBN92rs1jcaEC8L0ODkfD0h0mCUZwGU9Qdu8BdZk-WWuNIgFtxdCUC0vNcsrsK8RJ/exec')
-                    .then((response) => response.json()),
-                fetch('https://script.google.com/macros/s/AKfycbwvcqLWis-m6vhe04kk-pABFis9eg-jBrtd_fs3tc9eOUVxx9KyVA8YBW-6RMG-WuN9/exec')
-                    .then((response) => response.json()),
-                fetch('https://script.google.com/macros/s/AKfycbz5qNIGwQrYVcOUpvOR1jtM-XCruAVUKJW9SvVkSS50u8d8UmDSP-z59eNsXlcCxUuv/exec')
+                fetch(`${API_URL}/api/SistemaOperativo`)
                     .then((response) => response.json())
             ])
-            .then(([ubicaciones, departamentos,procesadores,sistemao,discoduro,equipo,conexion]) => {
-                setUbicaciones(ubicaciones);
-                setDepartamentos(departamentos);
+            .then(([procesadores,discoduro,equipos,sistema]) => {
                 setProcesadores(procesadores);
-                setSistemao(sistemao);
-                setDiscoDuro(discoduro);
-                setEquipo(equipo);
-                setConexion(conexion);
+                setDisco(discoduro);
+                setEquipos(equipos);
+                setSistema(sistema)
             })
             .catch((error) => console.error("Error al cargar datos:", error))
             .finally(() => setLoading(false));
@@ -49,45 +40,36 @@ export default function ModalEditEquipo({modal,equipo}){
         
     const navigate = useNavigate();
     
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    const usuario = JSON.parse(localStorage.getItem("user"));
 
     const closeModal = () => {
         modal(false); // Ocultar modal
     };
 
-    const tipoAlmacenamiento = equipo.tipoAlmacenamiento.split('/').map(item => item.trim());
-    const almacenamiento = equipo.almacenamiento.split('/').map(item => item.trim());
-
+    let S = false;
     let ssdSize = '';
+    let H = false
     let hddSize = '';
+    let M = false
     let m2Size = '';
+    if(isEdit){
 
-    // Asigna los valores en orden según los tipos de almacenamiento
-    switch (tipoAlmacenamiento.length) {
-        case 1:
-            if (tipoAlmacenamiento[0] === 'SSD') ssdSize = almacenamiento[0];
-            else if (tipoAlmacenamiento[0] === 'HDD') hddSize = almacenamiento[0];
-            else if (tipoAlmacenamiento[0] === 'M2') m2Size = almacenamiento[0];
-            break;
-
-        case 2:
-            tipoAlmacenamiento.forEach((tipo, index) => {
-                if (tipo === 'SSD') ssdSize = almacenamiento[index];
-                else if (tipo === 'HDD') hddSize = almacenamiento[index];
-                else if (tipo === 'M2') m2Size = almacenamiento[index];
-            });
-            break;
-
-        case 3:
-            tipoAlmacenamiento.forEach((tipo, index) => {
-                if (tipo === 'SSD') ssdSize = almacenamiento[index];
-                else if (tipo === 'HDD') hddSize = almacenamiento[index];
-                else if (tipo === 'M2') m2Size = almacenamiento[index];
-            });
-            break;
-
-        default:
-            console.warn('Formato de almacenamiento desconocido');
+        equipo.almacenamientos.map((alm) =>{
+            if(alm.tipo === 'SSD') 
+            {
+                ssdSize = alm.idCapacidad;  
+                S=true
+            }
+            if(alm.tipo === 'HDD') 
+            {
+                hddSize = alm.idCapacidad;  
+                H=true
+            }
+            if(alm.tipo === 'M2') 
+            {
+                m2Size = alm.idCapacidad;  M=true
+            }
+        })
     }
 
     return(
@@ -95,12 +77,12 @@ export default function ModalEditEquipo({modal,equipo}){
             <div onClick={closeModal} className="fixed inset-0 bg-black opacity-60 z-40" >
             </div>
             <div className="fixed inset-0 z-50 flex justify-center items-center overflow-y-auto">
-                <div className="relative p-4 w-full max-w-5xl max-h-full">
+                <div className="relative p-4 w-full max-w-3xl max-h-full">
                     <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                         {/* Modal header */}
                         <div className=" bg-twoo flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600 border-gray-200">
                         <h3 className="text-lg font-semibold text-white">
-                            Editar Equipo
+                            {isEdit ? 'Editar Equipo' : 'Agregar Equipo'}
                         </h3>
                         <button
                             onClick={closeModal}
@@ -125,303 +107,346 @@ export default function ModalEditEquipo({modal,equipo}){
                         </button>
                         </div>
                         <Formik
-                    initialValues={{
-                        id:equipo.ID,
-                        //USUARIO
-                        usuario: equipo.usuario,
-                        puesto: equipo.puesto,
-                        departamento: equipo.departamento,
-                        area: equipo.area,
-                        ubicacion: equipo.ubicacion,
-                        //EQUIPO
-                        equipo:equipo.equipo,
-                        marca:equipo.marca,
-                        modelo:equipo.modelo,
-                        noSerie: equipo.noSerie,
-                        procesador: equipo.procesador,
-                        ram: equipo.ram,
-                        ssd:((equipo.tipoAlmacenamiento === 'SSD/HDD/M2' || equipo.tipoAlmacenamiento === 'SSD/HDD' || equipo.tipoAlmacenamiento === 'SSD/M2' || equipo.tipoAlmacenamiento === 'SSD')? true :''),
-                        hdd:((equipo.tipoAlmacenamiento === 'SSD/HDD/M2' || equipo.tipoAlmacenamiento === 'SSD/HDD' || equipo.tipoAlmacenamiento === 'HDD/M2' || equipo.tipoAlmacenamiento === 'HDD')? true :''),
-                        m2:((equipo.tipoAlmacenamiento === 'SSD/HDD/M2' || equipo.tipoAlmacenamiento === 'HDD/M2' || equipo.tipoAlmacenamiento === 'SSD/M2' || equipo.tipoAlmacenamiento === 'M2')? true :''),
-                        ssdSize:ssdSize,
-                        hddSize:hddSize,
-                        m2Size:m2Size,
-                        sistemaOperativo: equipo.sistemaOperativo,
-                        tipoconexion:equipo.tipoconexion,
-                        activofijo: equipo.activofijo,
-                        //CORREO
-                        correo:equipo.correo,
-                        contrasena:equipo.contrasena,
-                    }}
-                    validate={values => {
-                        const errors = {};
-                        
-                        return errors
-                    }}
-                    onSubmit={(values, { setSubmitting}) => {
-                        console.log(values)
-                        setLoading(true);
-                        const datos = {
-                            ID: values.id,  // El nombre de la propiedad debe coincidir con lo que espera Google Apps Script (por ejemplo, 'ID', no 'id')
-                            Usuario: values.usuario,
-                            Puesto: values.puesto,
-                            Departamento: values.departamento,
-                            Area: values.area,  // Asegúrate de que la capitalización coincida con lo esperado en el código de Google
-                            Ubicacion: values.ubicacion,
-                            Equipo: values.equipo,
-                            SistemaOperativo: values.sistemaOperativo,
-                            Marca: values.marca,
-                            Modelo: values.modelo,
-                            NumeroSerie: values.noSerie,
-                            Procesador: values.procesador,
-                            RAM: values.ram,
-                            TipoAlmacenamiento: ((values.ssd && values.hdd && values.m2) ? ('SSD/HDD/M2') : ((values.ssd && values.hdd && !values.m2) ? ('SSD/HDD'):((values.ssd && !values.hdd && values.m2)?('SSD/M2'):((!values.ssd && values.hdd && values.m2)?('HDD/M2'):((values.ssd && !values.hdd && !values.m2)?('SSD'):((!values.ssd && values.hdd && !values.m2)?('HDD'):((!values.ssd && !values.hdd && values.m2)?('M2'):''))))))),
-                            Almacenamiento: ((values.ssd && values.hdd && values.m2) ? (values.ssdSize+'/'+values.hddSize+'/'+values.m2Size) : ((values.ssd && values.hdd && !values.m2) ? (values.ssdSize+'/'+values.hddSize):((values.ssd && !values.hdd && values.m2)?(values.ssdSize+'/'+values.m2Size):((!values.ssd && values.hdd && values.m2)?(values.hddSize+'/'+values.m2Size):((values.ssd && !values.hdd && !values.m2)?(values.ssdSize):((!values.ssd && values.hdd && !values.m2)?(values.hddSize):((!values.ssd && !values.hdd && values.m2)?(values.m2Size):''))))))),
-                            SistemaOperativo: values.sistemaOperativo,
-                            TipoConexion: values.tipoconexion,
-                            Correo: values.correo,
-                            Contraseña: values.contrasena,
-                            ActivoFijo: values.activofijo,
-                            Realizo: usuario.nombre,
-                            };
-                            
-                        
-                        fetch("https://script.google.com/macros/s/AKfycbyz74thvDlQI4G9l9HuFLOMzHxQhdAUZ26gRUE0mXWLXUd2yQ-caymENF2Dw48GdyuL/exec", {
-                            method: "POST",
-                            body: JSON.stringify(datos), // Enviar los valores del formulario
-                            headers: {
-                                "Content-Type": "text/plain;charset=utf-8",
-                            },
-                        })
-                            .then(response => response.text())
-                            .then(async (result) => {
-                                setLoading(false);
-                                    Swal.fire({
-                                    title: "Datos guardados correctamente",
-                                    icon: "success",
-                                    draggable: true
-                                    }).then(async (result)=>{
-                                    if(result.isConfirmed)
-                                    {
-                                    window.location.reload();
+                            initialValues={{
+                                idEquipo: isEdit ? equipo.idEquipo : '',
+                                tipoEquipo: isEdit ? equipo.idTipoEquipo : '',
+                                marca: isEdit ? equipo.marcaEquipo : '',
+                                modelo: isEdit ? equipo.modeloEquipo :'',
+                                sistemaOperativo: isEdit ? equipo.idSistemaOperativo : '',
+                                noSerie: isEdit ? equipo.nSerie : '',
+                                procesador: isEdit ? equipo.idProcesador : '',
+                                ram: isEdit ? equipo.ram : '',
+                                ssd: isEdit ? S : false,
+                                hdd: isEdit ? H : false ,
+                                m2: isEdit ? M : false,
+                                ssdSize: isEdit ? ssdSize : '',
+                                hddSize: isEdit ? hddSize : '',
+                                m2Size: isEdit ? m2Size : '',
+                                monitor: isEdit ? equipo.monitor : false,
+                                marcaMonitor: isEdit ? equipo.marcaMonitor : '',
+                                teclado: isEdit ? equipo.teclado : false,
+                                marcaTeclado: isEdit ? equipo.marcaTeclado : '',
+                                mouse: isEdit ? equipo.mouse : false,
+                                marcaMouse: isEdit ? equipo.marcaMouse : '',
+                                diadema: isEdit ? equipo.diadema : false,
+                                marcaDiadema: isEdit ? equipo.marcaDiadema : '',
+                                activofijo: isEdit ? equipo.activoFijo : '',
+                                observa: isEdit ? equipo.observaciones : '',
+                            }}
+                            validate={values => {
+                                const errors = {};
+                                
+                                return errors
+                            }}
+                            onSubmit={async(values, { setSubmitting}) => {
+                                console.log(values)
+                                setLoading(true);
+                                if(!isEdit){
+                                    try {
+                                        const response = await axios.post(`${API_URL}/api/Equipos/GuardarEquipo`,{
+                                            tipoEquipoId: values.tipoEquipo,
+                                            marcaEquipo: values.marca,
+                                            modeloEquipo:values.modelo,
+                                            sistemaOperativoId: values.sistemaOperativo,
+                                            nSerie: values.noSerie,
+                                            procesadorId: values.procesador,
+                                            ram: values.ram,
+                                            activoFijo: values.activofijo,
+                                            monitor: values.monitor,
+                                            marcaMonitor: values.marcaMonitor,
+                                            teclado: values.teclado,
+                                            marcaTeclado: values.marcaTeclado,
+                                            mouse: values.mouse,
+                                            marcaMouse: values.marcaMouse,
+                                            diadema: values.diadema,
+                                            marcaDiadema: values.marcaDiadema,
+                                            observaciones: values.observaciones,
+                                            almacenamientos: [
+                                                values.ssd && values.ssdSize ? { almacenamientoId: values.ssdSize, tipo: "SSD" } : null,
+                                                values.hdd && values.hddSize ? { almacenamientoId: values.hddSize, tipo: "HDD" } : null,
+                                                values.m2 && values.m2Size ? { almacenamientoId: values.m2Size, tipo: "M2" } : null,
+                                            ].filter(Boolean) // Elimina valores `null`
+                                        })
                                         
+                                        Swal.fire({
+                                            title: "¡Éxito!",
+                                            text: response.data.message,
+                                            icon: "success",
+                                            confirmButtonText: "OK"
+                                        }).then(() => {
+                                            window.location.reload(); // Recargar la página
+                                        });
+                                    } catch (error) {
+                                         Swal.fire({
+                                            title: "Error",
+                                            text: "Hubo un error al registrar los datos \n Error: " + error,
+                                            icon: "error",
+                                            confirmButtonText: "OK"
+                                        })
+                                    }finally {
+                                        setLoading(false);
+                                        setSubmitting(false);
                                     }
-                                    });
-                            })
-                            .catch(error => {
-                            console.error("Error:", error);
-                            Swal.fire({
-                                title: "Error al guardar los datos",
-                                icon: "error",
-                                draggable: true
-                                });
-                            });
-                    }}>
-                        {
-                        ({
-                            values,
-                            errors,
-                            handleChange,
-                            handleSubmit
-                        }) => (
-                            <form className="bg-white p-6 shadow-xl rounded-lg" onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Sección 1 */}
-                                <div>
-                                    <h3 className="text-lg font-semibold mb-2">Datos del responsable del equipo</h3>
-                                    <div className="space-y-4">
-                                        <label htmlFor="usuario">Usuario:</label>
-                                        <input type="text" id="usuario" name="usuario" value={values.usuario} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                        <label htmlFor="puesto">Puesto:</label>
-                                        <input type="text" id="puesto" name="puesto" value={values.puesto} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                        <label htmlFor="departamento">Departamento:</label>
-                                        <select id="departamento" name="departamento" value={values.departamento} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
-                                            <option value=""> --- Seleccione una opción ---</option>
-                                            {
-                                                departamentos.map((depa) =>{
-                                                    return(
-                                                        <option key={depa.name} value={depa.name}>{depa.name}</option>
-                                                    )
-                                                })
-                                            }
-                                        </select>
-                                        <label htmlFor="area">Area:</label>
-                                        <input type="text" id="area" name="area" value={values.area} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                        <label htmlFor="departamento">Ubicación:</label>
-                                        <select id="ubicacion" name="ubicacion" value={values.ubicacion} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
-                                            <option value=""> --- Seleccione una opción ---</option>
-                                            {
-                                                ubicaciones.map((ubicacion) =>{
-                                                    return(
-                                                        <option key={ubicacion.name} value={ubicacion.name}>{ubicacion.name}</option>
-                                                    )
-                                                })
-                                            }
-                                        </select>
-        
-                                    </div>
-                                </div>
-        
-                            {/* Sección 2 */}
-                                <div>
-                                    <h3 className="text-lg font-semibold mb-2">Datos del Equipo</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-3">
-                                        <div className="space-y-4">
-                                            <label htmlFor="equipo">Equipo:</label>
-                                            <select  id="equipo" name="equipo" value={values.equipo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
-                                                <option value="">--- Seleccione una opción ---</option>
-                                                {
-                                                    equipos.map((sistema) =>{
-                                                        return(
-                                                            <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
-                                                        )
-                                                    })
-                                                }
-                                            </select>
-                                        </div>
-                                        <div className="spae-y-4">
-                                            <label htmlFor="marca">Marca:</label>
-                                            <input type="text" id="marca" name="marca" value={values.marca} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label htmlFor="modelo">Modelo:</label>
-                                            <input type="text" id="modelo" name="modelo" value={values.modelo} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label htmlFor="noSerie">No. de Serie:</label>
-                                            <input type="text" id="noSerie" name="noSerie" value={values.noSerie} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label htmlFor="procesador">Procesador:</label>
-                                            <select id="procesador" name="procesador" value={values.procesador} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
-                                                <option value="">--- Selecciona una opción ---</option>
-                                                {
-                                                    procesadores.map((procesador) =>{
-                                                        return(
-                                                            <option key={procesador.name} value={procesador.name}>{procesador.name}</option>
-                                                        )
-                                                    })
-                                                }
-                                            </select>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label htmlFor="ram"> Memoria RAM:</label>
-                                            <input type="text" id="ram" name="ram" value={values.ram} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label htmlFor="sistemaOperativo">Sistema Operativo:</label>
-                                            <select  id="sistemaOperativo" name="sistemaOperativo" value={values.sistemaOperativo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
-                                                <option value="">Sistema Operativo</option>
-                                                {
-                                                    sistemao.map((sistema) =>{
-                                                        return(
-                                                            <option key={sistema.name} value={sistema.name}>{sistema.name}</option>
-                                                        )
-                                                    })
-                                                }
-                                            </select>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label htmlFor="tipoconexion">Tipo de Conexion:</label>
-                                            <select name="tipoconexion" id="tipoconexion" value={values.tipoconexion} onChange={handleChange} className="w-full p-2 border rounded-md">
-                                                <option value=""> --- Seleccione una opción ---</option>
-                                                {
-                                                    conexion.map((conexion) =>{
-                                                        return(
-                                                            <option key={conexion.name} value={conexion.name}>{conexion.name}</option>
-                                                        )
-                                                    })
-                                                }
-                                            </select>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <label htmlFor="activofijo">Placa Activo:</label>
-                                            <input type="text" id="activofijo" name="activofijo" value={values.activofijo} onChange={handleChange} placeholder="Placa Activo" className="w-full p-2 border rounded-md" />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 md:grid-cols-2">
-                                        <div className="space-y-3">
-                                            <label className="flex items-center space-x-2">
-                                                <input type="checkbox" name="ssd" checked={values.ssd} onChange={handleChange}/>
-                                                <span>SSD</span>
-                                            </label>
-                                            <label className="flex items-center space-x-2">
-                                                <input type="checkbox" name="hdd" checked={values.hdd} onChange={handleChange}/>
-                                                <span>HDD</span>
-                                            </label>
-                                            <label className="flex items-center space-x-2">
-                                                <input type="checkbox" name="m2" checked={values.m2} onChange={handleChange}/>
-                                                <span>M2</span>
-                                            </label>
-                                        </div>
-                                        <div className="space-y-3">
-                                            {values.ssd && (
-                                            <>
-                                                <select name="ssdSize" id="ssdSize" value={values.ssdSize} onChange={handleChange} className="w-full p-2 border rounded-md">
-                                                    <option value=""> --- SSD ---</option>
-                                                    {
-                                                        discoduro.map((disco) =>{
-                                                            return(
-                                                                <option key={disco.name} value={disco.name}>{disco.name}</option>
-                                                            )
-                                                        })
-                                                    }
-                                                </select>
-                                            </>
-                                            )}
-                                            {values.hdd && (
-                                            <>
-                                                <select name="hddSize" id="hddSize" value={values.hddSize} onChange={handleChange} className="w-full p-2 border rounded-md">
-                                                    <option value=""> --- HDD ---</option>
-                                                    {
-                                                        discoduro.map((disco) =>{
-                                                            return(
-                                                                <option key={disco.name} value={disco.name}>{disco.name}</option>
-                                                            )
-                                                        })
-                                                    }
-                                                </select>
-                                            </>
-                                            )}
-                                            {values.m2 && (
-                                            <>
-                                                <select name="m2Size" id="m2Size" value={values.m2Size} onChange={handleChange} className="w-full p-2 border rounded-md">
-                                                    <option value=""> --- M2 ---</option>
-                                                    {
-                                                        discoduro.map((disco) =>{
-                                                            return(
-                                                                <option key={disco.name} value={disco.name}>{disco.name}</option>
-                                                            )
-                                                        })
-                                                    }
-                                                </select>
-                                            </>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            {/* Sección 3 */}
-                                <div>
-                                    <h3 className="text-lg font-semibold mb-2">Correo Electronico</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                                        <label htmlFor="correo">Correo:</label>
-                                        <input type="email" id="correo" name="correo" value={values.correo} onChange={handleChange} className="w-full p-2 border rounded-md" />
-                                        <label htmlFor="contrasena">Contraseña:</label>
-                                        <input type="text" id="contrasena" name="contrasena" value={values.contrasena} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                }else{
+                                    try {
+                                        const response = await axios.patch(`${API_URL}/api/Equipos/EditarEquipo/${values.idEquipo}`,{
+                                            tipoEquipoId: values.tipoEquipo,
+                                            marcaEquipo: values.marca,
+                                            modeloEquipo:values.modelo,
+                                            sistemaOperativoId: values.sistemaOperativo,
+                                            nSerie: values.noSerie,
+                                            procesadorId: values.procesador,
+                                            ram: values.ram,
+                                            activoFijo: values.activofijo,
+                                            monitor: values.monitor,
+                                            marcaMonitor: values.marcaMonitor,
+                                            teclado: values.teclado,
+                                            marcaTeclado: values.marcaTeclado,
+                                            mouse: values.mouse,
+                                            marcaMouse: values.marcaMouse,
+                                            diadema: values.diadema,
+                                            marcaDiadema: values.marcaDiadema,
+                                            observaciones: values.observaciones,
+                                            almacenamientos: [
+                                                values.ssd && values.ssdSize ? { almacenamientoId: values.ssdSize, tipo: "SSD" } : null,
+                                                values.hdd && values.hddSize ? { almacenamientoId: values.hddSize, tipo: "HDD" } : null,
+                                                values.m2 && values.m2Size ? { almacenamientoId: values.m2Size, tipo: "M2" } : null,
+                                            ].filter(Boolean) // Elimina valores `null`
+                                        })
                                         
+                                        Swal.fire({
+                                            title: "¡Éxito!",
+                                            text: response.data.message,
+                                            icon: "success",
+                                            confirmButtonText: "OK"
+                                        }).then(() => {
+                                            window.location.reload(); // Recargar la página
+                                        });
+                                    } catch (error) {
+                                         Swal.fire({
+                                            title: "Error",
+                                            text: "Hubo un error al registrar los datos",
+                                            icon: "error",
+                                            confirmButtonText: "OK"
+                                        })
+                                    }finally {
+                                        setLoading(false);
+                                        setSubmitting(false);
+                                    }
+                                }
+                            
+                            }}>
+                            {
+                            ({
+                                values,
+                                errors,
+                                handleChange,
+                                handleSubmit
+                            }) => (
+                            <form className="bg-white p-6 shadow-xl rounded-lg" onSubmit={handleSubmit}>
+                                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                                    <div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-3">
+                                            <div className="space-y-4">
+                                                <label htmlFor="tipoEquipo">Tipo de Equipo:</label>
+                                                <select  id="tipoEquipo" name="tipoEquipo" value={values.tipoEquipo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
+                                                    <option value="">--- Seleccione una opción ---</option>
+                                                    {
+                                                        equipos.map((eq) =>{
+                                                            return(
+                                                                <option key={eq.idTipoEquipo} value={eq.idTipoEquipo}>{eq.tipoEquipo}</option>
+                                                            )
+                                                        })
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div className="spae-y-4">
+                                                <label htmlFor="marca">Marca:</label>
+                                                <input type="text" id="marca" name="marca" value={values.marca} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </div>
+                                            <div className="space-y-4">
+                                                <label htmlFor="modelo">Modelo:</label>
+                                                <input type="text" id="modelo" name="modelo" value={values.modelo} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </div>
+                                            <div className="space-y-4">
+                                                <label htmlFor="noSerie">No. de Serie:</label>
+                                                <input type="text" id="noSerie" name="noSerie" value={values.noSerie} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </div>
+                                            <div className="space-y-4">
+                                                <label htmlFor="sistemaOperativo">Sistema Operativo:</label>
+                                                <select id="sistemaOperativo" name="sistemaOperativo" value={values.sistemaOperativo} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
+                                                    <option value="">--- Selecciona una opción ---</option>
+                                                    {
+                                                        sistema.map((sis) =>{
+                                                            return(
+                                                                <option key={sis.idSistemaOperativo} value={sis.idSistemaOperativo}>{sis.sistemasOperativo}</option>
+                                                            )
+                                                        })
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <label htmlFor="procesador">Procesador:</label>
+                                                <select id="procesador" name="procesador" value={values.procesador} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
+                                                    <option value="">--- Selecciona una opción ---</option>
+                                                    {
+                                                        procesadores.map((procesador) =>{
+                                                            return(
+                                                                <option key={procesador.idProcesador} value={procesador.idProcesador}>{procesador.procesador}</option>
+                                                            )
+                                                        })
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <label htmlFor="ram"> Memoria RAM:</label>
+                                                <input type="text" id="ram" name="ram" value={values.ram} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </div>
+                                            <div className="space-y-4">
+                                                <label htmlFor="activofijo">Placa Activo:</label>
+                                                <input type="text" id="activofijo" name="activofijo" value={values.activofijo} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-2 pt-3">
+                                            <div className="space-y-3">
+                                                <label className="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ssd" checked={values.ssd} onChange={handleChange}/>
+                                                    <span>SSD</span>
+                                                </label>
+                                                <label className="flex items-center space-x-2">
+                                                    <input type="checkbox" name="hdd" checked={values.hdd} onChange={handleChange}/>
+                                                    <span>HDD</span>
+                                                </label>
+                                                <label className="flex items-center space-x-2">
+                                                    <input type="checkbox" name="m2" checked={values.m2} onChange={handleChange}/>
+                                                    <span>M2</span>
+                                                </label>
+                                            </div>
+                                            <div className="space-y-3">
+                                                {values.ssd && (
+                                                <>
+                                                    <select name="ssdSize" id="ssdSize" value={values.ssdSize} onChange={handleChange} className="w-full p-2 border rounded-md">
+                                                        <option value=""> --- SSD ---</option>
+                                                        {
+                                                            disco.map((disco) =>{
+                                                                return(
+                                                                    <option key={disco.idAlmacenamiento} value={disco.idAlmacenamiento}>{disco.almacenamiento}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                </>
+                                                )}
+                                                {values.hdd && (
+                                                <>
+                                                    <select name="hddSize" id="hddSize" value={values.hddSize} onChange={handleChange} className="w-full p-2 border rounded-md">
+                                                        <option value=""> --- HDD ---</option>
+                                                        {
+                                                            disco.map((disco) =>{
+                                                                return(
+                                                                    <option key={disco.idAlmacenamiento} value={disco.idAlmacenamiento}>{disco.almacenamiento}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                </>
+                                                )}
+                                                {values.m2 && (
+                                                <>
+                                                    <select name="m2Size" id="m2Size" value={values.m2Size} onChange={handleChange} className="w-full p-2 border rounded-md">
+                                                        <option value=""> --- M2 ---</option>
+                                                        {
+                                                            disco.map((disco) =>{
+                                                                return(
+                                                                    <option key={disco.idAlmacenamiento} value={disco.idAlmacenamiento}>{disco.almacenamiento}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-2 pt-3">
+                                            <div className="space-y-4">
+                                                <label className="flex items-center space-x-2">
+                                                    <input type="checkbox" name="monitor" checked={values.monitor} onChange={handleChange}/>
+                                                    <span>Monitor</span>
+                                                </label>
+                                            </div>
+                                            <div className="space-y-4">
+                                            {values.monitor && (
+                                            <>
+                                                <label htmlFor="marcaMonitor">Marca del Monitor:</label>
+                                                <input type="text" id="marcaMonitor" name="marcaMonitor" value={values.marcaMonitor} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </>
+                                            )}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-2 pt-3">
+                                            <div className="space-y-4">
+                                                <label className="flex items-center space-x-2">
+                                                    <input type="checkbox" name="teclado" checked={values.teclado} onChange={handleChange}/>
+                                                    <span>Teclado</span>
+                                                </label>
+                                            </div>
+                                            <div className="space-y-4">
+                                            {values.teclado && (
+                                            <>
+                                                <label htmlFor="marca">Marca del Teclado:</label>
+                                                <input type="text" id="marcaTeclado" name="marcaTeclado" value={values.marcaTeclado} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </>
+                                            )}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-2 pt-3">
+                                            <div className="space-y-4">
+                                                <label className="flex items-center space-x-2">
+                                                    <input type="checkbox" name="mouse" checked={values.mouse} onChange={handleChange}/>
+                                                    <span>Mouse</span>
+                                                </label>
+                                            </div>
+                                            <div className="space-y-4">
+                                            {values.mouse && (
+                                            <>
+                                                <label htmlFor="marcaMouse">Marca del Mouse:</label>
+                                                <input type="text" id="marcaMouse" name="marcaMouse" value={values.marcaMouse} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </>
+                                            )}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-2 pt-3">
+                                            <div className="space-y-4">
+                                                <label className="flex items-center space-x-2">
+                                                    <input type="checkbox" name="diadema" checked={values.diadema} onChange={handleChange}/>
+                                                    <span>Diadema</span>
+                                                </label>
+                                            </div>
+                                            <div className="space-y-4">
+                                            {values.diadema && (
+                                            <>
+                                                <label htmlFor="marca">Marca de la Diadema:</label>
+                                                <input type="text" id="marcaDiadema" name="marcaDiadema" value={values.marcaDiadema} onChange={handleChange} className="w-full p-2 border rounded-md" />
+                                            </>
+                                            )}
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-1 pt-3">
+                                            <label className="flex items-center space-x-2">Observaciones:</label>
+                                            <textarea id="observa" value={values.observa} onChange={handleChange} className="border-1 rounded-md"/>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-        
-                            {/* Botón de envío */}
-                            <div className="mt-6">
-                                <button type="submit" className="w-full bg-five hover:bg-four text-white py-2 rounded-md disabled:opacity-50"  >
-                                    Editar
-                                </button>
-                            </div>
-                        </form>
-                        )}
-                </Formik>
+            
+                                {/* Botón de envío */}
+                                <div className="mt-6">
+                                    <button type="submit" className="w-full bg-five hover:bg-four text-white py-2 rounded-md disabled:opacity-50"  >
+                                    {isEdit ?  'Editar' : 'Agregar'}
+                                    </button>
+                                </div>
+                            </form>
+                            )}
+                        </Formik>
                     </div>
                 </div>
             </div>

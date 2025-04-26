@@ -12,6 +12,8 @@ import VerUsers from './Components/Usuarios/VerUsers';
 import CrearEquipo from './Components/Equipos/CrearEquipo';
 import VerEquipos from './Components/Equipos/VerEquipos';
 import CrearRegistro from './Components/RegistroGlobal/Registro'
+import VerColaboradores from './Components/Colaboradores/VerColaboradores'
+import VerExtensiones from './Components/Extensiones/VerExtensiones'
 import Login from './Components/Login/Login';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -21,11 +23,11 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false); // Estado para controlar el tamaño del sidebar
 
   const [isAuthenticated, setIsAuthenticated] = useState(() =>{
-    return localStorage.getItem("usuario") ? true : false;
+    return localStorage.getItem("user") ? true : false;
   });
   
   useEffect(() => {
-    const storedUser = localStorage.getItem("usuario");
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setIsAuthenticated(true);
     }
@@ -38,11 +40,11 @@ function App() {
   return (
     <Router>
       {isAuthenticated ? (
-    <div className='flex h-screen'>
+    <div className='flex h-screen '>
           <Sidebar setIsAuthenticated={setIsAuthenticated} toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} ></Sidebar>
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col overflow-hidden">
             <Header setIsAuthenticated={setIsAuthenticated} toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} ></Header>
-            <div className="p-4 flex-1 overflow-auto">
+            <div className="flex-1 overflow-hidden bg-gray-100 p-4 overflow-y-scroll">
               <Routes>
                 <Route exact path="/Inicio" element={<Inicio />} />
                 <Route exact path="/CrearRegistro" element={<CrearRegistro />} />
@@ -54,6 +56,8 @@ function App() {
                 <Route exact path="/VerUsuarios" element={<VerUsers />} />
                 <Route exact path="/CrearEquipo" element={<CrearEquipo />} />
                 <Route exact path="/VerEquipos" element={<VerEquipos />} />
+                <Route exact path="/VerColaboradores" element={<VerColaboradores />} />
+                <Route exact path="/VerExtensiones" element={<VerExtensiones />} />
               </Routes>
             </div>
           </div>
