@@ -2,8 +2,11 @@ import { Formik } from "formik";
 import { useState } from "react";
 import Logo from '../../assets/ventologoN.svg'
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function ModalPassword({modal}){
+
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const [loading, setLoading] = useState(false);
 
@@ -59,41 +62,25 @@ export default function ModalPassword({modal}){
                                     
                                     return errors
                                 }}
-                                onSubmit={(values, { setSubmitting}) => {
+                                onSubmit={async(values, { setSubmitting}) => {
                                     setLoading(true)
-                                    console.log(values.correo)
-                                    const valores ={
-                                        "email": values.correo
+                                    try {
+                                        const response = await axios.post(`${API_URL}/api/Account/ForgotPassword`,{
+                                            Email: values.correo
+                                        });
+                                        Swal.fire({ 
+                                            title:"Correcto",
+                                            text:response.data.message, 
+                                            icon: "success", 
+                                            draggable: true });
+                                            closeModal()
+                                    } catch (error) {
+                                        Swal.fire({
+                                            title: "Error",
+                                            text: "El correo no esta registrado con ningun usuario. Favor de comunicarse con el administrador.",
+                                            icon: "error"
+                                          });
                                     }
-
-                                    fetch('https://script.google.com/macros/s/AKfycbxr0xh0mpk6JNTbVAAcwENdxG7KLvnbzrjAFpY0IIOF5OHHx4xwisz4sRP5r2Z2hU9I/exec',{
-                                        method: "POST",
-                                        body: JSON.stringify(valores), // Enviar los valores del formulario
-                                        headers: {
-                                            "Content-Type": "text/plain;charset=utf-8",
-                                        },})
-                                                  .then((response) => response.json())
-                                                  .then((data) => {
-                                                    setLoading(false);
-                                                    setSubmitting(false)
-                                                    console.log(data)
-                                                    if(data.success === true)
-                                                    {
-                                                        Swal.fire({ 
-                                                            title:"Correcto",
-                                                            text:`La contraseña se envio al correo ${values.correo}`, 
-                                                            icon: "success", 
-                                                            draggable: true });
-                                                            closeModal()
-                                                    }
-                                                    else{
-                                                        Swal.fire({
-                                                            title: "Error",
-                                                            text: "El correo no esta registrado con ningun usuario. Favor de comunicarse con el administrador.",
-                                                            icon: "error"
-                                                          });
-                                                    }
-                                                  });
        
                                 }}>
                                     {

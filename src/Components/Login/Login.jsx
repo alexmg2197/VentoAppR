@@ -17,7 +17,6 @@ export default function Login({ setIsAuthenticated }) {
   const navigate = useNavigate();
 
   const OlviPass = () => {
-    console.log('olvido')
     setModalOP(true)
   }
 
@@ -47,7 +46,6 @@ export default function Login({ setIsAuthenticated }) {
             return errors
           }}
           onSubmit={async(values, { setSubmitting,resetForm  }) => {
-            console.log(values)
             setLoading(true);
             try {
               const response = await axios.post(`${API_URL}/api/auth/login`, {
@@ -66,26 +64,6 @@ export default function Login({ setIsAuthenticated }) {
               setLoading(false);
               setSubmitting(false)
             }
-          //   let url = `https://script.google.com/macros/s/AKfycbytoCaI8ZgtheT8GrZH1_Fc2SYQ029es8A5ocNuSgUZX9pCxbOBzGCN9nLZl_BXtT6a/exec?usuario=${values.usuario}&password=${values.pass}`;
-
-          //   console.log(url)
-
-          //   fetch(url,{method:"GET",headers: {
-          //     "Content-Type": "text/plain;charset=utf-8",
-          // },})
-          //     .then((response) => response.json())
-          //     .then((data) => {
-          //       setLoading(false);
-          //       setSubmitting(false)
-          //       if (data.success === true) {
-          //         localStorage.setItem("usuario", JSON.stringify(data));
-          //         localStorage.setItem("isAuthenticated", "true");
-          //         setIsAuthenticated(true);
-          //         navigate('/Inicio');
-          //       } else {
-          //         Swal.fire({ title: data.message, icon: "error", draggable: true });
-          //       }
-          //     });
           }}
         >
           {({ values, handleChange, handleSubmit,errors, touched  }) => (

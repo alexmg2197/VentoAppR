@@ -11,7 +11,7 @@ export default function Header({  toggleSidebar, setIsAuthenticated,sidebarOpen 
 
 
   const logout = ()=>{
-    localStorage.removeItem("usuario");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
     navigate("/Login");
   };

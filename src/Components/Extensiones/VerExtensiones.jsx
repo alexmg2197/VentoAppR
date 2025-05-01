@@ -127,7 +127,7 @@ export default function VerExtensiones(){
                             </svg>
                             </button>
                             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-black text-sm rounded px-2 py-1 whitespace-nowrap z-10">
-                                Crear nuevo correo
+                                Crear nueva extensión
                             </div>
                         </div>
                     </div>

@@ -14,7 +14,9 @@ import VerEquipos from './Components/Equipos/VerEquipos';
 import CrearRegistro from './Components/RegistroGlobal/Registro'
 import VerColaboradores from './Components/Colaboradores/VerColaboradores'
 import VerExtensiones from './Components/Extensiones/VerExtensiones'
+import Areas from './Components/Catalogos/Areas';
 import Login from './Components/Login/Login';
+import ResetPassword from './Components/ResetPassword/ResetPassword'
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
@@ -58,6 +60,7 @@ function App() {
                 <Route exact path="/VerEquipos" element={<VerEquipos />} />
                 <Route exact path="/VerColaboradores" element={<VerColaboradores />} />
                 <Route exact path="/VerExtensiones" element={<VerExtensiones />} />
+                <Route exact path="/Areas" element={<Areas />} />
               </Routes>
             </div>
           </div>
@@ -65,6 +68,7 @@ function App() {
 
       ):(
         <Routes>
+          <Route exact path="/ResetPassword" element={<ResetPassword />} />
           <Route exact path="/Login" element={<Login setIsAuthenticated={setIsAuthenticated}/>} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>

@@ -12,17 +12,17 @@ export default function Inicio() {
     const [countCorreos, setCountCorreos] = useState([]);
     const [countUsuarios, setCountUsuarios] = useState([]);
     const [countEquipos, setCountEquipos] = useState([]);
-    const [dataMarcas, setDataMarcas] = useState([]);
-    const [dataAreas, setDataAreas] = useState([]);
+    const [countColaborqdores, setCountColaboradores] = useState([]);
+    const [countExtensiones, setCountExtensiones] = useState([]);
 
     useEffect(() => {
         setLoading(true);
 
-        const fetchResponsivasCount = fetch('https://script.google.com/macros/s/AKfycbweruTMcyLjgrfGsRa7v-QUhjrvNSO7NGM0w4NDnaRiC6UlcQbtcRnogNJQvii_YS78/exec')
+        const fetchResponsivasCount = fetch(`${API_URL}/api/Responsivas/ContarResponsivas`)
             .then((response) => response.json())
             .then((data) =>  setCountResponsivas(data));
 
-        const fetchCountCorreos = fetch('https://script.google.com/macros/s/AKfycbxqqh59CVPO5raQe9-R00E3WMSbmSk67FdRCOIfpllT3b-8eQEcSaVrZ4KH6tUblUx_/exec')
+        const fetchCountCorreos = fetch(`${API_URL}/api/Correos/ContarCorreos`)
             .then((response) => response.json())
             .then((data) =>  setCountCorreos(data));
 
@@ -30,43 +30,22 @@ export default function Inicio() {
             .then((response) => response.json())
             .then((data) =>  setCountUsuarios(data));
 
-        const fetchCountEquipos = fetch('https://script.google.com/macros/s/AKfycbxXCv9emYyAZ7G03fy_ZoBxLItDOpw_k_91bUDUF0QXRNSyoIBhgEw8fRN-bT8X5j41/exec')
+        const fetchCountEquipos = fetch(`${API_URL}/api/Equipos/ContarEquipos`)
             .then((response) => response.json())
             .then((data) =>  setCountEquipos(data));
 
-        const fetchMarcas =  fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Av0F9BmQQ24be89zJqtLGL4_J1hJKhTY2Pcu-3l7NcA3RszW99ZhHcjvPKDA6J6CI4i9eqcI5BxH44ni9uuoaPiOG5x42bHbm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnI0ZpyEVoOungJUum7ol0R_xYxaYy_BEKUe1uwbf9PKfHdly63Hcl_LKoeJAZRFeHfft8TSMfgyAOTP1mcJ_0xwD25TVflC-4A&lib=MHjXBVhai-CdhE7mJFGEsMsvpNBcmj7mt')
-                            .then((response) => response.json())
-                            .then((data) => {
-                                const marcas = data.reduce((acc, curr) => {
-                                    acc[curr.marca] = (acc[curr.marca] || 0) + 1;
-                                    return acc;
-                                }, {});
-                                
-                                setDataMarcas(Object.entries(marcas).map(([marca, total]) => ({ marca, total })));
-                            });
+        const fetchCountColaboradores = fetch(`${API_URL}/api/Colaboradores/ContarColaboradores`)
+            .then((response) => response.json())
+            .then((data) =>  setCountColaboradores(data));
 
-        const fetchAreas =  fetch('https://script.google.com/macros/s/AKfycbx2DvPh6RgJyQxF1tQJVMS8-1Hm7QctMtZdBA-S3A4mvvz-Bb36EqwrVSgmw_SCu7Wt/exec')
-                            .then((response) => response.json())
-                            .then((data) => {
-                                const areas = data.reduce((acc, curr) => {
-                                    acc[curr.departamento] = (acc[curr.departamento] || 0) + 1;
-                                    return acc;
-                                }, {});
-                                
-                                setDataAreas(Object.entries(areas).map(([label, value]) => ({ label, value })));
-                            });
+        const fetchCountExtensiones = fetch(`${API_URL}/api/Extension/ContarExtensiones`)
+            .then((response) => response.json())
+            .then((data) =>  setCountExtensiones(data));
 
-
-        Promise.all([fetchResponsivasCount, fetchCountCorreos, fetchCountUsuarios, fetchCountEquipos, fetchMarcas, fetchAreas])
+        Promise.all([fetchResponsivasCount, fetchCountCorreos, fetchCountUsuarios, fetchCountEquipos, fetchCountColaboradores, fetchCountExtensiones])
         .catch((error) => console.error("Error al cargar datos:", error))
-        .finally(() => {setLoading(false); console.log(dataAreas)});
+        .finally(() => {setLoading(false);});
     }, []);
-
-    const pieParams = {
-        height: 270,
-        margin: { right: 5 },
-        slotProps: { legend: { hidden: true } },
-      };
 
     return(
         <>
@@ -75,7 +54,7 @@ export default function Inicio() {
                 {/* Contenido Principal */}
                     <div className="p-4 flex justify-between items-center">
                         <div className='pl-2'>
-                            <h3 className="text-3xl font-bold">{countCorreos.totalActiveRows}</h3>
+                            <h3 className="text-3xl font-bold">{countCorreos}</h3>
                             <p className="text-sm uppercase text-white opacity-80">Correos</p>
                         </div>
                         <div className="text-6xl opacity-30"> 
@@ -92,7 +71,7 @@ export default function Inicio() {
                     {/* Contenido Principal */}
                     <div className="p-4 flex justify-between items-center">
                         <div className='pl-2'>
-                            <h3 className="text-3xl font-bold">{countResponsivas.totalActiveRows}</h3>
+                            <h3 className="text-3xl font-bold">{countResponsivas}</h3>
                             <p className="text-sm uppercase text-white opacity-80">Responsivas</p>
                         </div>
                         <div className="text-6xl opacity-30"> 
@@ -126,7 +105,7 @@ export default function Inicio() {
                     {/* Contenido Principal */}
                     <div className="p-4 flex justify-between items-center">
                         <div className='pl-2'>
-                            <h3 className="text-3xl font-bold">{countEquipos.totalActiveRows}</h3>
+                            <h3 className="text-3xl font-bold">{countEquipos}</h3>
                             <p className="text-sm uppercase text-white opacity-80">Equipos</p>
                         </div>
                         <div className="text-6xl opacity-30"> 
@@ -143,57 +122,34 @@ export default function Inicio() {
                     {/* Contenido Principal */}
                     <div className="p-4 flex justify-between items-center">
                         <div className='pl-2'>
-                            <h3 className="text-3xl font-bold">{countEquipos.totalActiveRows}</h3>
-                            <p className="text-sm uppercase text-white opacity-80">Equipos</p>
+                            <h3 className="text-3xl font-bold">{countColaborqdores}</h3>
+                            <p className="text-sm uppercase text-white opacity-80">Colaboradores</p>
                         </div>
                         <div className="text-6xl opacity-30"> 
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M8 2a1 1 0 0 0-1 1v.469h.5a2.75 2.75 0 0 1 2.75 2.75v.156H14V3a1 1 0 0 0-1-1zm-.109 11.871a2 2 0 0 0 .088-.944a2.75 2.75 0 0 0 2.271-2.708V7.625H14V13a1 1 0 0 1-1 1H8.5a1.5 1.5 0 0 1-.609-.129m4.78-9.684a.766.766 0 1 1-1.53 0a.766.766 0 0 1 1.53 0M0 6.22a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 9 6.22v4a1.5 1.5 0 0 1-1.5 1.5H5.25v.75H6a.75.75 0 1 1 0 1.5H3a.75.75 0 0 1 0-1.5h.75v-.75H1.5a1.5 1.5 0 0 1-1.5-1.5z" clipRule="evenodd"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2S7.5 4.019 7.5 6.5M20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1z"/></svg>
                         </div>
                     </div>
                     {/* Footer con Fondo Oscuro y Link */}
-                    <div className="bg-orange-700 text-white px-4 py-2 flex justify-center items-center hover:bg-green-800 transition">
-                        <a href="#VerEquipos" className="text-white text-sm font-semibold pr-2">Más Información</a>
+                    <div className="bg-orange-700 text-white px-4 py-2 flex justify-center items-center hover:bg-orange-800 transition">
+                        <a href="#VerColaboradores" className="text-white text-sm font-semibold pr-2">Más Información</a>
                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 15v-4H7v-2h5V7l5 5z"/></svg>
                     </div>
                 </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4 p-4">
-                <div className="bg-white shadow rounded-lg">
-                    <div className="bg-five text-white py-3 rounded-t-xl flex items-center justify-center px-4">
-                        <h3>Correos por Area</h3>
+                <div className="bg-teal-600 text-white rounded-lg shadow-md overflow-hidden">
+                    {/* Contenido Principal */}
+                    <div className="p-4 flex justify-between items-center">
+                        <div className='pl-2'>
+                            <h3 className="text-3xl font-bold">{countExtensiones}</h3>
+                            <p className="text-sm uppercase text-white opacity-80">Extensiones</p>
+                        </div>
+                        <div className="text-6xl opacity-30"> 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="currentColor" d="m15.88 3.86l-.61-1.31a1.21 1.21 0 0 0-.792-.658c-1.938-.528-4.161-.851-6.453-.891a27.5 27.5 0 0 0-6.687.934c-.165.048-.453.29-.605.609L.12 3.861a1.2 1.2 0 0 0-.12.52v.87l-.001.041c0 .392.318.71.71.71l.033-.001H3.26a.76.76 0 0 0 .742-.76L4 5.188v-.85a.65.65 0 0 1 .298-.546a6.9 6.9 0 0 1 3.724-.791a6.97 6.97 0 0 1 3.717.788c.143.099.262.3.262.529v.872a.76.76 0 0 0 .739.81h2.521l.031.001a.71.71 0 0 0 .71-.71l-.001-.043V4.38a1.2 1.2 0 0 0-.123-.527z"/><path fill="currentColor" d="M12 8.3a4.73 4.73 0 0 1-1.001-2.92L11 5.296V5h-1v1H6V5H5v.33l.001.08a4.74 4.74 0 0 1-1.009 2.93L1 12v3h14v-3zM8 13a3 3 0 1 1 0-6a3 3 0 0 1 0 6"/><path fill="currentColor" d="M10 10a2 2 0 1 1-3.999.001A2 2 0 0 1 10 10"/></svg>
+                        </div>
                     </div>
-                    <div className='flex flex-col md:flex-row items-center justify-center mt-4'>
-                        <PieChart
-                            series={[
-                            {
-                                data: dataAreas,
-                                cx: 100, // Centro del gráfico en X
-                                cy: 125, // Centro del gráfico en Y
-                            },
-                            ]}
-                            width={300} // Ancho del gráfico
-                            height={200} // Alto del gráfico
-                            {...pieParams}
-                        />
-                    </div>
-                </div>
-                <div className="bg-white shadow rounded-lg">
-                    {/* <h2 className="text-xl font-bold text-gray-700 mb-4">Correos por Mes</h2> */}
-                    <div className="bg-five text-white py-3 rounded-t-xl flex items-center justify-center px-4">
-                        <h3>Responsivas por Marca</h3>
-                    </div>
-                    <div className='flex flex-col md:flex-row items-center justify-center mt-4'>
-                        <BarChart
-                            xAxis={[{ scaleType: 'band', data: dataMarcas.map((item) => item.marca) }]}
-                            series={[{ 
-                                data: dataMarcas.map((item) => item.total), 
-                                color: '#3E5C76' ,
-                                cx: 200, // Centro del gráfico en X
-                                cy: 125, // Centro del gráfico en Y
-                                }]}
-                            width={500}
-                            height={300}
-                        />
+                    {/* Footer con Fondo Oscuro y Link */}
+                    <div className="bg-teal-700 text-white px-4 py-2 flex justify-center items-center hover:bg-teal-800 transition">
+                        <a href="#VerExtensiones" className="text-white text-sm font-semibold pr-2">Más Información</a>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 15v-4H7v-2h5V7l5 5z"/></svg>
                     </div>
                 </div>
             </div>
