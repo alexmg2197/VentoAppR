@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function ModalAddArea({modal, extension,isEdit}){
+export default function ModalAddArea({modal, area,isEdit}){
     
         const API_URL = import.meta.env.VITE_API_URL;
         
@@ -18,7 +18,7 @@ export default function ModalAddArea({modal, extension,isEdit}){
             
             if(isEdit){
                 Promise.all([
-                    fetch(`${API_URL}/api/Extension/ColaboradoresEditarExt/${extension.idExtension}`)
+                    fetch(`${API_URL}/api/Extension/ColaboradoresEditarExt/${area.idExtension}`)
                         .then((response) => response.json()),
                 ])
                 .then(([colaboradores]) => {
@@ -76,10 +76,9 @@ export default function ModalAddArea({modal, extension,isEdit}){
                         </div>
                         <Formik
                             initialValues={{
-                                idExtension: isEdit ? extension.idExtension : '',
-                                colaboradorid: isEdit ? extension.colaboradorId : '',
-                                extension: isEdit ? extension.extension : '',
-                                telefono: isEdit ? extension.telefono : '',
+                                idArea: isEdit ? area.idArea : '',
+                                nombreArea: isEdit ? area.nombreArea : '',
+                                responsableArea: isEdit ? area.responsableArea : '',
                             }}
                             validate={values => {
                                 const errors = {};
@@ -153,19 +152,8 @@ export default function ModalAddArea({modal, extension,isEdit}){
                                 }) => (
                                     <form onSubmit={handleSubmit} className="bg-white p-6 shadow-xl rounded-lg">
                                     <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                                        <label htmlFor="colaboradorid">Colaborador:</label>
-                                        <select id="colaboradorid" name="colaboradorid" value={values.colaboradorid} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
-                                            <option value="">--- Seleccione una opción ---</option>
-                                            {
-                                                colaboradores.map((cola) =>{
-                                                    return(
-                                                        <option key={cola.idColaborador} value={cola.idColaborador}>{cola.nombreColaborador + ' ' + cola.apellidoColaborador}</option>
-                                                    )
-                                                })
-                                            }
-                                        </select>
-                                        <input type="tel" id="telefono" name="telefono" value={values.telefono} onChange={handleChange} placeholder="Telefono" className="w-full p-2 border rounded-md"/>
-                                        <input type="text" id="extension" name="extension" value={values.extension} onChange={handleChange} placeholder="Extension" className="w-full p-2 border rounded-md"/>
+                                        <input type="text" id="nombreArea" name="nombreArea" value={values.nombreArea} onChange={handleChange} placeholder="Telefono" className="w-full p-2 border rounded-md"/>
+                                        <input type="text" id="responsableArea" name="responsableArea" value={values.responsableArea} onChange={handleChange} placeholder="Extension" className="w-full p-2 border rounded-md"/>
                                     </div>
                                     <div className="mt-6">
                                         <button type="submit" className="w-full bg-five hover:bg-four text-white py-2 rounded-md disabled:opacity-50"  >

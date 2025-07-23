@@ -55,10 +55,7 @@ export default function VerUsers(){
     }
 
     const deleteU = (datos) => {
-        let valores = {
-          ID: datos.ID,
-          Activo: 0 
-        }
+        
         Swal.fire({
           title: "¿Estas seguro que deseas eliminar esta responsiva?",
           text: "Esta acción no se puede revertir!",
@@ -71,35 +68,30 @@ export default function VerUsers(){
         }).then((result) => {
           if (result.isConfirmed) {
             setLoading(true)
-            fetch("https://script.google.com/macros/s/AKfycbzb47oev1mqmeZz_qfNsCIPBpvIoua9OftmVt_fii-HU_g1FbXXTIj_7CPPwmxdEmYA/exec", {
-              method: "POST",
-              body: JSON.stringify(valores), // Enviar los valores del formulario
-              headers: {
-                  "Content-Type": "text/plain;charset=utf-8",
-              },
-          })
-              .then(response => response.text())
-              .then(result => {
-                setLoading(false)
-                Swal.fire({
-                  title: "Eliminada",
-                  text: "El usuario a sido eliminado.",
-                  icon: "success"
-                }).then((result)=>{
-                  if(result.isConfirmed){
-                    window.location.reload();
-                  }
-                });
-              })
-              .catch(error => {
-              console.error("Error:", error);
+            try {
+              console.log('aqui 2')
+              axios.patch(`${API_URL}/api/Usuario/EliminarUsuario/${datos.idUsuario}`)
+              console.log('aqui 3')
               Swal.fire({
-                title: "No se pudo eliminar el usuario",
-                icon: "error",
-                draggable: true
-              });
-              });
-            
+                      title: "¡Éxito!",
+                      text: "Usuario eliminado correctamente.",
+                      icon: "success",
+                      confirmButtonText: "OK"
+                  }).then(() => {
+                      window.location.reload(); // Recargar la página
+                  });
+             } catch (error) {
+              console.error(error)
+                  Swal.fire({
+                          title: "Error",
+                          text: "Hubo un error al eliminar los datos",
+                          icon: "error",
+                          confirmButtonText: "OK"
+                      })
+             } finally {
+              setLoading(false);
+          
+      }
           }
         });
       }
@@ -142,7 +134,7 @@ export default function VerUsers(){
                     </svg>
                     </button>
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-black text-sm rounded px-2 py-1 whitespace-nowrap z-10">
-                        Crear nuevo correo
+                        Crear nuevo usuario
                     </div>
                 </div>
               </div>

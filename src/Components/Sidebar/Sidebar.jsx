@@ -53,7 +53,7 @@ export default function Sidebar({ sidebarOpen,toggleSidebar }) {
                         </a>
                     </li>
                     <li>
-                        <a href="#VerColaboradores" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
+                        <a href="#VerColaboradores" title="Colaboradores" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
                             {
                                 sidebarOpen ? (
                                     <>
@@ -69,7 +69,7 @@ export default function Sidebar({ sidebarOpen,toggleSidebar }) {
                         </a>
                     </li>
                     <li>
-                        <a href="#VerEquipos" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
+                        <a href="#VerEquipos" title="Equipos" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
                             {
                                 sidebarOpen ? (
                                     <>
@@ -85,7 +85,7 @@ export default function Sidebar({ sidebarOpen,toggleSidebar }) {
                         </a>
                     </li>
                     <li>
-                        <a href="#VerResponsiva" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
+                        <a href="#VerResponsiva" title="Responsivas" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
                             {
                                 sidebarOpen ? (
                                     <>
@@ -101,7 +101,7 @@ export default function Sidebar({ sidebarOpen,toggleSidebar }) {
                         </a>
                     </li>
                     <li>
-                        <a href="#VerCorreos" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
+                        <a href="#VerCorreos" title="Correos" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
                             {
                                 sidebarOpen ? (
                                     <>
@@ -117,7 +117,7 @@ export default function Sidebar({ sidebarOpen,toggleSidebar }) {
                         </a>
                     </li>
                     <li>
-                        <a href="#VerExtensiones" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
+                        <a href="#VerExtensiones" title="Extensiones" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
                             {
                                 sidebarOpen ? (
                                         <>
@@ -133,7 +133,7 @@ export default function Sidebar({ sidebarOpen,toggleSidebar }) {
                         </a>
                     </li>
                     <li>
-                        <a href="#VerUsuarios" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
+                        <a href="#VerUsuarios" title="Usuarios" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
                             {
                                 sidebarOpen ? (
                                         <>
