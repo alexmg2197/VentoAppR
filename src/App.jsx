@@ -14,9 +14,11 @@ import VerEquipos from './Components/Equipos/VerEquipos';
 import CrearRegistro from './Components/RegistroGlobal/Registro'
 import VerColaboradores from './Components/Colaboradores/VerColaboradores'
 import VerExtensiones from './Components/Extensiones/VerExtensiones'
-import Areas from './Components/Catalogos/Areas';
 import Login from './Components/Login/Login';
 import ResetPassword from './Components/ResetPassword/ResetPassword'
+import Catalogos from './Components/Catalogos/Catalogos';
+import ProtectedRoute from './Components/ProtectedRoute';
+import Unauthorized from './Components/unauthorized';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
@@ -48,19 +50,16 @@ function App() {
             <Header setIsAuthenticated={setIsAuthenticated} toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} ></Header>
             <div className="flex-1 overflow-hidden bg-gray-100 p-4 overflow-y-scroll">
               <Routes>
+                <Route index element={<Navigate to="/Inicio" replace />} />
                 <Route exact path="/Inicio" element={<Inicio />} />
-                <Route exact path="/CrearRegistro" element={<CrearRegistro />} />
-                <Route exact path="/CrearResponsiva" element={<CrearResponsiva />} />
+                <Route exact path="/unauthorized" element={<Unauthorized />} />
                 <Route exact path="/VerResponsiva" element={<VerResponsiva />} />
-                <Route exact path="/CrearCorreo" element={<CrearCorreo />} />
                 <Route exact path="/VerCorreos" element={<VerCorreos />} />
-                <Route exact path="/CrearUsuario" element={<CrearUser />} />
-                <Route exact path="/VerUsuarios" element={<VerUsers />} />
-                <Route exact path="/CrearEquipo" element={<CrearEquipo />} />
+                <Route exact path="/VerUsuarios" element={<ProtectedRoute allowedRoles={["Admin"]}><VerUsers /></ProtectedRoute>} />
                 <Route exact path="/VerEquipos" element={<VerEquipos />} />
                 <Route exact path="/VerColaboradores" element={<VerColaboradores />} />
                 <Route exact path="/VerExtensiones" element={<VerExtensiones />} />
-                <Route exact path="/Areas" element={<Areas />} />
+                <Route exact path="/Catalogos" element={<ProtectedRoute allowedRoles={["Admin"]}><Catalogos /></ProtectedRoute>} />
               </Routes>
             </div>
           </div>

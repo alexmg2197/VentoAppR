@@ -41,7 +41,7 @@ export default function ModalEditColaborador({modal, colaborador}){
                     <div className="relative bg-white rounded-lg shadow-sm">
                         <div className="bg-twoo flex items-center justify-between p-4 border-b rounded-t">
                             <h3 className="text-lg font-semibold text-white">
-                                Agregar Colaborador
+                                Editar Colaborador
                             </h3>
                             <button onClick={closeModal} className="text-gray-400 bg-transparent hover:bg-five hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center">
                                 <svg

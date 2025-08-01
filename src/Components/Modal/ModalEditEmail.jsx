@@ -131,7 +131,7 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                                         window.location.reload(); // Recargar la página
                                     });
                                 } catch (error) {
-                                     Swal.fire({
+                                    Swal.fire({
                                         title: "Error",
                                         text: "Hubo un error al registrar los datos",
                                         icon: "error",
@@ -165,8 +165,10 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                                             })
                                         }
                                     </select>
-                                    <input type="email" id="correo" name="correo" value={values.correo} onChange={handleChange} placeholder="Correo" className="w-full p-2 border rounded-md"/>
-                                    <input type="text" id="contrasena" name="contrasena" value={values.contrasena} onChange={handleChange} placeholder="Contraseña" className="w-full p-2 border rounded-md"/>
+                                    <label htmlFor="correo">Correo:</label>
+                                    <input type="email" id="correo" name="correo" value={values.correo} onChange={handleChange} className="w-full p-2 border rounded-md"/>
+                                    <label htmlFor="contrasena">Contraseña:</label>
+                                    <input type="text" id="contrasena" name="contrasena" value={values.contrasena} onChange={handleChange} className="w-full p-2 border rounded-md"/>
                                 </div>
                                 <div className="mt-6">
                                     <button type="submit" className="w-full bg-five hover:bg-four text-white py-2 rounded-md disabled:opacity-50"  >

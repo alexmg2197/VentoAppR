@@ -1,7 +1,9 @@
 import {React, useState, useEffect} from "react";
 import Swal from "sweetalert2";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, InputAdornment  } from "@mui/material";
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, InputAdornment  } from "@mui/material";
 import ModalEditUser from "../Modal/ModalEditUser";
+import Loader from "../Loader";
+import axios from "axios";
 
 export default function VerUsers(){
 
@@ -57,54 +59,49 @@ export default function VerUsers(){
     const deleteU = (datos) => {
         
         Swal.fire({
-          title: "¿Estas seguro que deseas eliminar esta responsiva?",
-          text: "Esta acción no se puede revertir!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Si, Eliminar",
-          cancelButtonText: "Cancelar"
-        }).then((result) => {
-          if (result.isConfirmed) {
-            setLoading(true)
-            try {
-              console.log('aqui 2')
-              axios.patch(`${API_URL}/api/Usuario/EliminarUsuario/${datos.idUsuario}`)
-              console.log('aqui 3')
-              Swal.fire({
-                      title: "¡Éxito!",
-                      text: "Usuario eliminado correctamente.",
-                      icon: "success",
-                      confirmButtonText: "OK"
-                  }).then(() => {
-                      window.location.reload(); // Recargar la página
-                  });
-             } catch (error) {
-              console.error(error)
-                  Swal.fire({
-                          title: "Error",
-                          text: "Hubo un error al eliminar los datos",
-                          icon: "error",
-                          confirmButtonText: "OK"
-                      })
-             } finally {
-              setLoading(false);
-          
-      }
-          }
+            title: "¿Estas seguro que deseas eliminar el usuario?",
+            text: "Esta acción no se puede revertir!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, Eliminar",
+            cancelButtonText: "Cancelar"
+        }).then(async(result) => {
+            if (result.isConfirmed) {
+                setLoading(true)
+                try {
+                    console.log('aqui 2')
+                    await axios.patch(`${API_URL}/api/Usuario/EliminarUsuario/${datos.idUsuario}`)
+                    console.log('aqui 3')
+                    await Swal.fire({
+                        title: "¡Éxito!",
+                        text: "Usuario eliminado correctamente.",
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        window.location.reload(); // Recargar la página
+                    });
+                } catch (error) {
+                    console.error(error)
+                    Swal.fire({
+                        title: "Error",
+                        text: "Hubo un error al eliminar los datos",
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    })
+                } finally {
+                    setLoading(false);
+                }   
+            }   
         });
-      }
+    }
 
-      const newUser = () => {
+    const newUser = () => {
         setUsuario(null);
         setIsModal(false)
         setModalEdit(true)
-      }
-
-      const cambiarPass = () => {
-        
-      }
+    }
 
     return(
         <div className="p-4">
@@ -114,30 +111,28 @@ export default function VerUsers(){
             <div className="bg-three text-white py-3 rounded-t-xl flex items-center justify-between px-4">
                 <h2 className="text-2xl font-bold text-center flex-1">Usuarios</h2>
                 <TextField onChange={(e) => setSearchTerm(e.target.value)} id="standard-basic" label="" variant="standard"  slotProps={{
-                  input: {
+                    input: {
                     startAdornment: (
-                      <InputAdornment position="end" className="p-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34M208 336c-70.7 0-128-57.2-128-128c0-70.7 57.2-128 128-128c70.7 0 128 57.2 128 128c0 70.7-57.2 128-128 128"/></svg>
-                      </InputAdornment>
+                        <InputAdornment position="end" className="p-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34M208 336c-70.7 0-128-57.2-128-128c0-70.7 57.2-128 128-128c70.7 0 128 57.2 128 128c0 70.7-57.2 128-128 128"/></svg>
+                        </InputAdornment>
                     ),
-                  },
+                    },
                 }} className="bg-white rounded-2xl"  sx={{
-                  "& .MuiInput-underline:before": { borderBottom: "none" },
-                  "& .MuiInput-underline:after": { borderBottom: "none" },
-                }}/>   
+                        "& .MuiInput-underline:before": { borderBottom: "none" },
+                        "& .MuiInput-underline:after": { borderBottom: "none" },
+                    }}/>   
             </div>
-            <div className="flex justify-end bg-three relative pr-5">
-                <div className="relative group">
-                    <button onClick={()=>{newUser()}} className="icon-button text-white cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
-                        <path fill="currentColor" fillRule="evenodd" d="M5.4 3h13.2A2.4 2.4 0 0 1 21 5.4v13.2a2.4 2.4 0 0 1-2.4 2.4H5.4A2.4 2.4 0 0 1 3 18.6V5.4A2.4 2.4 0 0 1 5.4 3M12 7a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V8a1 1 0 0 1 1-1" clipRule="evenodd"/>
-                    </svg>
-                    </button>
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-black text-sm rounded px-2 py-1 whitespace-nowrap z-10">
-                        Crear nuevo usuario
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }} className="bg-three">
+                <button onClick={()=>{newUser()}} className="group mr-3 mb-3 flex items-center justify-start w-11 h-8 bg-green-500 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-30 hover:rounded-lg active:translate-x-1 active:translate-y-1">
+                    <div className="flex items-center justify-center w-full transition-all duration-300 group-hover:justify-start group-hover:px-3 text-three">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
                     </div>
-                </div>
-              </div>
+                    <div className="absolute right-5 transform translate-x-full opacity-0 text-three text-lg font-semibold transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                        Usuario
+                    </div>
+                </button>  
+            </Box>
             <TableContainer>
                 <Table sx={{minWidth:650}} aria-label="simple table">
                     <TableHead sx={{backgroundColor:'#26292c'}}>
@@ -158,9 +153,22 @@ export default function VerUsers(){
                                     <TableCell>{usuario.correoUsuario}</TableCell>
                                     <TableCell>{usuario.rolUsuario}</TableCell>
                                     <TableCell>
-                                        <button onClick={()=>{editU(usuario)}} title="Editar Usuario" className='icon-button p-2'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="m2.292 13.36l4.523 4.756L.5 20zM12.705 2.412l4.522 4.755L7.266 17.64l-4.523-4.754zM16.142.348l2.976 3.129c.807.848.086 1.613.086 1.613l-1.521 1.6l-4.524-4.757L14.68.334l.02-.019c.119-.112.776-.668 1.443.033"/></svg></button>
-                                        <button onClick={()=>{deleteU(usuario)}} title="Eliminar Usuario" className='icon-button'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>
-                                        <button onClick={()=>{cambiarPass(usuario)}} title="Cambiar Contraeña" className='icon-button p-2'><svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24"><path fill="currentColor" d="M3 20v-2.8q0-.85.438-1.562T4.6 14.55q1.55-.775 3.15-1.162T11 13q.5 0 1 .038t1 .112q-.1 1.45.525 2.738T15.35 18v2zm16 3l-1.5-1.5v-4.65q-1.1-.325-1.8-1.237T15 13.5q0-1.45 1.025-2.475T18.5 10t2.475 1.025T22 13.5q0 1.125-.638 2t-1.612 1.25L21 18l-1.5 1.5L21 21zm-8-11q-1.65 0-2.825-1.175T7 8t1.175-2.825T11 4t2.825 1.175T15 8t-1.175 2.825T11 12m7.5 2q.425 0 .713-.288T19.5 13t-.288-.712T18.5 12t-.712.288T17.5 13t.288.713t.712.287"/></svg></button>
+                                        <div className="flex items-center justify-center gap-x-2">
+                                            <button onClick={() => {editU(usuario)}} className="group relative  flex items-center justify-start w-fit px-3 py-1 bg-yellow-500 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24">
+                                                    <path fill="currentColor" d="M15.748 2.947a2 2 0 0 1 2.828 0l2.475 2.475a2 2 0 0 1 0 2.829L9.158 20.144l-6.38 1.076l1.077-6.38zm-.229 3.057l2.475 2.475l1.643-1.643l-2.475-2.474zm1.06 3.89l-2.474-2.475l-8.384 8.384l-.503 2.977l2.977-.502z"/>
+                                                    </svg>
+                                                    <span>Editar</span>
+                                                </div>
+                                            </button> 
+                                            <button onClick={() => { deleteU(usuario) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-red-600 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                                                    <span>Eliminar</span>
+                                                </div>
+                                            </button> 
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -183,15 +191,7 @@ export default function VerUsers(){
                 sx={{color: '#FFFFFF'}}
             />
             {loading && (
-            <div className="fixed inset-0 bg-black opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
-                <svg className="animate-spin h-10 w-10 text-blue-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                </svg>
-                <p className="text-gray-700">Cargando...</p>
-            </div>
-            </div>
+                <Loader/>
             )}
         </div>
     )
