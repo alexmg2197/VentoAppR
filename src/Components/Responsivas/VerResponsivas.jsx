@@ -1,12 +1,13 @@
 import {React, useState, useEffect} from "react";
 import Swal from "sweetalert2";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, TextField,InputAdornment } from "@mui/material";
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, TextField,InputAdornment } from "@mui/material";
 import ModalEditR from "../Modal/ModalEditR";
 import ModalUploadR from "../Modal/ModalUploadR";
 import ModalPrestamoEquipo from "../Modal/ModalPrestamoEquipo";
 import {generarPDF} from "../PDFS/generarPDF"
 import {generarPDFDevolucion} from "../PDFS/generarPDFDEvolucion"
 import { generarPDFPrestamo } from "../PDFS/generarPDFPrestamo";
+import Loader from "../Loader";
 import axios from "axios";
 
 
@@ -23,7 +24,9 @@ export default function VerResponsiva() {
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(0); // Página actual
     const [itemsPerPage, setItemsPerPage] = useState(5); // Elementos por página
-    const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda44
+    const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
+
+    const user = JSON.parse(localStorage.getItem('user'));
     
     useEffect(() => {
       setLoading(true);
@@ -67,8 +70,8 @@ export default function VerResponsiva() {
     setResponsiva(datos);
     }
 
-    const deleteR = (datos) => {
-    Swal.fire({
+    const deleteR = async (datos) => {
+    const result = await Swal.fire({
       title: "¿Estas seguro que deseas eliminar esta responsiva?",
       text: "Esta acción no se puede revertir!",
       icon: "warning",
@@ -77,13 +80,13 @@ export default function VerResponsiva() {
       cancelButtonColor: "#d33",
       confirmButtonText: "Si, Eliminar",
       cancelButtonText: "Cancelar"
-    }).then((result) => {
+    })
       if (result.isConfirmed) {
         setLoading(true);
 
         try{
-          axios.patch(`${API_URL}/api/Responsivas/EliminarResponsiva/${datos.idResponsiva}`)
-          Swal.fire({
+          const res = await axios.patch(`${API_URL}/api/Responsivas/EliminarResponsiva/${datos.idResponsiva}`)
+          await Swal.fire({
               title: "¡Éxito!",
               text: "Responsiva eliminada correctamente.",
               icon: "success",
@@ -92,7 +95,7 @@ export default function VerResponsiva() {
               window.location.reload(); // Recargar la página
           });
         }catch(error){
-           Swal.fire({
+          Swal.fire({
                 title: "Error",
                 text: "Hubo un error al eliminar los datos",
                 icon: "error",
@@ -101,10 +104,9 @@ export default function VerResponsiva() {
         }finally {
           setLoading(false);
           
-       }
+      }
         
       }
-    });
     }
 
     const viewR = (datos) => {
@@ -161,7 +163,7 @@ export default function VerResponsiva() {
           return mensaje; // Devuelve el valor para usarlo en .then()
         }
       }).then((result) => {
-        if (result.isConfirmed && result.value) {
+        if (result.isConfirmed) {
           axios.post(`${API_URL}/api/Responsivas/DevolverEquipo`, {
             ResponsivaAsignacionId:datos.idResponsiva,
             Observaciones: result.value,
@@ -241,18 +243,16 @@ export default function VerResponsiva() {
                   "& .MuiInput-underline:after": { borderBottom: "none" },
                 }}/> 
             </div>
-            <div className="flex justify-end bg-three relative pr-5">
-                <div className="relative group">
-                    <button onClick={()=>{newResponsiva()}} className="icon-button text-white cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
-                        <path fill="currentColor" fillRule="evenodd" d="M5.4 3h13.2A2.4 2.4 0 0 1 21 5.4v13.2a2.4 2.4 0 0 1-2.4 2.4H5.4A2.4 2.4 0 0 1 3 18.6V5.4A2.4 2.4 0 0 1 5.4 3M12 7a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V8a1 1 0 0 1 1-1" clipRule="evenodd"/>
-                    </svg>
-                    </button>
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-black text-sm rounded px-2 py-1 whitespace-nowrap z-10">
-                        Crear Prestamo
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }} className="bg-three">
+                <button onClick={()=>{newResponsiva()}} className="group mr-3 mb-3 flex items-center justify-start w-11 h-8 bg-green-500 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-38 hover:rounded-lg active:translate-x-1 active:translate-y-1">
+                    <div className="flex items-center justify-center w-full transition-all duration-300 group-hover:justify-start group-hover:px-3 text-three">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
                     </div>
-                </div>
-              </div>
+                    <div className="absolute right-5 transform translate-x-full opacity-0 text-three text-lg font-semibold transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                        Responsiva
+                    </div>
+                </button>  
+            </Box>
         <TableContainer component={Paper} className=" overflow-hidden">
           <Table className="min-w-full">
             <TableHead className="bg-five">
@@ -295,35 +295,119 @@ export default function VerResponsiva() {
                       {
                       ((responsiva.docResponsiva === '' || responsiva.docResponsiva=== null && responsiva.tipoResponsiva === 'Asignación') ?
                       (
-                        <>
-                        {/* <button onClick={()=>{editR(responsiva)}} className='icon-button p-1'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="m2.292 13.36l4.523 4.756L.5 20zM12.705 2.412l4.522 4.755L7.266 17.64l-4.523-4.754zM16.142.348l2.976 3.129c.807.848.086 1.613.086 1.613l-1.521 1.6l-4.524-4.757L14.68.334l.02-.019c.119-.112.776-.668 1.443.033"/></svg></button> */}
-                        <button onClick={()=>{viewR(responsiva)}} title="Ver Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg></button>
-                        <button onClick={()=>{deleteR(responsiva)}} title="Eliminar Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>
-                        <button onClick={()=>{uploadR(responsiva)}} title="Subir Responsiva Firmada" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg></button>
-                        </>
+                        <div className="flex flex-col items-center justify-center gap-y-1">
+                            <button onClick={() => { viewR(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-three rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+                                    <span>Responsiva</span>
+                                </div>
+                            </button> 
+                            {
+                              user.rol != 'Analista' && (
+                                <button onClick={() => {deleteR(responsiva)}} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-red-600 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                    <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                                        <span>Eliminar</span>
+                                    </div>
+                                </button> 
+                              )
+                            }
+                            <button onClick={() => { uploadR(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-yellow-600 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg>
+                                    <span>Subir Firmada</span>
+                                </div>
+                            </button> 
+                        </div>
+                        // <>
+                        // <button onClick={()=>{viewR(responsiva)}} title="Ver Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg></button>
+                        // <button onClick={()=>{deleteR(responsiva)}} title="Eliminar Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>
+                        // <button onClick={()=>{uploadR(responsiva)}} title="Subir Responsiva Firmada" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg></button>
+                        // </>
                       ):((responsiva.docResponsiva === '' || responsiva.docResponsiva=== null && responsiva.tipoResponsiva === 'Devolución') ?
                       (
-                        <>
-                        {/* <button onClick={()=>{editR(responsiva)}} className='icon-button p-1'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="m2.292 13.36l4.523 4.756L.5 20zM12.705 2.412l4.522 4.755L7.266 17.64l-4.523-4.754zM16.142.348l2.976 3.129c.807.848.086 1.613.086 1.613l-1.521 1.6l-4.524-4.757L14.68.334l.02-.019c.119-.112.776-.668 1.443.033"/></svg></button> */}
-                        <button onClick={()=>{viewRD(responsiva)}} title="Ver Responsiva de Devolución" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg></button>
-                        {/* <button onClick={()=>{deleteR(responsiva)}} title="Eliminar Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button> */}
-                        <button onClick={()=>{uploadR(responsiva)}} title="Subir Responsiva Firmada de Devolucion" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg></button>
-                        </>
+                        <div className="flex flex-col items-center justify-center gap-y-1">
+                            <button onClick={() => { viewRD(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-three rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+                                    <span>Devolución</span>
+                                </div>
+                            </button> 
+                            <button onClick={() => { uploadR(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-yellow-600 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg>
+                                    <span>Subir</span>
+                                </div>
+                            </button>
+                        </div>
+                        // <>
+                        // <button onClick={()=>{viewRD(responsiva)}} title="Ver Responsiva de Devolución" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg></button>
+                        // <button onClick={()=>{uploadR(responsiva)}} title="Subir Responsiva Firmada de Devolucion" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg></button>
+                        // </>
                       ):((responsiva.estado === "Terminada" || (responsiva.tipoResponsiva === "Devolución" && responsiva.estado ==="Firmada")) ?
-                        ("") : (responsiva.docResponsiva === '' || responsiva.docResponsiva=== null && responsiva.tipoResponsiva === 'Prestamo') ?
                         (
-                          <>
-                            <button onClick={()=>{viewRP(responsiva)}} title="Ver Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg></button>
-                            <button onClick={()=>{deleteR(responsiva)}} title="Eliminar Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>
-                            <button onClick={()=>{uploadR(responsiva)}} title="Subir Responsiva Firmada" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg></button>
-                          </>
+                          <div className="flex flex-col items-center justify-center gap-y-1">
+                            <button onClick={() => { viewRF(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-three rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg className="" xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1s-1-.44-1-1s.44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4c.94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5a2.5 2.5 0 0 1 2.5-2.5a2.5 2.5 0 0 1 2.5 2.5a2.5 2.5 0 0 1-2.5 2.5m-7.86-1.75L8.85 19l.29-.74C10.43 15.06 13.5 13 17 13c1.05 0 2.06.21 3 .56V8l-6-6H6c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h4.5c-.55-.66-1-1.42-1.36-2.25M13 3.5L18.5 9H13z"/></svg>
+                                    <span>Firmada</span>
+                                </div>
+                            </button> 
+                          </div>
+                        // <button onClick={() => {viewRF(responsiva)}} title="Ver Responsiva Firmada" className='icon-button p-1 cursor-pointer'>
+                        //   <svg className="" xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1s-1-.44-1-1s.44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4c.94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5a2.5 2.5 0 0 1 2.5-2.5a2.5 2.5 0 0 1 2.5 2.5a2.5 2.5 0 0 1-2.5 2.5m-7.86-1.75L8.85 19l.29-.74C10.43 15.06 13.5 13 17 13c1.05 0 2.06.21 3 .56V8l-6-6H6c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h4.5c-.55-.66-1-1.42-1.36-2.25M13 3.5L18.5 9H13z"/></svg>
+                        // </button>
+                        ) : (responsiva.docResponsiva === '' || responsiva.docResponsiva=== null && responsiva.tipoResponsiva === 'Prestamo') 
+                        ?
+                        (
+                          <div className="flex flex-col items-center justify-center gap-y-1">
+                            <button onClick={() => { viewRP(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-three rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+                                    <span>Prestamo</span>
+                                </div>
+                            </button> 
+                            <button onClick={() => {deleteR(responsiva)}} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-red-600 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                              <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                                  <span>Eliminar</span>
+                              </div>
+                            </button> 
+                            <button onClick={() => { uploadR(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-yellow-600 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg>
+                                    <span>Subir</span>
+                                </div>
+                            </button> 
+                          </div>
+                          // <>
+                          //   <button onClick={()=>{viewRP(responsiva)}} title="Ver Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg></button>
+                          //   <button onClick={()=>{deleteR(responsiva)}} title="Eliminar Responsiva" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>
+                          //   <button onClick={()=>{uploadR(responsiva)}} title="Subir Responsiva Firmada" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fillRule="evenodd" d="M1.44.44A1.5 1.5 0 0 1 2.5 0h6a.5.5 0 0 1 .354.146l4 4A.5.5 0 0 1 13 4.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 12.5v-11c0-.398.158-.78.44-1.06m5.747 2.993l.104.104c.116.076.216.176.292.292l1.854 1.854a.625.625 0 0 1-.442 1.067h-1.25v3.625a1 1 0 1 1-2 0V6.75h-1.25a.625.625 0 0 1-.442-1.067L5.907 3.83c.076-.116.176-.216.292-.292l.104-.104a.625.625 0 0 1 .884 0Z" clipRule="evenodd"/></svg></button>
+                          // </>
                         ):
-                      (<>
-                        <button onClick={() => {viewRF(responsiva)}} title="Ver Responsiva Firmada" className='icon-button p-1 cursor-pointer'>
-                          <svg className="" xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1s-1-.44-1-1s.44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4c.94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5a2.5 2.5 0 0 1 2.5-2.5a2.5 2.5 0 0 1 2.5 2.5a2.5 2.5 0 0 1-2.5 2.5m-7.86-1.75L8.85 19l.29-.74C10.43 15.06 13.5 13 17 13c1.05 0 2.06.21 3 .56V8l-6-6H6c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h4.5c-.55-.66-1-1.42-1.36-2.25M13 3.5L18.5 9H13z"/></svg>
-                        </button>
-                        <button onClick={()=>{devoR(responsiva)}} title="Devolución de Equipo" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 20 20"><path fill="currentColor" d="M19 5.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.147.354l.003-.003A.5.5 0 0 0 17 5.503v-.006a.5.5 0 0 0-.146-.35l-2-2a.5.5 0 0 0-.708.707L15.293 5H12.5a.5.5 0 0 0 0 1h2.793l-1.147 1.146a.5.5 0 0 0 .708.708zM14.5 11c1.33 0 2.55-.472 3.5-1.257V13.5a1.5 1.5 0 0 1-1.5 1.5H13v2h1.5a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1H7v-2H3.5A1.5 1.5 0 0 1 2 13.5v-10A1.5 1.5 0 0 1 3.5 2h6.757a5.5 5.5 0 0 0 4.243 9M12 17v-2H8v2z"/></svg></button>
-                    </>)
+                      (
+                        <div className="flex flex-col items-center justify-center gap-y-1">
+                            <button onClick={() => { viewRF(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-three rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg className="" xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1s-1-.44-1-1s.44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4c.94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5a2.5 2.5 0 0 1 2.5-2.5a2.5 2.5 0 0 1 2.5 2.5a2.5 2.5 0 0 1-2.5 2.5m-7.86-1.75L8.85 19l.29-.74C10.43 15.06 13.5 13 17 13c1.05 0 2.06.21 3 .56V8l-6-6H6c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h4.5c-.55-.66-1-1.42-1.36-2.25M13 3.5L18.5 9H13z"/></svg>
+                                    <span>Firmada</span>
+                                </div>
+                            </button> 
+                            <button onClick={() => { devoR(responsiva) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-fuchsia-800 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 20 20"><path fill="currentColor" d="M19 5.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.147.354l.003-.003A.5.5 0 0 0 17 5.503v-.006a.5.5 0 0 0-.146-.35l-2-2a.5.5 0 0 0-.708.707L15.293 5H12.5a.5.5 0 0 0 0 1h2.793l-1.147 1.146a.5.5 0 0 0 .708.708zM14.5 11c1.33 0 2.55-.472 3.5-1.257V13.5a1.5 1.5 0 0 1-1.5 1.5H13v2h1.5a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1H7v-2H3.5A1.5 1.5 0 0 1 2 13.5v-10A1.5 1.5 0 0 1 3.5 2h6.757a5.5 5.5 0 0 0 4.243 9M12 17v-2H8v2z"/></svg>
+                                    <span>Devolver Equipo</span>
+                                </div>
+                            </button> 
+                        </div>
+                        // <>
+                        //   <button onClick={() => {viewRF(responsiva)}} title="Ver Responsiva Firmada" className='icon-button p-1 cursor-pointer'>
+                        //     <svg className="" xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1s-1-.44-1-1s.44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4c.94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5a2.5 2.5 0 0 1 2.5-2.5a2.5 2.5 0 0 1 2.5 2.5a2.5 2.5 0 0 1-2.5 2.5m-7.86-1.75L8.85 19l.29-.74C10.43 15.06 13.5 13 17 13c1.05 0 2.06.21 3 .56V8l-6-6H6c-1.11 0-2 .89-2 2v16a2 2 0 0 0 2 2h4.5c-.55-.66-1-1.42-1.36-2.25M13 3.5L18.5 9H13z"/></svg>
+                        //   </button>
+                        //   <button onClick={()=>{devoR(responsiva)}} title="Devolución de Equipo" className='icon-button p-1 cursor-pointer'><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 20 20"><path fill="currentColor" d="M19 5.5a4.5 4.5 0 1 1-9 0a4.5 4.5 0 0 1 9 0m-2.147.354l.003-.003A.5.5 0 0 0 17 5.503v-.006a.5.5 0 0 0-.146-.35l-2-2a.5.5 0 0 0-.708.707L15.293 5H12.5a.5.5 0 0 0 0 1h2.793l-1.147 1.146a.5.5 0 0 0 .708.708zM14.5 11c1.33 0 2.55-.472 3.5-1.257V13.5a1.5 1.5 0 0 1-1.5 1.5H13v2h1.5a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1H7v-2H3.5A1.5 1.5 0 0 1 2 13.5v-10A1.5 1.5 0 0 1 3.5 2h6.757a5.5 5.5 0 0 0 4.243 9M12 17v-2H8v2z"/></svg></button>
+                        // </>
+                      )
                       )))
                       
                       }
@@ -346,15 +430,7 @@ export default function VerResponsiva() {
           sx={{color: '#FFFFFF'}}
         />
         {loading && (
-        <div className="fixed inset-0 bg-black opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
-            <svg className="animate-spin h-10 w-10 text-blue-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-            <p className="text-gray-700">Cargando...</p>
-          </div>
-        </div>
+          <Loader/>
         )}
       </div>
   );

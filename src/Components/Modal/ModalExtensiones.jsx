@@ -1,6 +1,7 @@
 import {React,useState, useEffect} from "react";
 import { Formik } from "formik";
 import Swal from "sweetalert2";
+import Loader from "../Loader";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -99,7 +100,7 @@ export default function ModalExtensiones({modal, extension,isEdit}){
                                     });
                                     Swal.fire({
                                         title: "¡Éxito!",
-                                        text: "¡Se guardo el correo con exito!",
+                                        text: "¡Se guardo la extensión con exito!",
                                         icon: "success",
                                         confirmButtonText: "OK"
                                     }).then(() => {
@@ -164,8 +165,10 @@ export default function ModalExtensiones({modal, extension,isEdit}){
                                             })
                                         }
                                     </select>
-                                    <input type="tel" id="telefono" name="telefono" value={values.telefono} onChange={handleChange} placeholder="Telefono" className="w-full p-2 border rounded-md"/>
-                                    <input type="text" id="extension" name="extension" value={values.extension} onChange={handleChange} placeholder="Extension" className="w-full p-2 border rounded-md"/>
+                                    <label htmlFor="telefono">Telefono:</label>
+                                    <input type="tel" id="telefono" name="telefono" value={values.telefono} onChange={handleChange} className="w-full p-2 border rounded-md"/>
+                                    <label htmlFor="extension">Extensión:</label>
+                                    <input type="text" id="extension" name="extension" value={values.extension} onChange={handleChange} className="w-full p-2 border rounded-md"/>
                                 </div>
                                 <div className="mt-6">
                                     <button type="submit" className="w-full bg-five hover:bg-four text-white py-2 rounded-md disabled:opacity-50"  >
@@ -179,15 +182,7 @@ export default function ModalExtensiones({modal, extension,isEdit}){
             </div>
         </div>
         {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
-            <svg className="animate-spin h-10 w-10 text-blue-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-            <p className="text-gray-700">Cargando...</p>
-            </div>
-        </div>
+            <Loader/>
         )}
         </>
     )

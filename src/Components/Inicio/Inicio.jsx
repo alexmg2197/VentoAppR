@@ -15,6 +15,9 @@ export default function Inicio() {
     const [countColaborqdores, setCountColaboradores] = useState([]);
     const [countExtensiones, setCountExtensiones] = useState([]);
 
+    const user = JSON.parse(localStorage.getItem('user'));
+    console.log(user.rol)
+
     useEffect(() => {
         setLoading(true);
 

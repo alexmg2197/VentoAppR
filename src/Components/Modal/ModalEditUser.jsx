@@ -87,11 +87,11 @@ export default function ModalEditUser({modal, usuario, isEdit}){
                                                 window.location.reload();
                                             }
                                             });
-                                        
-                                    } catch (error) {
-                                        console.error("Error:", error);
+                                        } catch (error) {
+                                        console.log(error.response.data.message)
                                         Swal.fire({
-                                        title: "Error al guardar los datos",
+                                        title: `Error al guardar los datos`,
+                                        text: error.response.data.message,
                                         icon: "error",
                                         draggable: true
                                         });
