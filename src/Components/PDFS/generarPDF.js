@@ -7,65 +7,34 @@ import Logo from '../../assets/LOGOVNA.png'
  export const generarPDF = async (values,resp) => {
             return new Promise((resolve,reject)=>{
                 const doc = new jsPDF('p', 'mm', 'letter');
-                const today = new Date((resp ? values.fechaCreacion :values[0].fechaCreacion));
+                // const today = new Date((resp ? values.fechaCreacion :values[0].fechaCreacion));
 
-                const nombre = (resp ? values.colaborador.nombre :values[0].colaborador.nombre) + ' ' + (resp ? values.colaborador.apellido :values[0].colaborador.apellido)
+                const nombre = (resp ? values.colaborador.nombre :values.responsivaCompleta[0].colaborador.nombre) + ' ' + (resp ? values.colaborador.apellido :values.responsivaCompleta[0].colaborador.apellido)
         
                 // Lista de meses en español
-                const months = [
-                  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
-                  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-                ];
-              
-                // Obtener día, mes y año
-                const day = today.getDate();
-                const month = months[today.getMonth()];
-                const year = today.getFullYear();
+                // const months = [
+                //   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                //   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+                // ];              
+                // // Obtener día, mes y año
+                // const day = today.getDate();
+                // const month = months[today.getMonth()];
+                // const year = today.getFullYear();
               
                 // Formatear la fecha
-                const fecha = `${day} de ${month} de ${year}`;
+                // const fecha = `${day} de ${month} de ${year}`;
+                const fecha = new Date(resp ? values.fechaCreacion : values.responsivaCompleta[0].fechaCreacion)
+
+                const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                const fechaFormateada = fecha.toLocaleDateString('es-ES', opciones);    
         
                 const HTMLtext =`<div style="width: 190px;">
                         <p style="text-align:center; font-size:4px;color:black;">
                         Por este medio hago constar que la empresa <strong>Mototransp S.A.</strong> hace entrega a <strong>
-                        ${(resp ? values.colaborador.nombre : values[0].colaborador.nombre)} ${ resp ? values.colaborador.apellido : values[0].colaborador.apellido}</strong> asignado al Área de <strong>${ resp ? values.colaborador.area : values[0].colaborador.area}</strong>, con fecha <strong>${fecha}</strong>
+                        ${(resp ? values.colaborador.nombre : values.responsivaCompleta[0].colaborador.nombre)} ${ resp ? values.colaborador.apellido : values.responsivaCompleta[0].colaborador.apellido}</strong> asignado al Área de <strong>${ resp ? values.colaborador.area : values.responsivaCompleta[0].colaborador.area}</strong>, con fecha <strong>${fechaFormateada}</strong>
                         el siguiente equipo de cómputo:
                         </p>
                     </div>    `
-        
-                const abajo = `
-                    <div style="width: 190px; padding-top:4px">
-                        <p style="text-align:center; font-size:4px;color:black;">
-                            El costo del equipo es proporcional al valor de la factura, este valor deberá cubrirse por el responsable 
-                            del equipo en caso de pérdida, robo, extravío o daño irreparable. Si el responsable permanece dentro de la compañía, 
-                            se cubrirá el costo a través de pagos quincenales a la cuenta asignada por la compañía, en caso de no continuar 
-                            con la relación laboral, se dispondrá de dicha cantidad del finiquito o liquidación y fondo de ahorro correspondiente. 
-                        </p>
-                    </div>
-                    <div style="width: 190px;">
-                        <div class="container text-center">
-                            <div class="row">
-                                <div class="col">
-                                    <hr class="p-0 m-0"><p style="text-align:center; font-size:4px;color:black;"><strong>Capital Humano:</strong><br> Gloria Claribel Lara Orellana</p> 
-                                </div>
-                                <div class="col">
-                                    <hr class="p-0 m-0"><p style="text-align:center; font-size:4px;color:black;"><strong>Área de TI:</strong><br> Miguel Angel Quiróz Valdes</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="width: 190px;">
-                        <div class="container text-center">
-                            <div class="row">
-                                <div class="col">
-                                    <hr class="p-0 m-0"><p style="text-align:center; font-size:4px;color:black;"><strong>Responsable del Departamento:</strong><br> ${values.responsableArea}</p> 
-                                </div>
-                                <div class="col">
-                                    <hr class="p-0 m-0"><p style="text-align:center; font-size:4px;color:black;"><strong>Responsable del Equipo:</strong><br> ${values.nombreResponsable}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`
         
             // Tabla dibujada (3 columnas) como encabezado
             const startY = 10;  // Coordenada Y para la tabla (más cerca de la parte superior)
@@ -120,13 +89,13 @@ import Logo from '../../assets/LOGOVNA.png'
                 startY: 82,
                 head: [["Marca/Modelo", "Serie", "S.O.", "Memoria RAM", "Procesador", "Disco Duro", "Placa Activo"]],
                 body: [[
-                    `${(resp ? values.equipo[0].marca : values[0].equipo[0].marca)} ${(resp ? values.equipo[0].modeloEquipo : values[0].equipo[0].modeloEquipo)}`,
-                    (resp ? values.equipo[0].nSerie : values[0].equipo[0].nSerie),
-                    (resp ? values.equipo[0].sistemaOperativo : values[0].equipo[0].sistemaOperativo),
-                    (resp ? values.equipo[0].ram : values[0].equipo[0].ram),
-                    (resp ? values.equipo[0].procesador : values[0].equipo[0].procesador),
-                    (resp ? values.equipo[0]?.almacenamientos?.join(' / ') : values[0]?.equipo[0]?.almacenamientos?.join(' / ')),
-                    (resp ? values.equipo[0].activoFijo : values[0].equipo[0].activoFijo)
+                    `${(resp ? values.equipo[0].marca : values.responsivaCompleta[0].equipo[0].marca)} ${(resp ? values.equipo[0].modeloEquipo : values.responsivaCompleta[0].equipo[0].modeloEquipo)}`,
+                    (resp ? values.equipo[0].nSerie : values.responsivaCompleta[0].equipo[0].nSerie),
+                    (resp ? values.equipo[0].sistemaOperativo : values.responsivaCompleta[0].equipo[0].sistemaOperativo),
+                    (resp ? values.equipo[0].ram : values.responsivaCompleta[0].equipo[0].ram),
+                    (resp ? values.equipo[0].procesador : values.responsivaCompleta[0].equipo[0].procesador),
+                    (resp ? values.equipo[0]?.almacenamientos?.join(' / ') : values.responsivaCompleta[0]?.equipo[0]?.almacenamientos?.join(' / ')),
+                    (resp ? values.equipo[0].activoFijo : values.responsivaCompleta[0].equipo[0].activoFijo)
                 ]],
                 theme: 'grid',
                 styles: { fontSize: 11, cellPadding: 2, lineWidth: 0.5, lineColor: [0, 0, 0],textColor: [0, 0, 0], fillColor: [220, 220, 220] },
@@ -148,12 +117,12 @@ import Logo from '../../assets/LOGOVNA.png'
             doc.text("Gloria Claribel Lara Orellana", 28, firmaY + 5);
             doc.text("Capital Humano", 40, firmaY + 10);
         
-            doc.text("_____________________________", 120, firmaY);
-            doc.text("Miguel Angel Quiróz Valdes", 129, firmaY + 5);
-            doc.text("Área de TI", 145, firmaY + 10);
+            doc.text("_____________________________", 128, firmaY);
+            doc.text((resp ? values.colaborador.encargadoSistemas : values.responsableFirmante), 129, firmaY + 5);
+            doc.text("Área de TI", 155, firmaY + 10);
         
             doc.text("_____________________________", 20, firmaY+50);
-            doc.text((resp ? values.colaborador.responsableArea : values[0].colaborador.responsableArea), 52, firmaY + 55,{align:'center'});
+            doc.text((resp ? values.colaborador.responsableArea : values.responsivaCompleta[0].colaborador.responsableArea), 52, firmaY + 55,{align:'center'});
             doc.text("Responsable del Area", 52, firmaY + 60,{align:'center'});
         
             doc.text("_____________________________", 120, firmaY+50);

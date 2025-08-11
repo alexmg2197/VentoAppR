@@ -21,10 +21,17 @@ export default function VerEquipos(){
         const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda44
 
         const user = JSON.parse(localStorage.getItem('user'));
+        const token = localStorage.getItem("token");
 
         useEffect(() => {
               setLoading(true);
-              fetch(`${API_URL}/api/Equipos/EquiposCompletos`)
+              fetch(`${API_URL}/api/Equipos/EquiposCompletos`,
+                {
+                  headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+              )
                 .then((response) => response.json())
                 .then((data) => {setLoading(false); setEquipos(data)});
             }, []);
@@ -60,7 +67,6 @@ export default function VerEquipos(){
           }
         
           const deleteE = (datos) => {
-          console.log("id " + datos.idEquipo)
           Swal.fire({
             title: "¿Estas seguro que deseas eliminar este equipo?",
             text: "Esta acción no se puede revertir!",
@@ -105,7 +111,6 @@ export default function VerEquipos(){
           }
 
           const asignarE = (datos) =>{
-            console.log(datos)
             setModalAsignar(true)
             setEquipo(datos);
           }

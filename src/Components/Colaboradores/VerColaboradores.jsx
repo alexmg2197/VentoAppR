@@ -19,12 +19,19 @@ export default function VerColaboradores(){
     const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda44
 
     const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
             setLoading(true);
-            fetch(`${API_URL}/api/Colaboradores`)
-            .then((response) => response.json())
-            .then((data) => {setLoading(false); setColaboradores(data)});
+
+                axios.get(`${API_URL}/api/Colaboradores`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }).then(res => {
+                        setLoading(false);
+                        setColaboradores(res.data)
+                    });
         }, []);
 
     const filteredRows = colaboradores.filter(item => 
@@ -52,18 +59,15 @@ export default function VerColaboradores(){
         const currentItems = filteredRows.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
         const newC = () =>{
-            console.log('datos')
             setModalNew(true)
         }
 
         const editC = (datos) =>{
-            console.log(datos);
             setModalEdit(true);
             setColaborador(datos)
         }
 
         const deleteC = (datos) => {
-            console.log(datos.idColaborador)
             Swal.fire({
                 title: `¿Estas seguro que deseas eliminar al colaborador ${datos.nombreColaborador + ' ' + datos.apellidoColaborador}?`,
                 text: "Esta acción no se puede revertir!",
@@ -76,11 +80,8 @@ export default function VerColaboradores(){
                 }).then((result) => {
                 if (result.isConfirmed) {
                     setLoading(true);
-                    console.log('aqui 1')
                     try {
-                        console.log('aqui 2')
                         axios.patch(`${API_URL}/api/Colaboradores/EliminarColaborador/${datos.idColaborador}`)
-                        console.log('aqui 3')
                         Swal.fire({
                                 title: "¡Éxito!",
                                 text: "Colaborador eliminado correctamente.",
@@ -89,7 +90,7 @@ export default function VerColaboradores(){
                             }).then(() => {
                                 window.location.reload(); // Recargar la página
                             });
-                       } catch (error) {
+                        } catch (error) {
                         console.error(error)
                             Swal.fire({
                                     title: "Error",
@@ -97,7 +98,7 @@ export default function VerColaboradores(){
                                     icon: "error",
                                     confirmButtonText: "OK"
                                 })
-                       } finally {
+                        } finally {
                         setLoading(false);
                     
                 }

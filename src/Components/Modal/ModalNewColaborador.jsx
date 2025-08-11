@@ -11,6 +11,8 @@ export default function ModalNewColaborador({modal}){
     const [ubicaciones, setUbicaciones] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
 
+    const token = localStorage.getItem("token");
+
     useEffect(() => {
                 setLoading(true);
         
@@ -18,14 +20,19 @@ export default function ModalNewColaborador({modal}){
                     .then((response) => response.json())
                     .then((data) =>  setUbicaciones(data));
 
-                const fetchDepartamentos = fetch(`${API_URL}/api/Areas`)
+                const fetchDepartamentos = fetch(`${API_URL}/api/Areas`,
+                    {
+                headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+            }
+                )
                     .then((response) => response.json())
                     .then((data) =>  setDepartamentos(data));
         
                 Promise.all([fetchUbicaciones, fetchDepartamentos])
                 .catch((error) => console.error("Error al cargar datos:", error))
                 .finally(() => {setLoading(false)});
-                console.log(ubicaciones)
             }, []);
 
     const closeModal = () => {
@@ -75,6 +82,7 @@ export default function ModalNewColaborador({modal}){
                                 
                                 return errors
                             }}
+                            enableReinitialize={true}
                             onSubmit={(values, { setSubmitting}) => {
                                 setLoading(true)
 
@@ -111,8 +119,20 @@ export default function ModalNewColaborador({modal}){
                                     values,
                                     errors,
                                     handleChange,
-                                    handleSubmit
-                                }) => (
+                                    handleSubmit,
+                                    setFieldValue
+                                }) => {
+                                        // Cuando cambie el área, actualizamos la ubicación en Formik
+                                        useEffect(() => {
+                                        const areaSeleccionada = departamentos.find((d) => d.idArea === values.area);
+                                        if (areaSeleccionada) {
+                                            // Actualiza la ubicación en Formik
+                                            setFieldValue("ubicacion", areaSeleccionada.ubicacionId || "");
+                                        } else {
+                                            setFieldValue("ubicacion", "");
+                                        }
+                                        }, [values.area, departamentos, setFieldValue]);
+                                        return(
                                     <form className="bg-white p-6 shadow-xl rounded-lg" onSubmit={handleSubmit}>
                                         <div className="flex flex-col items-center">
                                         {/* Sección 1 */}
@@ -136,7 +156,7 @@ export default function ModalNewColaborador({modal}){
                                                     }
                                                 </select>
                                                 <label htmlFor="departamento">Ubicación:</label>
-                                                <select id="ubicacion" name="ubicacion" value={values.ubicacion} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
+                                                <select id="ubicacion" disabled name="ubicacion" value={values.ubicacion} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
                                                     <option value=""> --- Seleccione una opción ---</option>
                                                     {
                                                         ubicaciones.map((ubicacion) =>{
@@ -157,6 +177,7 @@ export default function ModalNewColaborador({modal}){
                                         </div>
                                     </form>
                             )}
+                            }
                         </Formik>
                     </div>
                 </div>

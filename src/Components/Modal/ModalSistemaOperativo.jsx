@@ -58,7 +58,6 @@ export default function ModalSistemaOperativo({modal, sistema,isEdit, onRefresh=
                                 return errors
                             }}
                             onSubmit={async(values, { setSubmitting}) => {
-                                console.log(values)
                                 setLoading(true)
     
                                 if(!isEdit){

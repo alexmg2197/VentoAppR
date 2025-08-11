@@ -27,10 +27,17 @@ export default function VerResponsiva() {
     const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
 
     const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem("token");
     
     useEffect(() => {
       setLoading(true);
-      fetch(`${API_URL}/api/Responsivas`)
+      fetch(`${API_URL}/api/Responsivas`,
+        {
+          headers:{
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      )
         .then((response) => response.json())
         .then((data) => {setLoading(false); setResponsivas(data)});
     }, []);
@@ -60,7 +67,6 @@ export default function VerResponsiva() {
     const currentItems = filteredRows.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
     const editR = (datos) =>{
-    console.log(datos)
     setResponsiva(datos);
     setModalEdit(true)
     }
@@ -110,8 +116,6 @@ export default function VerResponsiva() {
     }
 
     const viewR = (datos) => {
-      console.log(datos)
-      console.log(usuario)
       generarPDF(datos,true)
     }
 
@@ -140,7 +144,6 @@ export default function VerResponsiva() {
     }
 
     const devoR = (datos) =>{
-      console.log(datos)
       
       Swal.fire({
         title: `<strong>Devolución de equipo de: </strong> ${datos.colaborador.nombre} ${datos.colaborador.apellido}`,
@@ -210,7 +213,6 @@ export default function VerResponsiva() {
 
     const newResponsiva = () => {
       setModalPrestamo(true)
-      console.log(modalPrestamo)
     }
 
     const viewRP = (datos) => {

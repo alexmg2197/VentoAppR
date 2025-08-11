@@ -19,10 +19,17 @@ export default function VerCorreos(){
     const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
 
     const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem("token");
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_URL}/api/Correos`)
+    fetch(`${API_URL}/api/Correos`,
+      {
+          headers:{
+            Authorization: `Bearer ${token}`,
+          }
+        }
+    )
       .then((response) => response.json())
       .then((data) => {setLoading(false); setCorreos(data)});
   }, []);
@@ -30,7 +37,7 @@ export default function VerCorreos(){
     // Filtrar las filas de la tabla según el término de búsqueda
   // Función para aplicar el filtro y devolver las filas filtradas
   const filteredRows = correos.filter((r) => 
-        ["usuario", "departamento", "ubicacion","correo"]
+        ["colaborador.nombreColaborador", "colaborador.area.nombreArea", "ubicacion.ubicacion","correo"]
         .some((campo) =>
         r[campo]?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
   );

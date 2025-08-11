@@ -88,7 +88,6 @@ export default function ModalExtensiones({modal, extension,isEdit}){
                             return errors
                         }}
                         onSubmit={async(values, { setSubmitting}) => {
-                            console.log(values)
                             setLoading(true)
 
                             if(!isEdit){

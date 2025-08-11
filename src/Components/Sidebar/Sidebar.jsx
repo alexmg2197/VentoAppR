@@ -155,7 +155,7 @@ export default function Sidebar({ sidebarOpen,toggleSidebar }) {
                         </a>
                     </li>
                     {
-                        user.rol != 'Analista' && (
+                        user.rol == 'Admin' && (
                             <li>
                                 <a href="#VerUsuarios" title="Usuarios" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
                                     {
@@ -181,7 +181,7 @@ export default function Sidebar({ sidebarOpen,toggleSidebar }) {
                         )
                     }
                     {
-                        user.rol != 'Analista' && (
+                        user.rol == 'Admin' && (
                             <li>
                                 <a href="#Catalogos" className={`flex items-center ${!sidebarOpen ? 'justify-center' : ''} p-2 text-white hover:text-black rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group`}>
                                     {

@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import axios from 'axios';
 import Header from './Components/Header/Header'
 import Sidebar from './Components/Sidebar/Sidebar';
 import Inicio from './Components/Inicio/Inicio';
-import CrearResponsiva from './Components/Responsivas/CrearResponsiva';
 import VerResponsiva from './Components/Responsivas/VerResponsivas';
-import CrearCorreo from './Components/Correos/CrearCorreo';
 import VerCorreos from './Components/Correos/VerCorreos';
-import CrearUser from './Components/Usuarios/CrearUser';
 import VerUsers from './Components/Usuarios/VerUsers';
-import CrearEquipo from './Components/Equipos/CrearEquipo';
 import VerEquipos from './Components/Equipos/VerEquipos';
-import CrearRegistro from './Components/RegistroGlobal/Registro'
 import VerColaboradores from './Components/Colaboradores/VerColaboradores'
 import VerExtensiones from './Components/Extensiones/VerExtensiones'
 import Login from './Components/Login/Login';
@@ -19,6 +15,7 @@ import ResetPassword from './Components/ResetPassword/ResetPassword'
 import Catalogos from './Components/Catalogos/Catalogos';
 import ProtectedRoute from './Components/ProtectedRoute';
 import Unauthorized from './Components/unauthorized';
+import NotFound from './NotFound';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
@@ -26,6 +23,7 @@ function App() {
   const [count, setCount] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false); // Estado para controlar el tamaño del sidebar
 
+  
   const [isAuthenticated, setIsAuthenticated] = useState(() =>{
     return localStorage.getItem("user") ? true : false;
   });
@@ -60,6 +58,8 @@ function App() {
                 <Route exact path="/VerColaboradores" element={<VerColaboradores />} />
                 <Route exact path="/VerExtensiones" element={<VerExtensiones />} />
                 <Route exact path="/Catalogos" element={<ProtectedRoute allowedRoles={["Admin"]}><Catalogos /></ProtectedRoute>} />
+                  {/* Ruta 404 para rutas protegidas */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
           </div>
@@ -70,6 +70,7 @@ function App() {
           <Route exact path="/ResetPassword" element={<ResetPassword />} />
           <Route exact path="/Login" element={<Login setIsAuthenticated={setIsAuthenticated}/>} />
           <Route path="*" element={<Navigate to="/login" />} />
+            {/* Ruta 404 para no autenticados */}
         </Routes>
       )}
     </Router>

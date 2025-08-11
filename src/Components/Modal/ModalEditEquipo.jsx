@@ -139,7 +139,6 @@ export default function ModalEditEquipo({modal,equipo, isEdit}){
                                 return errors
                             }}
                             onSubmit={async(values, { setSubmitting}) => {
-                                console.log(values)
                                 setLoading(true);
                                 if(!isEdit){
                                     try {

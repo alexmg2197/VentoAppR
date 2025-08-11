@@ -12,10 +12,18 @@ export default function ModalPrestamoEquipo({modal}) {
     const [equiposDisponibles, setEquiposDisponibles] = useState([]);
     const [loading, setLoading] = useState(false);
 
+        const token = localStorage.getItem("token");
+
     useEffect(() => {
         setLoading(true);
 
-        const fetchColaboradores = fetch(`${API_URL}/api/Colaboradores`)
+        const fetchColaboradores = fetch(`${API_URL}/api/Colaboradores`,
+            {
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                }
+            }
+        )
             .then((response) => response.json())
             .then((data) =>  setColaboradores(data));
 
@@ -85,10 +93,8 @@ export default function ModalPrestamoEquipo({modal}) {
                                         icon: "success",
                                         confirmButtonText: "OK"
                                     }).then(async () => {
-                                        console.log(response.data)
                                         let resp = response.data
                                         await generarPDFPrestamo(resp,false);
-                                        console.log(resp)
                                         window.location.reload(); // Recargar la página
                                     });
                                 } catch (error) {
@@ -130,7 +136,6 @@ export default function ModalPrestamoEquipo({modal}) {
                                                     <option value=""> --- Seleccione una opción ---</option>
                                                     {
                                                         equiposDisponibles.map((eqd) =>{
-                                                            console.log(eqd.c_Tipo_Equipo.tipoEquipo === 'Laptop' ? 'nerie' : 'vna')
                                                             return(
                                                                 <option key={eqd.idEquipo} value={eqd.idEquipo}>{eqd.c_Tipo_Equipo.tipoEquipo === 'Laptop' ? eqd.nSerie :eqd.activoFijo}</option>
                                                             )

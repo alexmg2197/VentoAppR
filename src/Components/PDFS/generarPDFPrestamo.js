@@ -154,7 +154,7 @@ El activo está bajo control e inventario del área de Tecnología de la Informa
             // doc.text("Área de TI", 145, firmaY + 10);
         
             // doc.text("_____________________________", 20, firmaY+50);
-            // doc.text("Miguel Angel Quiróz Valdes", 52, firmaY + 55,{align:'center'});
+            // doc.text((resp ? (values.colaborador.ubicacion === 'LERMA' ? "Miguel Angel Quiróz Valdes" : (values.colaborador.ubicacion === 'SANTIN' ? 'Jose Gomez Robledo' : '')) : (values[0].colaborador.ubicacion === 'LERMA' ? "Miguel Angel Quiróz Valdes" : (values[0].colaborador.ubicacion === 'SANTIN' ? 'Jose Gomez Robledo' : ''))), 52, firmaY + 55,{align:'center'});
             // doc.text("Departamento de TI ", 52, firmaY + 60,{align:'center'});
         
             doc.text("________________________________", 73, firmaY+50);

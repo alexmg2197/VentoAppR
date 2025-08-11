@@ -208,7 +208,6 @@ export default function ModalEditR({modal,responsiva}){
 
             })
     };
-    console.log(responsiva)
     const closeModal = () => {
         modal(false); // Ocultar modal
     };

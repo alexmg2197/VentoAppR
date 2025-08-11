@@ -10,9 +10,17 @@ export default function ModalAddArea({modal, area,isEdit, onRefresh={onRefresh}}
         const API_URL = import.meta.env.VITE_API_URL;
         
         const [loading, setLoading] = useState(false);
-        const [colaboradores,setColaboradores] = useState([]);
+        const [ubicaciones,setUbicaciones] = useState([]);
     
         const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+        useEffect(() => {
+            axios.get(`${API_URL}/api/Ubicaciones`
+            ).then(res => {
+                    setLoading(false);
+                    setUbicaciones(res.data)
+                });
+            }, []);
     
         const closeModal = () => {
             modal(false); // Ocultar modal
@@ -52,6 +60,7 @@ export default function ModalAddArea({modal, area,isEdit, onRefresh={onRefresh}}
                             initialValues={{
                                 idArea: isEdit ? area.idArea : '',
                                 nombreArea: isEdit ? area.nombreArea : '',
+                                ubicacionId: isEdit ? area.ubicacionId : '',
                                 responsableArea: isEdit ? area.responsableArea : '',
                             }}
                             validate={values => {
@@ -60,14 +69,14 @@ export default function ModalAddArea({modal, area,isEdit, onRefresh={onRefresh}}
                                 return errors
                             }}
                             onSubmit={async(values, { setSubmitting}) => {
-                                console.log(values)
                                 setLoading(true)
     
                                 if(!isEdit){
                                     try {
                                         const response = await axios.post(`${API_URL}/api/Areas/GuardarArea`,{
                                             NombreArea: values.nombreArea,
-                                            ResponsableArea: values.responsableArea
+                                            ResponsableArea: values.responsableArea,
+                                            UbicacionId: values.ubicacionId
                                         });
                                         Swal.fire({
                                             title: "¡Éxito!",
@@ -92,7 +101,8 @@ export default function ModalAddArea({modal, area,isEdit, onRefresh={onRefresh}}
                                     try {
                                         const response = await axios.patch(`${API_URL}/api/Areas/EditarArea/${values.idArea}`,{
                                             NombreArea: values.nombreArea,
-                                            ResponsableArea: values.responsableArea
+                                            ResponsableArea: values.responsableArea,
+                                            UbicacionId: values.ubicacionId
                                         })
                                         
                                         Swal.fire({
@@ -129,6 +139,18 @@ export default function ModalAddArea({modal, area,isEdit, onRefresh={onRefresh}}
                                     <form onSubmit={handleSubmit} className="bg-white p-6 shadow-xl rounded-lg">
                                     <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                                         <input type="text" id="nombreArea" name="nombreArea" value={values.nombreArea} onChange={handleChange} placeholder="Area" className="w-full p-2 border rounded-md"/>
+                                        <label htmlFor="ubicacionId">Ubicaciones:</label>
+                                        <select id="ubicacionId" name="ubicacionId" value={values.ubicacionId} onChange={handleChange} className="w-full p-2 border rounded-md bg-white" >
+                                            <option value=""> --- Seleccione una opción ---</option>
+                                            {
+                                                ubicaciones.map((ubi) =>{
+                                                    return(
+                                                        <option key={ubi.idUbicacion} value={ubi.idUbicacion}>{ubi.ubicacion}</option>
+                                                    )
+                                                    
+                                                })
+                                            }
+                                        </select>
                                         <input type="text" id="responsableArea" name="responsableArea" value={values.responsableArea} onChange={handleChange} placeholder="Responsable" className="w-full p-2 border rounded-md"/>
                                     </div>
                                     <div className="mt-6">

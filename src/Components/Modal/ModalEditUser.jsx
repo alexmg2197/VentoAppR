@@ -1,4 +1,4 @@
-import {React,useState} from "react";
+import { React, useState, useEffect} from "react";
 import { Formik } from "formik";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -7,7 +7,15 @@ export default function ModalEditUser({modal, usuario, isEdit}){
 
     const API_URL = import.meta.env.VITE_API_URL;
 
+    const [ubicaciones, setUbicaciones] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setLoading(true);
+        fetch(`${API_URL}/api/Ubicaciones`)
+            .then((response) => response.json())
+            .then((data) => {setLoading(false); setUbicaciones(data)});
+        }, []);
 
     const Roles = [
         {name:'Admin'},{name:'Director'}, {name:'Gerente'},{name:'Supervisor'},{name:'Analista'}
@@ -57,6 +65,7 @@ export default function ModalEditUser({modal, usuario, isEdit}){
                                 contraseña:'',
                                 telefono: isEdit ? usuario.telefonoUsuario : '',
                                 rol: isEdit ? usuario.rolUsuario : '',
+                                ubicacionId: isEdit ? usuario.ubicacionId : '',
                             }}
                             validate={values => {
                                 const errors = {};
@@ -76,6 +85,7 @@ export default function ModalEditUser({modal, usuario, isEdit}){
                                             Usuario: values.usuario,
                                             Password: values.contraseña,
                                             RolUsuario: values.rol,
+                                            UbicacionId: values.ubicacionId,
                                         })
                                         Swal.fire({
                                             title: "Datos guardados correctamente",
@@ -88,7 +98,6 @@ export default function ModalEditUser({modal, usuario, isEdit}){
                                             }
                                             });
                                         } catch (error) {
-                                        console.log(error.response.data.message)
                                         Swal.fire({
                                         title: `Error al guardar los datos`,
                                         text: error.response.data.message,
@@ -108,6 +117,7 @@ export default function ModalEditUser({modal, usuario, isEdit}){
                                             Telefono: values.telefono,
                                             Usuario: values.usuario,
                                             Rol: values.rol,
+                                            UbicacionId: values.ubicacionId,
                                         })
                                         Swal.fire({
                                             title: "Datos guardados correctamente",
@@ -166,6 +176,17 @@ export default function ModalEditUser({modal, usuario, isEdit}){
                                                         Roles.map((roles) =>{
                                                             return(
                                                                 <option key={roles.name} value={roles.name}>{roles.name}</option>
+                                                            )
+                                                        })
+                                                    }
+                                                </select>
+                                                <label htmlFor="ubicacionId">Ubicción::</label>
+                                                <select  id="ubicacionId" name="ubicacionId" value={values.ubicacionId} onChange={handleChange} className="w-full p-2 border rounded-md bg-white">
+                                                    <option value="">-- Seleccion una ubicación --</option>
+                                                    {
+                                                        ubicaciones.map((ubi) =>{
+                                                            return(
+                                                                <option key={ubi.idUbicacion} value={ubi.idUbicacion}>{ubi.ubicacion}</option>
                                                             )
                                                         })
                                                     }
