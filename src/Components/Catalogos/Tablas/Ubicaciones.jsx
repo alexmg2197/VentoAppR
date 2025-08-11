@@ -40,19 +40,13 @@ export default function Ubicaciones({search, onComponentListChange, reloadFlag, 
         return filteredRows.slice(start, start + rowsPerPage);
     }, [filteredRows, page]);
 
-    // Filtrar los elementos para la página actual
-    const handleChangePage = (event, newPage) => {
-    setCurrentPage(newPage);
-    };
+
 
     // Cambiar el número de filas por página
     const handleChangeRowsPerPage = (event) => {
     setItemsPerPage(parseInt(event.target.value, 10));
     setCurrentPage(0); // Resetea a la primera página al cambiar el número de elementos por página
     };
-
-    // Obtener las filas a mostrar en la página actual
-    const currentItems = filteredRows.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
     const editU = (datos) =>{
         setUbicacion(datos);
@@ -128,7 +122,7 @@ export default function Ubicaciones({search, onComponentListChange, reloadFlag, 
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {currentItems.map((ubi, i) => (
+                            {paginatedData.map((ubi, i) => (
                             <TableRow key={ubi.idUbicacion}>
                                 <TableCell>{i+1}</TableCell>
                                 <TableCell>{`${ubi.ubicacion}`}</TableCell>
@@ -181,8 +175,8 @@ export default function Ubicaciones({search, onComponentListChange, reloadFlag, 
                             page={page}
                             onChange={(_, value) => setPage(value)}
                             color="primary"
-                            siblingCount={2}   // Cuántas páginas mostrar a los lados de la actual
-                            boundaryCount={2}  // Cuántas páginas mostrar al inicio y al final
+                            siblingCount={0}   // Cuántas páginas mostrar a los lados de la actual
+                            boundaryCount={1}  // Cuántas páginas mostrar al inicio y al final
                             showFirstButton    // (opcional) muestra el botón "Primera página"
                             showLastButton 
                         />

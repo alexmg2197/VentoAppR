@@ -11,12 +11,21 @@ export default function ModalAsignarEquipo({modal,equipo}){
     const [colaboradores, setColaboradores] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("usuario"));
+
     useEffect(() => {
-            setLoading(true);
-            fetch(`${API_URL}/api/Colaboradores`)
-            .then((response) => response.json())
-            .then((data) => {setLoading(false); setColaboradores(data)});
-        }, []);
+        setLoading(true);
+        fetch(`${API_URL}/api/Colaboradores`,
+            {
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                }
+            }
+        )
+        .then((response) => response.json())
+        .then((data) => {setLoading(false); setColaboradores(data)});
+    }, []);
 
     const closeModal = () => {
         modal(false); // Ocultar modal
@@ -67,6 +76,11 @@ export default function ModalAsignarEquipo({modal,equipo}){
                                     const response = await axios.patch(`${API_URL}/api/Equipos/AsignarEquipo`,{
                                         colaboradorId: values.colaboradorId,
                                         equipoId: equipo.idEquipo,
+                                    },{
+                                        headers:{
+                                            Authorization: `Bearer ${token}`,
+                                        }
+                                        
                                     })
                                     Swal.fire({
                                         title: "¡Éxito!",
@@ -74,10 +88,8 @@ export default function ModalAsignarEquipo({modal,equipo}){
                                         icon: "success",
                                         confirmButtonText: "OK"
                                     }).then(async () => {
-                                        console.log(response.data)
                                         let resp = response.data
                                         await generarPDF(resp,false);
-                                        console.log(resp)
                                         window.location.reload(); // Recargar la página
                                     });
                                 } catch (error) {

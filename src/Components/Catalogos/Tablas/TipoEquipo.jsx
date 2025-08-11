@@ -128,7 +128,7 @@ export default function TipoEquipo({search, onComponentListChange, reloadFlag, o
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {currentItems.map((equipo, i) => (
+                            {paginatedData.map((equipo, i) => (
                             <TableRow key={equipo.idTipoEquipo}>
                                 <TableCell>{i+1}</TableCell>
                                 <TableCell>{`${equipo.tipoEquipo}`}</TableCell>
@@ -180,8 +180,8 @@ export default function TipoEquipo({search, onComponentListChange, reloadFlag, o
                             page={page}
                             onChange={(_, value) => setPage(value)}
                             color="primary"
-                            siblingCount={2}   // Cuántas páginas mostrar a los lados de la actual
-                            boundaryCount={2}  // Cuántas páginas mostrar al inicio y al final
+                            siblingCount={0}   // Cuántas páginas mostrar a los lados de la actual
+                            boundaryCount={1}  // Cuántas páginas mostrar al inicio y al final
                             showFirstButton    // (opcional) muestra el botón "Primera página"
                             showLastButton 
                         />

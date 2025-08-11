@@ -19,10 +19,17 @@ export default function VerExtensiones(){
     const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
 
     const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem("token");
     
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_URL}/api/Extension`)
+        fetch(`${API_URL}/api/Extension`,
+          {
+          headers:{
+            Authorization: `Bearer ${token}`,
+          }
+        }
+        )
             .then((response) => response.json())
             .then((data) => {setLoading(false); setExtensiones(data)});
     }, []);

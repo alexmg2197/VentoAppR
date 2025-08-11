@@ -152,7 +152,7 @@ import Logo from '../../assets/LOGOVNA.png'
             // doc.text("Área de TI", 145, firmaY + 10);
         
             doc.text("_____________________________", 20, firmaY+50);
-            doc.text("Miguel Angel Quiróz Valdes", 52, firmaY + 55,{align:'center'});
+            doc.text((resp ? values.colaborador.encargadoSistemas : values.responsableFirmante), 52, firmaY + 55,{align:'center'});
             doc.text("Departamento de TI ", 52, firmaY + 60,{align:'center'});
         
             doc.text("_____________________________", 120, firmaY+50);

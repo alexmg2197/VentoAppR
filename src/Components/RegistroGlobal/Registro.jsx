@@ -46,7 +46,6 @@ export default function Registro(){
             Promise.all([fetchUbicaciones, fetchSistema, fetchDepartamentos, fetchProcesadores, fetchDisco, fetchEquipo])
             .catch((error) => console.error("Error al cargar datos:", error))
             .finally(() => {setLoading(false)});
-            console.log(ubicaciones)
         }, []);
     
         const usuario = JSON.parse(localStorage.getItem("usuario"));

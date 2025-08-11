@@ -71,9 +71,7 @@ export default function VerUsers(){
             if (result.isConfirmed) {
                 setLoading(true)
                 try {
-                    console.log('aqui 2')
                     await axios.patch(`${API_URL}/api/Usuario/EliminarUsuario/${datos.idUsuario}`)
-                    console.log('aqui 3')
                     await Swal.fire({
                         title: "¡Éxito!",
                         text: "Usuario eliminado correctamente.",
@@ -140,6 +138,7 @@ export default function VerUsers(){
                             <TableCell sx={{color:'white', fontWeight:'bold'}}>Nombre Completo</TableCell>
                             <TableCell sx={{color:'white', fontWeight:'bold'}}>Usuario</TableCell>
                             <TableCell sx={{color:'white', fontWeight:'bold'}}>Correo</TableCell>
+                            <TableCell sx={{color:'white', fontWeight:'bold'}}>Ubicación</TableCell>
                             <TableCell sx={{color:'white', fontWeight:'bold'}}>Rol</TableCell>
                             <TableCell sx={{color:'white', fontWeight:'bold'}}>Opciones</TableCell>
                         </TableRow>
@@ -151,6 +150,7 @@ export default function VerUsers(){
                                     <TableCell>{usuario.nombreUsuario + ' ' + usuario.apellidoUsuario}</TableCell>
                                     <TableCell>{usuario.usuario}</TableCell>
                                     <TableCell>{usuario.correoUsuario}</TableCell>
+                                    <TableCell>{usuario.ubicacion == null ? "NA" : usuario.ubicacion.ubicacion}</TableCell>
                                     <TableCell>{usuario.rolUsuario}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center justify-center gap-x-2">

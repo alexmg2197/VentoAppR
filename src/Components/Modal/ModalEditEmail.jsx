@@ -13,7 +13,6 @@ export default function ModalEditEmail({modal, correo,isEdit}){
 
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-    console.log(correo)
     useEffect(() => {
         setLoading(true);
         
@@ -88,7 +87,6 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                             return errors
                         }}
                         onSubmit={async(values, { setSubmitting}) => {
-                            console.log(values)
                             setLoading(true)
 
                             if(!isEdit){

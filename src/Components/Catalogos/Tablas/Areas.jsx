@@ -19,10 +19,18 @@ export default function Areas({search, onComponentListChange, reloadFlag, onRefr
     const [page, setPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState(''); // Estado para el término de búsqueda
         const rowsPerPage = 5;
+
+    const token = localStorage.getItem("token");
     
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_URL}/api/Areas`)
+        fetch(`${API_URL}/api/Areas`,
+            {
+                headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+            }
+        )
             .then((response) => response.json())
             .then((data) => {setLoading(false); setAreas(data)});
     }, [reloadFlag]);
@@ -173,8 +181,8 @@ export default function Areas({search, onComponentListChange, reloadFlag, onRefr
                             page={page}
                             onChange={(_, value) => setPage(value)}
                             color="primary"
-                            siblingCount={2}   // Cuántas páginas mostrar a los lados de la actual
-                            boundaryCount={2}  // Cuántas páginas mostrar al inicio y al final
+                            siblingCount={0}   // Cuántas páginas mostrar a los lados de la actual
+                            boundaryCount={1}  // Cuántas páginas mostrar al inicio y al final
                             showFirstButton    // (opcional) muestra el botón "Primera página"
                             showLastButton 
                         />

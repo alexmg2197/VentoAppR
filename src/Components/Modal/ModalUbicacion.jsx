@@ -58,7 +58,6 @@ export default function ModalAddArea({modal, ubicacion,isEdit, onRefresh={onRefr
                                 return errors
                             }}
                             onSubmit={async(values, { setSubmitting}) => {
-                                console.log(values)
                                 setLoading(true)
     
                                 if(!isEdit){
