@@ -13,7 +13,7 @@ import VerExtensiones from './Components/Extensiones/VerExtensiones'
 import Login from './Components/Login/Login';
 import ResetPassword from './Components/ResetPassword/ResetPassword'
 import Catalogos from './Components/Catalogos/Catalogos';
-import Logs from './Components/Logs/Logs';
+import Logs from './Components/Logs';
 import ProtectedRoute from './Components/ProtectedRoute';
 import Unauthorized from './Components/unauthorized';
 import NotFound from './NotFound';
