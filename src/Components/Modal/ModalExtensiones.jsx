@@ -13,6 +13,7 @@ export default function ModalExtensiones({modal, extension,isEdit}){
     const [colaboradores,setColaboradores] = useState([]);
 
     const usuario = JSON.parse(localStorage.getItem("usuario"));
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         setLoading(true);
@@ -96,6 +97,10 @@ export default function ModalExtensiones({modal, extension,isEdit}){
                                         Extension: values.extension,
                                         Telefono: values.telefono,
                                         ColaboradorId: values.colaboradorid
+                                    },{
+                                        headers:{
+                                            Authorization: `Bearer ${token}`,
+                                        }
                                     });
                                     Swal.fire({
                                         title: "¡Éxito!",
@@ -119,6 +124,10 @@ export default function ModalExtensiones({modal, extension,isEdit}){
                                         Extension: values.extension,
                                         Telefono: values.telefono,
                                         ColaboradorId: values.colaboradorid
+                                    },{
+                                        headers:{
+                                            Authorization: `Bearer ${token}`,
+                                        }
                                     })
                                     
                                     Swal.fire({

@@ -84,36 +84,40 @@ export default function ModalEditColaborador({modal, colaborador}){
                                 return errors
                             }}
                             enableReinitialize={true}
-                            onSubmit={(values, { setSubmitting}) => {
+                            onSubmit={async(values, { setSubmitting}) => {
                                 setLoading(true)
 
-                               try {
-                                axios.patch(`${API_URL}/api/Colaboradores/EditarColaborador/${values.idColaborador}`,{
-                                    nombreColaborador: values.nombreColaborador,
-                                    apellidoColaborador: values.apellidosColaborador,
-                                    puesto: values.puesto,
-                                    areaId: values.area,
-                                    ubicacionId: values.ubicacion,
-                                })
-                                Swal.fire({
-                                        title: "¡Éxito!",
-                                        text: "Colaborador guardado correctamente.",
-                                        icon: "success",
-                                        confirmButtonText: "OK"
-                                    }).then(() => {
-                                        window.location.reload(); // Recargar la página
-                                    });
-                               } catch (error) {
-                                    Swal.fire({
-                                        title: "Error",
-                                        text: "Hubo un error al registrar los datos",
-                                        icon: "error",
-                                        confirmButtonText: "OK"
+                                try {
+                                    await axios.patch(`${API_URL}/api/Colaboradores/EditarColaborador/${values.idColaborador}`,{
+                                        nombreColaborador: values.nombreColaborador.toUpperCase(),
+                                        apellidoColaborador: values.apellidosColaborador.toUpperCase(),
+                                        puesto: values.puesto.toUpperCase(),
+                                        areaId: values.area,
+                                        ubicacionId: values.ubicacion,
+                                    },{
+                                        headers: {
+                                            Authorization: `Bearer ${token}`,
+                                        }
                                     })
-                               } finally {
-                                setLoading(false);
-                                setSubmitting(false);
-                            }
+                                    await Swal.fire({
+                                            title: "¡Éxito!",
+                                            text: "Colaborador guardado correctamente.",
+                                            icon: "success",
+                                            confirmButtonText: "OK"
+                                        }).then(() => {
+                                            window.location.reload(); // Recargar la página
+                                        });
+                                } catch (error) {
+                                        Swal.fire({
+                                            title: "Error",
+                                            text: "Hubo un error al registrar los datos",
+                                            icon: "error",
+                                            confirmButtonText: "OK"
+                                        })
+                                } finally {
+                                    setLoading(false);
+                                    setSubmitting(false);
+                                }
                             }}>
                                 {
                                 ({

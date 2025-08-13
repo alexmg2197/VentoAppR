@@ -12,6 +12,8 @@ export default function ModalUploadR({modal,responsiva}){
     const [file, setFile] = useState("Ningun Archivo Seleccionado");
     const [loading, setLoading] = useState(false);
 
+    const token = localStorage.getItem("token");
+
     const manejarArchivo = (event) => {
         const f = event.target.files[0]
         setArchivo(event.target.files[0]);
@@ -78,6 +80,7 @@ export default function ModalUploadR({modal,responsiva}){
                                             {
                                               headers: {
                                                 "Content-Type": "multipart/form-data",
+                                                Authorization: `Bearer ${token}`,
                                               },
                                             }
                                           );
@@ -97,6 +100,7 @@ export default function ModalUploadR({modal,responsiva}){
                                             {
                                               headers: {
                                                 "Content-Type": "multipart/form-data",
+                                                Authorization: `Bearer ${token}`,
                                               },
                                             }
                                           );
@@ -117,6 +121,7 @@ export default function ModalUploadR({modal,responsiva}){
                                             {
                                               headers: {
                                                 "Content-Type": "multipart/form-data",
+                                                Authorization: `Bearer ${token}`,
                                               },
                                             }
                                           );

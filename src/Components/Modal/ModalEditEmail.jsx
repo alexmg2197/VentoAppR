@@ -12,6 +12,7 @@ export default function ModalEditEmail({modal, correo,isEdit}){
     const [colaboradores,setColaboradores] = useState([]);
 
     const usuario = JSON.parse(localStorage.getItem("usuario"));
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         setLoading(true);
@@ -95,6 +96,10 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                                         Correo: values.correo,
                                         ContraseñaCorreo: values.contrasena,
                                         ColaboradorId: values.colaboradorid
+                                    },{
+                                        headers:{
+                                            Authorization: `Bearer ${token}`,
+                                        }
                                     });
                                     Swal.fire({
                                         title: "¡Éxito!",
@@ -118,6 +123,10 @@ export default function ModalEditEmail({modal, correo,isEdit}){
                                         Correo: values.correo,
                                         ContraseñaCorreo: values.contrasena,
                                         ColaboradorId: values.colaboradorid
+                                    },{
+                                        headers:{
+                                            Authorization: `Bearer ${token}`,
+                                        }
                                     })
                                     
                                     Swal.fire({

@@ -83,18 +83,22 @@ export default function ModalNewColaborador({modal}){
                                 return errors
                             }}
                             enableReinitialize={true}
-                            onSubmit={(values, { setSubmitting}) => {
+                            onSubmit={async(values, { setSubmitting}) => {
                                 setLoading(true)
 
                                try {
-                                axios.post(`${API_URL}/api/Colaboradores/GuardarColaborador`,{
-                                    nombreColaborador: values.nombreColaborador,
-                                    apellidoColaborador: values.apellidosColaborador,
-                                    puesto: values.puesto,
+                                await axios.post(`${API_URL}/api/Colaboradores/GuardarColaborador`,{
+                                    nombreColaborador: values.nombreColaborador.toUpperCase(),
+                                    apellidoColaborador: values.apellidosColaborador.toUpperCase(),
+                                    puesto: values.puesto.toUpperCase(),
                                     areaId: values.area,
                                     ubicacionId: values.ubicacion,
-                                })
-                                Swal.fire({
+                                },  {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`,
+                                        }
+                                    })
+                                await Swal.fire({
                                         title: "¡Éxito!",
                                         text: "Colaborador guardado correctamente.",
                                         icon: "success",

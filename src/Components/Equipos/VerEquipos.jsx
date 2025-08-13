@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, TextField,InputAdornment } from "@mui/material";
 import ModalEditEquipo from "../Modal/ModalEditEquipo";
 import ModalAsignarEquipo from "../Modal/ModalAsignarEquipo";
+import ModalGarantia from "../Modal/ModalGarantia";
 import Loader from "../Loader";
 import axios from "axios";
 
@@ -15,6 +16,7 @@ export default function VerEquipos(){
         const [ismodal, setIsModal] = useState(false);
         const [modalEdit, setModalEdit] = useState(false);
         const [modalAsignar, setModalAsignar] = useState(false);
+        const [modalGarantia, setModalGarantia] = useState(false);
         const [loading, setLoading] = useState(false);
         const [currentPage, setCurrentPage] = useState(0); // Página actual
         const [itemsPerPage, setItemsPerPage] = useState(5); // Elementos por página
@@ -38,11 +40,14 @@ export default function VerEquipos(){
 
          // Filtrar las filas de la tabla según el término de búsqueda
           // Función para aplicar el filtro y devolver las filas filtradas
-          const filteredRows = equipos.filter((r) => 
-            ["usuario", "ubicacion", "activoFijo"]
-            .some((campo) =>
-            r[campo]?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
-          );
+          const filteredRows = equipos.filter(item => 
+            item.activoFijo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.colaboradorNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.estado?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.sistemaOperativo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.marcaEquipo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.modeloEquipo?.toLowerCase().includes(searchTerm.toLowerCase()) 
+    );
           // Definir el total de páginas
           const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
         
@@ -80,9 +85,15 @@ export default function VerEquipos(){
             if (result.isConfirmed) {
               setLoading(true);
               try {
-                const response = await axios.delete(`${API_URL}/api/Equipos/EliminarEquipo/${datos.idEquipo}`);
+                const response = await axios.delete(`${API_URL}/api/Equipos/EliminarEquipo/${datos.idEquipo}`,
+                  {
+                  headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+                );
                 setLoading(false);
-                  Swal.fire({
+                  await Swal.fire({
                     title: "Eliminada",
                     text: response.data.message,
                     icon: "success"
@@ -115,6 +126,11 @@ export default function VerEquipos(){
             setEquipo(datos);
           }
 
+          const garantia = (datos) => {
+            setModalGarantia(true)
+            setEquipo(datos);
+          }
+
     return(
             <div className="container mx-auto pb-6">
               {
@@ -122,6 +138,9 @@ export default function VerEquipos(){
               }
               {
                 modalAsignar && <ModalAsignarEquipo modal={setModalAsignar} equipo={equipo} />
+              }
+              {
+                modalGarantia && <ModalGarantia modal={setModalGarantia} equipo={equipo} />
               }
               <div className="bg-three text-white py-3 px-4 rounded-t-xl flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-center flex-1">Equipos de computo</h2>
@@ -155,6 +174,7 @@ export default function VerEquipos(){
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>Equipo</TableCell>
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>Marca</TableCell>
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>No de Serie</TableCell>
+                    <TableCell sx={{color:'white', fontWeight:'bold' }}>Estado</TableCell>
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>Procesador</TableCell>
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>RAM</TableCell>
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>Almacenamiento</TableCell>
@@ -167,7 +187,7 @@ export default function VerEquipos(){
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>Marca Mouse</TableCell>
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>Diadema</TableCell>
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>Marca Diadema</TableCell>
-                    <TableCell sx={{color:'white', fontWeight:'bold' }}>Estado</TableCell>
+                    <TableCell sx={{color:'white', fontWeight:'bold' }}>Garantia</TableCell>
                     <TableCell sx={{color:'white', fontWeight:'bold' }}>Opciones</TableCell>
                   </TableRow>
                 </TableHead>
@@ -177,6 +197,12 @@ export default function VerEquipos(){
                         <TableCell>{equipo.tipoEquipo}</TableCell>
                         <TableCell>{equipo.marcaEquipo}</TableCell>
                         <TableCell>{equipo.nSerie}</TableCell>
+                        <TableCell>
+                          <div className={`flex items-center space-x-2 ${equipo.estado === 'Disponible' ? 'bg-emerald-100' : 'bg-blue-100'}  dark:bg-emerald-900/20 px-3 py-1 rounded-full`}>
+                              <span className={`w-2 h-2 ${equipo.estado === 'Disponible' ? 'bg-emerald-500' :'bg-blue-500'} rounded-full animate-pulse`} />
+                              <span className={`text-sm ${equipo.estado === 'Disponible' ? 'text-emerald-600' :'text-blue-600'} dark:text-emerald-400 font-medium`}>{equipo.estado}</span>
+                          </div>
+                        </TableCell>
                         <TableCell>{equipo.procesador}</TableCell>
                         <TableCell>{equipo.ram}</TableCell>
                         <TableCell>{equipo.almacenamientos?.map((alm, idx) => (
@@ -191,7 +217,12 @@ export default function VerEquipos(){
                         <TableCell>{equipo.mouse ? equipo.marcaMouse : 'N/A'}</TableCell>
                         <TableCell>{equipo.diadema ? 'Si' : 'No'}</TableCell>
                         <TableCell>{equipo.diadema ? equipo.marcaDiadema : 'N/A'}</TableCell>
-                        <TableCell>{equipo.estado}</TableCell>
+                        <TableCell>
+                          <div className={`flex items-center space-x-2 ${equipo.garantia ? 'bg-green-100' : ((!equipo.garantia && equipo.fechaGarantia === null) ? 'bg-yellow-100' : 'bg-red-100')}  dark:bg-emerald-900/20 px-3 py-1 rounded-full`}>
+                              <span className={`w-2 h-2 ${equipo.garantia ? 'bg-green-500' : ((!equipo.garantia && equipo.fechaGarantia === null) ? 'bg-yellow-500' : 'bg-red-500')} rounded-full animate-pulse`} />
+                              <span className={`text-sm ${equipo.garantia ? 'text-green-600' : ((!equipo.garantia && equipo.fechaGarantia === null) ? 'text-yellow-600' : 'text-red-600')} dark:text-emerald-400 font-medium`}>{equipo.garantia ? 'Activa' : ((!equipo.garantia && equipo.fechaGarantia === null) ? 'Sin Capturar' : 'Inactiva') }</span>
+                          </div>
+                        </TableCell>
                         <TableCell>
                           {
                             (equipo.colaboradorNombre == null || equipo.colaboradorNombre == ' ' || equipo.colaboradorNombre == '') ?
@@ -221,19 +252,43 @@ export default function VerEquipos(){
                                         </button> 
                                       )
                                     }
+                                    {
+                                    (!equipo.garantia && equipo.fechaGarantia === null) && (
+                                      <div className="flex flex-col items-center justify-center gap-y-1">
+                                        <button onClick={() => { garantia(equipo) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-fuchsia-600 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                            <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M4.75 3A2.75 2.75 0 0 0 2 5.75V11a5 5 0 0 1 8 6v1h9.25A2.75 2.75 0 0 0 22 15.25v-9.5A2.75 2.75 0 0 0 19.25 3zm2 4h10.5a.75.75 0 0 1 0 1.5H6.75a.75.75 0 0 1 0-1.5M12 12.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75M6 10a4 4 0 1 0 0 8.001A4 4 0 0 0 6 10m3 8.001c-.835.628-1.874 1-3 1a4.98 4.98 0 0 1-3-.998v3.246c0 .57.605.92 1.09.669l.09-.055L6 20.592l1.82 1.272a.75.75 0 0 0 1.172-.51L9 21.249z"/></svg>
+                                                <span>Garantia</span>
+                                            </div>
+                                        </button> 
+                                      </div>
+                                      )
+                                    }
                                 </div>
-                              // <>
-                              //   <button onClick={()=>{asignarE(equipo)}} title="Asignar Equipo" className='icon-button p-1'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="currentColor" d="M7.5 14.4c-.8-.8-.8-2 0-2.8s2-.8 2.8 0l.6.6l1.9-2.1c-.7-.4-1.3-.4-2-.4c-.7-.1-1.4-.3-1.4-.9s.8-.4 1.4-1.5c0 0 2.7-7.3-2.9-7.3c-5.5 0-2.8 7.3-2.8 7.3c.6 1 1.4.8 1.4 1.5s-.7.7-1.4.8C4 9.7 3 9.5 2 11.3c-.6 1.1-.9 4.7-.9 4.7h8zm5.3 1.6h2.1s-.1-.9-.2-2z"/><path fill="currentColor" d="M11 16c-.3 0-.5-.1-.7-.3l-2-2c-.4-.4-.4-1 0-1.4s1-.4 1.4 0l1.3 1.3l3.3-3.6c.4-.4 1-.4 1.4-.1c.4.4.4 1 .1 1.4l-4 4.3c-.3.3-.5.4-.8.4"/></svg></button>
-                              //   <button onClick={()=>{editE(equipo)}} title="Editar Equipo" className='icon-button p-1'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="m2.292 13.36l4.523 4.756L.5 20zM12.705 2.412l4.522 4.755L7.266 17.64l-4.523-4.754zM16.142.348l2.976 3.129c.807.848.086 1.613.086 1.613l-1.521 1.6l-4.524-4.757L14.68.334l.02-.019c.119-.112.776-.668 1.443.033"/></svg></button>
-                              //   <button onClick={()=>{deleteE(equipo)}} title="Eliminar Equipo" className='icon-button p-1'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button>
-                              // </>
                             ):(
                               <>
-                                {/* <button onClick={()=>{editE(equipo)}} className='icon-button p-1'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="m2.292 13.36l4.523 4.756L.5 20zM12.705 2.412l4.522 4.755L7.266 17.64l-4.523-4.754zM16.142.348l2.976 3.129c.807.848.086 1.613.086 1.613l-1.521 1.6l-4.524-4.757L14.68.334l.02-.019c.119-.112.776-.668 1.443.033"/></svg></button>
-                                <button onClick={()=>{deleteE(equipo)}} className='icon-button p-1'><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><defs><mask id="IconifyId19491a687d6412eb80"><g fill="none" strokeLinejoin="round" strokeWidth="4"><path fill="#fff" stroke="#fff" d="M9 10v34h30V10z"/><path stroke="#000" strokeLinecap="round" d="M20 20v13m8-13v13"/><path stroke="#fff" strokeLinecap="round" d="M4 10h40"/><path fill="#fff" stroke="#fff" d="m16 10l3.289-6h9.488L32 10z"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#IconifyId19491a687d6412eb80)"/></svg></button> */}
+                              {
+                                (!equipo.garantia && equipo.fechaGarantia === null) && (
+                                  <div className="flex flex-col items-center justify-center gap-y-1">
+                                    <button onClick={() => { garantia(equipo) }} className="group relative flex items-center justify-start w-fit px-3 py-1 bg-fuchsia-600 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                                        <div className="flex items-center space-x-1 text-white text-xs font-semibold">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M4.75 3A2.75 2.75 0 0 0 2 5.75V11a5 5 0 0 1 8 6v1h9.25A2.75 2.75 0 0 0 22 15.25v-9.5A2.75 2.75 0 0 0 19.25 3zm2 4h10.5a.75.75 0 0 1 0 1.5H6.75a.75.75 0 0 1 0-1.5M12 12.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75M6 10a4 4 0 1 0 0 8.001A4 4 0 0 0 6 10m3 8.001c-.835.628-1.874 1-3 1a4.98 4.98 0 0 1-3-.998v3.246c0 .57.605.92 1.09.669l.09-.055L6 20.592l1.82 1.272a.75.75 0 0 0 1.172-.51L9 21.249z"/></svg>
+                                            <span>Garantia</span>
+                                        </div>
+                                    </button> 
+                                  </div>
+                                )
+                              }
                               </>
                             )
                           }
+                          {currentItems.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={3} align="center">
+                                    No hay resultados.
+                                </TableCell>
+                            </TableRow>
+                          )}
                         </TableCell>
                     </TableRow>
                   ))}

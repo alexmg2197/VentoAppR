@@ -77,7 +77,13 @@ export default function VerCorreos(){
     }).then(async(result) => {
       if (result.isConfirmed) {
         try {
-          await axios.patch(`${API_URL}/api/Correos/EliminarCorreo/${datos.idCorreo}`)
+          await axios.patch(`${API_URL}/api/Correos/EliminarCorreo/${datos.idCorreo}`,{},
+            {
+              headers:{
+                Authorization: `Bearer ${token}`,
+              }
+            }
+          )
 
           await Swal.fire({
                 title: "Eliminado",
