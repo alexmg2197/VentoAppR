@@ -57,7 +57,7 @@ export default function Header({  toggleSidebar, setIsAuthenticated,sidebarOpen}
   };
 
   return (
-    <header className="h-16 bg-gray-200 text-one px-4 flex items-center justify-between shadow-md">
+    <header className="h-16 bg-gray-200 max-[431px]:bg-black text-one px-4 flex items-center justify-between shadow-md">
       {
         modal && <ModalPerfil modal={setModal} usuario={usuario}/>
       }
@@ -173,6 +173,11 @@ export default function Header({  toggleSidebar, setIsAuthenticated,sidebarOpen}
                         <Disclosure as="div" className="-mx-3">
                             <DisclosureButton as="a" onClick={() => setMobileMenuOpen(false)} href="#Catalogos" className=" group flex w-full items-center justify-center rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-50 hover:bg-gray-50 hover:text-black">
                               Catalogos
+                            </DisclosureButton>
+                          </Disclosure>
+                        <Disclosure as="div" className="-mx-3">
+                            <DisclosureButton as="a" onClick={() => setMobileMenuOpen(false)} href="#Logs" className=" group flex w-full items-center justify-center rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-50 hover:bg-gray-50 hover:text-black">
+                              Logs
                             </DisclosureButton>
                           </Disclosure>
                       </>

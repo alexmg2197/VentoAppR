@@ -14,6 +14,8 @@ export default function ModalEditEquipo({modal,equipo, isEdit}){
     const [disco, setDisco] = useState([]);
     const [equipos, setEquipos] = useState([]);
 
+    const token = localStorage.getItem("token");
+
     useEffect(() => {
             setLoading(true);
         
@@ -144,30 +146,34 @@ export default function ModalEditEquipo({modal,equipo, isEdit}){
                                     try {
                                         const response = await axios.post(`${API_URL}/api/Equipos/GuardarEquipo`,{
                                             tipoEquipoId: values.tipoEquipo,
-                                            marcaEquipo: values.marca,
-                                            modeloEquipo:values.modelo,
+                                            marcaEquipo: values.marca.toUpperCase(),
+                                            modeloEquipo:values.modelo.toUpperCase(),
                                             sistemaOperativoId: values.sistemaOperativo,
-                                            nSerie: values.noSerie,
+                                            nSerie: values.noSerie.toUpperCase(),
                                             procesadorId: values.procesador,
-                                            ram: values.ram,
-                                            activoFijo: values.activofijo,
+                                            ram: values.ram.toUpperCase(),
+                                            activoFijo: values.activofijo.toUpperCase(),
                                             monitor: values.monitor,
-                                            marcaMonitor: values.marcaMonitor,
+                                            marcaMonitor: values.marcaMonitor?.toUpperCase(),
                                             teclado: values.teclado,
-                                            marcaTeclado: values.marcaTeclado,
+                                            marcaTeclado: values.marcaTeclado?.toUpperCase(),
                                             mouse: values.mouse,
-                                            marcaMouse: values.marcaMouse,
+                                            marcaMouse: values.marcaMouse?.toUpperCase(),
                                             diadema: values.diadema,
-                                            marcaDiadema: values.marcaDiadema,
-                                            observaciones: values.observaciones,
+                                            marcaDiadema: values.marcaDiadema?.toUpperCase(),
+                                            observaciones: values.observaciones?.toUpperCase(),
                                             almacenamientos: [
                                                 values.ssd && values.ssdSize ? { almacenamientoId: values.ssdSize, tipo: "SSD" } : null,
                                                 values.hdd && values.hddSize ? { almacenamientoId: values.hddSize, tipo: "HDD" } : null,
                                                 values.m2 && values.m2Size ? { almacenamientoId: values.m2Size, tipo: "M2" } : null,
                                             ].filter(Boolean) // Elimina valores `null`
+                                        },{
+                                            headers: {
+                                                    Authorization: `Bearer ${token}`,
+                                                }
                                         })
                                         
-                                        Swal.fire({
+                                        await Swal.fire({
                                             title: "¡Éxito!",
                                             text: response.data.message,
                                             icon: "success",
@@ -190,27 +196,31 @@ export default function ModalEditEquipo({modal,equipo, isEdit}){
                                     try {
                                         const response = await axios.patch(`${API_URL}/api/Equipos/EditarEquipo/${values.idEquipo}`,{
                                             tipoEquipoId: values.tipoEquipo,
-                                            marcaEquipo: values.marca,
-                                            modeloEquipo:values.modelo,
+                                            marcaEquipo: values.marca.toUpperCase(),
+                                            modeloEquipo:values.modelo.toUpperCase(),
                                             sistemaOperativoId: values.sistemaOperativo,
-                                            nSerie: values.noSerie,
+                                            nSerie: values.noSerie.toUpperCase(),
                                             procesadorId: values.procesador,
-                                            ram: values.ram,
-                                            activoFijo: values.activofijo,
+                                            ram: values.ram.toUpperCase(),
+                                            activoFijo: values.activofijo.toUpperCase(),
                                             monitor: values.monitor,
-                                            marcaMonitor: values.marcaMonitor,
+                                            marcaMonitor: values.marcaMonitor?.toUpperCase(),
                                             teclado: values.teclado,
-                                            marcaTeclado: values.marcaTeclado,
+                                            marcaTeclado: values.marcaTeclado?.toUpperCase(),
                                             mouse: values.mouse,
-                                            marcaMouse: values.marcaMouse,
+                                            marcaMouse: values.marcaMouse?.toUpperCase(),
                                             diadema: values.diadema,
-                                            marcaDiadema: values.marcaDiadema,
-                                            observaciones: values.observaciones,
+                                            marcaDiadema: values.marcaDiadema?.toUpperCase(),
+                                            observaciones: values.observaciones?.toUpperCase(),
                                             almacenamientos: [
                                                 values.ssd && values.ssdSize ? { almacenamientoId: values.ssdSize, tipo: "SSD" } : null,
                                                 values.hdd && values.hddSize ? { almacenamientoId: values.hddSize, tipo: "HDD" } : null,
                                                 values.m2 && values.m2Size ? { almacenamientoId: values.m2Size, tipo: "M2" } : null,
                                             ].filter(Boolean) // Elimina valores `null`
+                                        },{
+                                            headers: {
+                                                    Authorization: `Bearer ${token}`,
+                                                }
                                         })
                                         
                                         Swal.fire({

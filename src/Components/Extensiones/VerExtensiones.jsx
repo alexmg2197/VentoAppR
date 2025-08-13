@@ -79,7 +79,13 @@ export default function VerExtensiones(){
         }).then(async (result) => {
           if (result.isConfirmed) {
             try {
-              await axios.patch(`${API_URL}/api/Extension/EliminarExtension/${datos.idExtension}`)
+              await axios.patch(`${API_URL}/api/Extension/EliminarExtension/${datos.idExtension}`,{},
+                {
+                  headers:{
+                    Authorization: `Bearer ${token}`,
+                  }
+                }
+              )
     
               await Swal.fire({
                     title: "Eliminado",

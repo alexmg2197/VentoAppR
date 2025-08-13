@@ -91,7 +91,13 @@ export default function VerResponsiva() {
         setLoading(true);
 
         try{
-          const res = await axios.patch(`${API_URL}/api/Responsivas/EliminarResponsiva/${datos.idResponsiva}`)
+          const res = await axios.patch(`${API_URL}/api/Responsivas/EliminarResponsiva/${datos.idResponsiva}`,{},
+            {
+          headers:{
+            Authorization: `Bearer ${token}`,
+          }
+        }
+          )
           await Swal.fire({
               title: "¡Éxito!",
               text: "Responsiva eliminada correctamente.",
@@ -170,6 +176,10 @@ export default function VerResponsiva() {
           axios.post(`${API_URL}/api/Responsivas/DevolverEquipo`, {
             ResponsivaAsignacionId:datos.idResponsiva,
             Observaciones: result.value,
+          },{
+            headers:{
+                    Authorization: `Bearer ${token}`,
+                }
           })
           .then(async(response) => {
             Swal.fire("¡Éxito!", "Equipo devuelto correctamente.", "success");

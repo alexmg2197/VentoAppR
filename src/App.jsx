@@ -13,6 +13,7 @@ import VerExtensiones from './Components/Extensiones/VerExtensiones'
 import Login from './Components/Login/Login';
 import ResetPassword from './Components/ResetPassword/ResetPassword'
 import Catalogos from './Components/Catalogos/Catalogos';
+import Logs from './Components/Logs/Logs';
 import ProtectedRoute from './Components/ProtectedRoute';
 import Unauthorized from './Components/unauthorized';
 import NotFound from './NotFound';
@@ -58,6 +59,7 @@ function App() {
                 <Route exact path="/VerColaboradores" element={<VerColaboradores />} />
                 <Route exact path="/VerExtensiones" element={<VerExtensiones />} />
                 <Route exact path="/Catalogos" element={<ProtectedRoute allowedRoles={["Admin"]}><Catalogos /></ProtectedRoute>} />
+                <Route exact path="/Logs" element={<ProtectedRoute allowedRoles={["Admin"]}><Logs /></ProtectedRoute>} />
                   {/* Ruta 404 para rutas protegidas */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

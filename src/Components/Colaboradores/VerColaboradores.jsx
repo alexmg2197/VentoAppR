@@ -77,12 +77,17 @@ export default function VerColaboradores(){
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Si, Eliminar",
                 cancelButtonText: "Cancelar"
-                }).then((result) => {
+                }).then(async(result) => {
                 if (result.isConfirmed) {
                     setLoading(true);
                     try {
-                        axios.patch(`${API_URL}/api/Colaboradores/EliminarColaborador/${datos.idColaborador}`)
-                        Swal.fire({
+                        await axios.patch(`${API_URL}/api/Colaboradores/EliminarColaborador/${datos.idColaborador}`,{},
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                }
+                            });
+                        await Swal.fire({
                                 title: "¡Éxito!",
                                 text: "Colaborador eliminado correctamente.",
                                 icon: "success",
@@ -182,6 +187,13 @@ export default function VerColaboradores(){
                                 </TableCell>
                             </TableRow>
                         ))}
+                        {currentItems.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={3} align="center">
+                                    No hay resultados.
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

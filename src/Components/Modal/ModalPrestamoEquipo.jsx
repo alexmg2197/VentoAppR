@@ -86,6 +86,10 @@ export default function ModalPrestamoEquipo({modal}) {
                                     const response = await axios.patch(`${API_URL}/api/Responsivas/PrestamoEquipo`,{
                                         colaboradorId: values.colaboradorId,
                                         equipoId: values.equipos,
+                                    },{
+                                        headers:{
+                                            Authorization: `Bearer ${token}`,
+                                        }
                                     })
                                     Swal.fire({
                                         title: "¡Éxito!",

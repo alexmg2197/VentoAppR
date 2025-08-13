@@ -20,6 +20,7 @@ export default function Inicio() {
     const [countResponsivaPorUbi, setCountResponsivaPorUbi] = useState([]);
     const [countCorreoPorUbi, setCountCorreoPorUbi] = useState([]);
     const [countExtensionPorUbi, setCountExtensionPorUbi] = useState([]);
+    const [actividades, setActividades] = useState([]);
     const [users, setUsers] = useState([]);
 
     // const users = [{name:'AlexM',email:'',storage:'' }]
@@ -96,6 +97,16 @@ export default function Inicio() {
             )
                 .then((response) => response.json())
                 .then((data) =>  setUsers(data));
+
+            const fetchActividades = fetch(`${API_URL}/api/Logs/LogsPorUbicacion`,
+                {
+                    headers:{
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            )
+                .then((response) => response.json())
+                .then((data) =>  setActividades(data));
     
             const fetchResponsivasCount = fetch(`${API_URL}/api/Responsivas/ContarResponsivas`,
                 {
@@ -168,8 +179,7 @@ export default function Inicio() {
         <h2 className='text-center xl:text-4xl text-3xl font-bold pb-4 bg-gradient-to-r from-black to-blue-600 bg-clip-text text-transparent'>{`Bienvenido Vento App TI ${user.nombreUbicacion}`} </h2>
             {
                 (user.rol === 'Analista' || user.rol === 'Supervisor') && (
-                    <article className="p-1.5 hover:animate-background rounded-xl bg-gradient-to-r from-blue-500 to-cyan-800 shadow-xl transition hover:bg-[length:400%_400%] hover:shadow-sm hover:[animation-duration:_4s]">
-                        <div className="w-auto rounded-[10px] bg-gray-200 sm:p-6">
+
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 p-4">
                                 <div className="bg-red-600 text-white rounded-lg shadow-md overflow-hidden">
                                 {/* Contenido Principal */}
@@ -278,8 +288,6 @@ export default function Inicio() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </article>
                 )
             }
             {
@@ -516,8 +524,8 @@ export default function Inicio() {
             }
             {
                 user.rol != 'Admin' && (
-                    <article className="p-1.5 mt-6 hover:animate-background rounded-xl bg-gradient-to-r from-blue-500 to-cyan-800 shadow-xl transition hover:bg-[length:400%_400%] hover:shadow-sm hover:[animation-duration:_4s]">
-                        <div className="w-auto rounded-[10px] bg-gray-200 sm:p-6">
+                    <article className="p-1.5 mt-6 mb-6 hover:animate-background rounded-xl bg-gradient-to-r from-blue-500 to-cyan-800 shadow-xl transition hover:bg-[length:400%_400%] hover:shadow-sm hover:[animation-duration:_4s]">
+                        <div className="w-auto rounded-[10px] bg-gray-300 sm:p-6">
                                         <div className="flex flex-wrap items-center justify-between mb-1 -m-2">
                                             <div className="w-auto p-2">
                                                 <h2 className="text-lg font-semibold text-gray-800">Usuarios</h2>
@@ -560,6 +568,68 @@ export default function Inicio() {
                                         </TableContainer>
                         </div>
                     </article>
+                )
+            }
+            {
+                user.rol != 'Admin' && (
+                        <div className="relative mx-[10px] h-[400px] border-4 border-black rounded-2xl bg-gray-300" style={{ boxShadow: '5px 5px 2.5px 6px rgb(209, 218, 218)' }}>
+                            {/* Pantalla interna */}
+                            <div className="absolute inset-0 flex flex-col justify-start p-4 overflow-y-auto">
+                                <div className="flex flex-wrap items-center justify-between mb-1 -m-2">
+                                            <div className="w-auto p-2">
+                                                <h2 className="text-lg font-semibold text-gray-800">Actividad</h2>
+                                            </div>
+                                        </div>
+                                        <TableContainer component={Paper}>
+                                            <Table className='bg-gray-200'>
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell sx={{fontWeight:'bold', textAlign:'center'}}>Fecha</TableCell>
+                                                        <TableCell sx={{fontWeight:'bold', textAlign:'center'}}>Tabla</TableCell>
+                                                        <TableCell sx={{fontWeight:'bold', textAlign:'center'}}>Accion</TableCell>
+                                                        <TableCell sx={{fontWeight:'bold', textAlign:'center'}}>Usuario</TableCell>
+                                                        <TableCell sx={{fontWeight:'bold', textAlign:'center'}}>Registro</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {
+                                                        actividades.map((log, index) =>(
+                                                            <TableRow key={log.idLog}>
+                                                                <TableCell sx={{textAlign:'center'}}>{new Date(log.fecha).toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" })}</TableCell>
+                                                                <TableCell sx={{textAlign:'center'}}>{log.tabla}</TableCell>
+                                                                <TableCell sx={{textAlign:'center'}}>{log.accion}</TableCell>
+                                                                <TableCell sx={{textAlign:'center'}}>{log.usuarioNombre}</TableCell>
+                                                                <TableCell sx={{textAlign:'center'}}>
+                                                                    {
+                                                                        log.tabla === "Equipos" ? log.registroDatos?.activoFijo :
+                                                                        log.tabla === "Correos" ? log.registroDatos?.correo :
+                                                                        log.tabla === "Usuarios" ? log.registroDatos?.nombreCompleto :
+                                                                        log.tabla === "Colaboradores" ? log.registroDatos?.nombreCompleto :
+                                                                        log.tabla === "Areas" ? log.registroDatos?.nombreArea :
+                                                                        log.tabla === "Extensiones" ? log.registroDatos?.extension :
+                                                                        log.tabla === "Ubicaciones" ? log.registroDatos?.ubicacion :
+                                                                        log.tabla === "Responsivas" ? log.registroDatos?.responsiva :
+                                                                        ""
+                                                                    }
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))
+                                                    }
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+                            </div>
+
+                            {/* Notch */}
+                            <span className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-2 bg-black rounded-b-xl" />
+
+                            {/* Botones laterales */}
+                            <span className="absolute -right-2 top-[60px] border-4 border-black h-7 rounded-md" />
+                            <span className="absolute -right-2 bottom-[250px] border-4 border-black h-7 rounded-md" />
+                            <span className="absolute -right-2 bottom-[150px] border-4 border-black h-12 rounded-md" />
+                        </div>
+
+
                 )
             }
             {loading && (
